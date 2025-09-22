@@ -11,7 +11,7 @@ import {
 import { Logo } from '@/components/logo';
 import { SidebarNavigation } from './sidebar-navigation';
 
-export function SidebarWrapper({ children }: { children: React.ReactNode }) {
+export function SidebarWrapper() {
   return (
     <SidebarProvider defaultOpen={false}>
       <Sidebar collapsible="icon">
@@ -24,7 +24,6 @@ export function SidebarWrapper({ children }: { children: React.ReactNode }) {
         </SidebarContent>
         <SidebarFooter>{/* Footer content can be added here */}</SidebarFooter>
       </Sidebar>
-      {children}
     </SidebarProvider>
   );
 }
