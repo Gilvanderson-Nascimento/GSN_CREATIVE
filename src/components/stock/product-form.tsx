@@ -14,6 +14,8 @@ import {
 import { Input } from '@/components/ui/input';
 import type { Product } from '@/lib/types';
 import Image from 'next/image';
+import React from 'react';
+import { Upload } from 'lucide-react';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
@@ -22,7 +24,7 @@ const formSchema = z.object({
   purchasePrice: z.coerce.number().positive({ message: 'Preço de compra deve ser positivo.' }),
   salePrice: z.coerce.number().positive({ message: 'Preço de venda deve ser positivo.' }),
   barcode: z.string().min(8, { message: 'Código de barras inválido.' }),
-  imageUrl: z.string().url({ message: 'URL da imagem inválida.' }).optional().or(z.literal('')),
+  imageUrl: z.string().optional(),
 });
 
 type ProductFormProps = {
@@ -46,39 +48,54 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
   });
 
   const imageUrl = form.watch('imageUrl');
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue('imageUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onSave({ ...values, id: product?.id || '' });
+    onSave({ ...values, imageUrl: values.imageUrl || '', id: product?.id || '' });
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
-        {imageUrl && (
-            <div className="flex justify-center">
-                <Image 
-                    src={imageUrl} 
-                    alt="Preview" 
-                    width={128} 
-                    height={128} 
-                    className="rounded-md object-cover"
-                    data-ai-hint="product image"
-                />
+        <div className="flex flex-col items-center gap-4">
+            <div className="w-32 h-32 rounded-md border border-dashed flex items-center justify-center bg-muted overflow-hidden">
+                {imageUrl ? (
+                    <Image 
+                        src={imageUrl} 
+                        alt="Preview" 
+                        width={128} 
+                        height={128} 
+                        className="object-cover h-full w-full"
+                        data-ai-hint="product image"
+                    />
+                ) : (
+                    <span className="text-xs text-muted-foreground text-center">Sem Imagem</span>
+                )}
             </div>
-        )}
-         <FormField
-          control={form.control}
-          name="imageUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>URL da Imagem</FormLabel>
-              <FormControl>
-                <Input placeholder="https://exemplo.com/imagem.png" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageChange}
+              className="hidden" 
+              ref={fileInputRef}
+            />
+            <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                <Upload className="mr-2 h-4 w-4" />
+                Carregar Imagem
+            </Button>
+        </div>
         <FormField
           control={form.control}
           name="name"

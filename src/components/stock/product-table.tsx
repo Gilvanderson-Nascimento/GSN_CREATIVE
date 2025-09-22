@@ -176,7 +176,7 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
         </CardFooter>
       </Card>
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent>
+        <SheetContent className="overflow-y-auto">
           <SheetHeader>
             <SheetTitle>{editingProduct ? 'Editar Produto' : 'Adicionar Produto'}</SheetTitle>
           </SheetHeader>
