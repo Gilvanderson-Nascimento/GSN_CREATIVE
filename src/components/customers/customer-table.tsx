@@ -18,10 +18,27 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+
 import { Eye, MoreHorizontal, Pencil, PlusCircle, Trash2, Search } from 'lucide-react';
 import type { Customer } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-
+import { CustomerForm } from './customer-form';
 
 type CustomerTableProps = {
   initialCustomers: Customer[];
@@ -30,6 +47,45 @@ type CustomerTableProps = {
 export function CustomerTable({ initialCustomers }: CustomerTableProps) {
   const [customers, setCustomers] = useState(initialCustomers);
   const [filter, setFilter] = useState('');
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const handleAddCustomer = () => {
+    setEditingCustomer(null);
+    setIsSheetOpen(true);
+  };
+
+  const handleEditCustomer = (customer: Customer) => {
+    setEditingCustomer(customer);
+    setIsSheetOpen(true);
+  };
+
+  const confirmDeleteCustomer = (customer: Customer) => {
+    setDeletingCustomer(customer);
+  }
+
+  const handleDeleteCustomer = () => {
+    if (deletingCustomer) {
+      setCustomers(customers.filter((c) => c.id !== deletingCustomer.id));
+      setDeletingCustomer(null);
+    }
+  };
+  
+  const handleSaveCustomer = (customerData: Omit<Customer, 'id' | 'salesCount' | 'totalSpent'>) => {
+    if(editingCustomer) {
+        setCustomers(customers.map(c => c.id === editingCustomer.id ? { ...editingCustomer, ...customerData } : c));
+    } else {
+        const newCustomer: Customer = {
+          ...customerData,
+          id: `CUST${Date.now()}`,
+          salesCount: 0,
+          totalSpent: 0,
+        }
+        setCustomers([...customers, newCustomer]);
+    }
+    setIsSheetOpen(false);
+  }
 
   const filteredCustomers = customers.filter(
     (customer) =>
@@ -58,9 +114,9 @@ export function CustomerTable({ initialCustomers }: CustomerTableProps) {
                         className="pl-8"
                     />
                 </div>
-                <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Adicionar Cliente
+                <Button onClick={handleAddCustomer}>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Adicionar Cliente
                 </Button>
             </div>
             <div className="rounded-md border">
@@ -101,10 +157,10 @@ export function CustomerTable({ initialCustomers }: CustomerTableProps) {
                                         <Eye className="mr-2 h-4 w-4" /> Ver Detalhes
                                     </DropdownMenuItem>
                                 </Link>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => handleEditCustomer(customer)}>
                                     <Pencil className="mr-2 h-4 w-4" /> Editar
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="text-destructive">
+                                <DropdownMenuItem onSelect={() => confirmDeleteCustomer(customer)} className="text-destructive">
                                     <Trash2 className="mr-2 h-4 w-4" /> Excluir
                                 </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -130,6 +186,33 @@ export function CustomerTable({ initialCustomers }: CustomerTableProps) {
             </div>
         </CardFooter>
       </Card>
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent className="overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{editingCustomer ? 'Editar Cliente' : 'Adicionar Cliente'}</SheetTitle>
+          </SheetHeader>
+          <CustomerForm
+            customer={editingCustomer}
+            onSave={handleSaveCustomer}
+            onCancel={() => setIsSheetOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
+      <AlertDialog open={!!deletingCustomer} onOpenChange={(open) => !open && setDeletingCustomer(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação não pode ser desfeita. Isso excluirá permanentemente o cliente
+              e seus dados de nossos servidores.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setDeletingCustomer(null)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteCustomer} className="bg-destructive hover:bg-destructive/90">Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
