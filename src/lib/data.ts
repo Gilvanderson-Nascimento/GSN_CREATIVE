@@ -1,13 +1,13 @@
 import type { Product, Customer, Sale } from './types';
 
 export const products: Product[] = [
-  { id: 'PROD001', name: 'Arroz Parboilizado', category: 'Grãos', quantity: 100, purchasePrice: 3.5, salePrice: 5.0, barcode: '7890123456789' },
-  { id: 'PROD002', name: 'Feijão Carioca', category: 'Grãos', quantity: 80, purchasePrice: 5.0, salePrice: 7.5, barcode: '7890123456790' },
-  { id: 'PROD003', name: 'Óleo de Soja', category: 'Óleos', quantity: 120, purchasePrice: 4.0, salePrice: 6.0, barcode: '7890123456791' },
-  { id: 'PROD004', name: 'Leite Integral', category: 'Laticínios', quantity: 50, purchasePrice: 2.5, salePrice: 4.0, barcode: '7890123456792' },
-  { id: 'PROD005', name: 'Pão de Forma', category: 'Padaria', quantity: 30, purchasePrice: 3.0, salePrice: 5.5, barcode: '7890123456793' },
-  { id: 'PROD006', name: 'Café em Pó', category: 'Mercearia', quantity: 5, purchasePrice: 8.0, salePrice: 12.0, barcode: '7890123456794' },
-  { id: 'PROD007', name: 'Refrigerante Cola', category: 'Bebidas', quantity: 200, purchasePrice: 2.0, salePrice: 3.5, barcode: '7890123456795' },
+  { id: 'PROD001', name: 'Arroz Parboilizado', category: 'Grãos', quantity: 100, purchasePrice: 3.5, salePrice: 5.0, barcode: '7890123456789', imageUrl: 'https://picsum.photos/seed/PROD001/200/200' },
+  { id: 'PROD002', name: 'Feijão Carioca', category: 'Grãos', quantity: 80, purchasePrice: 5.0, salePrice: 7.5, barcode: '7890123456790', imageUrl: 'https://picsum.photos/seed/PROD002/200/200' },
+  { id: 'PROD003', name: 'Óleo de Soja', category: 'Óleos', quantity: 120, purchasePrice: 4.0, salePrice: 6.0, barcode: '7890123456791', imageUrl: 'https://picsum.photos/seed/PROD003/200/200' },
+  { id: 'PROD004', name: 'Leite Integral', category: 'Laticínios', quantity: 50, purchasePrice: 2.5, salePrice: 4.0, barcode: '7890123456792', imageUrl: 'https://picsum.photos/seed/PROD004/200/200' },
+  { id: 'PROD005', name: 'Pão de Forma', category: 'Padaria', quantity: 30, purchasePrice: 3.0, salePrice: 5.5, barcode: '7890123456793', imageUrl: 'https://picsum.photos/seed/PROD005/200/200' },
+  { id: 'PROD006', name: 'Café em Pó', category: 'Mercearia', quantity: 5, purchasePrice: 8.0, salePrice: 12.0, barcode: '7890123456794', imageUrl: 'https://picsum.photos/seed/PROD006/200/200' },
+  { id: 'PROD007', name: 'Refrigerante Cola', category: 'Bebidas', quantity: 200, purchasePrice: 2.0, salePrice: 3.5, barcode: '7890123456795', imageUrl: 'https://picsum.photos/seed/PROD007/200/200' },
 ];
 
 export const customers: Customer[] = [

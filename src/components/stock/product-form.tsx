@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import type { Product } from '@/lib/types';
+import Image from 'next/image';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
@@ -21,6 +22,7 @@ const formSchema = z.object({
   purchasePrice: z.coerce.number().positive({ message: 'Preço de compra deve ser positivo.' }),
   salePrice: z.coerce.number().positive({ message: 'Preço de venda deve ser positivo.' }),
   barcode: z.string().min(8, { message: 'Código de barras inválido.' }),
+  imageUrl: z.string().url({ message: 'URL da imagem inválida.' }).optional().or(z.literal('')),
 });
 
 type ProductFormProps = {
@@ -39,8 +41,11 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       purchasePrice: 0,
       salePrice: 0,
       barcode: '',
+      imageUrl: '',
     },
   });
+
+  const imageUrl = form.watch('imageUrl');
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave({ ...values, id: product?.id || '' });
@@ -49,6 +54,31 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
+        {imageUrl && (
+            <div className="flex justify-center">
+                <Image 
+                    src={imageUrl} 
+                    alt="Preview" 
+                    width={128} 
+                    height={128} 
+                    className="rounded-md object-cover"
+                    data-ai-hint="product image"
+                />
+            </div>
+        )}
+         <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>URL da Imagem</FormLabel>
+              <FormControl>
+                <Input placeholder="https://exemplo.com/imagem.png" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"

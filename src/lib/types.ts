@@ -6,6 +6,7 @@ export type Product = {
   purchasePrice: number;
   salePrice: number;
   barcode: string;
+  imageUrl?: string;
 };
 
 export type SaleItem = {

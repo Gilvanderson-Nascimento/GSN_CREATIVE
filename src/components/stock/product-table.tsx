@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import {
   Table,
   TableBody,
@@ -24,7 +25,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon } from 'lucide-react';
 import { ProductForm } from './product-form';
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -97,6 +98,7 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
                 <Table>
                 <TableHeader>
                     <TableRow>
+                    <TableHead className="w-[80px]">Imagem</TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>Categoria</TableHead>
                     <TableHead className="text-center">Qtde.</TableHead>
@@ -111,6 +113,22 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
                 <TableBody>
                     {filteredProducts.map((product) => (
                     <TableRow key={product.id}>
+                        <TableCell>
+                          <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden">
+                            {product.imageUrl ? (
+                                <Image 
+                                    src={product.imageUrl} 
+                                    alt={product.name} 
+                                    width={40} 
+                                    height={40} 
+                                    className="object-cover h-full w-full"
+                                    data-ai-hint="product image" 
+                                />
+                            ) : (
+                                <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{product.category}</TableCell>
                         <TableCell className="text-center">{product.quantity}</TableCell>
@@ -142,7 +160,7 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
                     ))}
                      {filteredProducts.length === 0 && (
                         <TableRow>
-                            <TableCell colSpan={7} className="h-24 text-center">
+                            <TableCell colSpan={8} className="h-24 text-center">
                                 Nenhum produto encontrado.
                             </TableCell>
                         </TableRow>
