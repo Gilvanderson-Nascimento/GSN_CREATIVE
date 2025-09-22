@@ -83,10 +83,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton>
-                <Settings />
-                Configurações
-              </SidebarMenuButton>
+                <Link href="/settings" passHref>
+                    <SidebarMenuButton asChild isActive={isActive('/settings')}>
+                        <span>
+                            <Settings />
+                            Configurações
+                        </span>
+                    </SidebarMenuButton>
+              </Link>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
