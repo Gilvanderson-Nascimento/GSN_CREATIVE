@@ -3,9 +3,24 @@
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon, Monitor } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // Renderiza um placeholder ou nada enquanto o componente não estiver montado no cliente
+    return (
+        <div className="inline-flex items-center rounded-md bg-secondary p-1 h-11 w-[284px]">
+            {/* Você pode adicionar um Skeleton/Loader aqui se preferir */}
+        </div>
+    );
+  }
 
   return (
     <div className="inline-flex items-center rounded-md bg-secondary p-1">
