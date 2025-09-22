@@ -13,7 +13,7 @@ export function SidebarNavigation() {
       <SidebarMenu>
         <SidebarMenuItem>
           <Link href="/dashboard" passHref>
-            <SidebarMenuButton asChild isActive={isActive('/dashboard')}>
+            <SidebarMenuButton asChild isActive={isActive('/dashboard')} tooltip="Dashboard">
               <span>
                 <LayoutDashboard />
                 Dashboard
@@ -23,7 +23,7 @@ export function SidebarNavigation() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <Link href="/stock" passHref>
-            <SidebarMenuButton asChild isActive={isActive('/stock')}>
+            <SidebarMenuButton asChild isActive={isActive('/stock')} tooltip="Estoque">
               <span>
                 <Boxes />
                 Estoque
@@ -33,7 +33,7 @@ export function SidebarNavigation() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <Link href="/sales" passHref>
-            <SidebarMenuButton asChild isActive={isActive('/sales')}>
+            <SidebarMenuButton asChild isActive={isActive('/sales')} tooltip="Vendas">
               <span>
                 <ShoppingCart />
                 Vendas
@@ -43,7 +43,7 @@ export function SidebarNavigation() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <Link href="/customers" passHref>
-            <SidebarMenuButton asChild isActive={isActive('/customers')}>
+            <SidebarMenuButton asChild isActive={isActive('/customers')} tooltip="Clientes">
               <span>
                 <Users />
                 Clientes
@@ -53,7 +53,7 @@ export function SidebarNavigation() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <Link href="/pricing" passHref>
-            <SidebarMenuButton asChild isActive={isActive('/pricing')}>
+            <SidebarMenuButton asChild isActive={isActive('/pricing')} tooltip="Precificação">
               <span>
                 <Tags />
                 Precificação
@@ -66,7 +66,7 @@ export function SidebarNavigation() {
       <SidebarMenu>
         <SidebarMenuItem>
           <Link href="/settings" passHref>
-            <SidebarMenuButton asChild isActive={isActive('/settings')}>
+            <SidebarMenuButton asChild isActive={isActive('/settings')} tooltip="Configurações">
               <span>
                 <Settings />
                 Configurações

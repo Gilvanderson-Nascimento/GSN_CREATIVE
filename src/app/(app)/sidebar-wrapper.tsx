@@ -6,16 +6,18 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { SidebarNavigation } from './sidebar-navigation';
 
 export function SidebarWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <Sidebar>
+    <SidebarProvider defaultOpen={false}>
+      <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo />
+          <SidebarTrigger/>
         </SidebarHeader>
         <SidebarContent>
           <SidebarNavigation />
