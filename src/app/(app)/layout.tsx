@@ -31,50 +31,50 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <SidebarMenuItem>
               <Link href="/dashboard" passHref>
                 <SidebarMenuButton asChild isActive={isActive('/dashboard')}>
-                  <>
+                  <span>
                     <LayoutDashboard />
                     Dashboard
-                  </>
+                  </span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <Link href="/stock" passHref>
                 <SidebarMenuButton asChild isActive={isActive('/stock')}>
-                  <>
+                  <span>
                     <Boxes />
                     Estoque
-                  </>
+                  </span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
                <Link href="/sales" passHref>
                 <SidebarMenuButton asChild isActive={isActive('/sales')}>
-                  <>
+                  <span>
                     <ShoppingCart />
                     Vendas
-                  </>
+                  </span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <Link href="/customers" passHref>
                 <SidebarMenuButton asChild isActive={isActive('/customers')}>
-                  <>
+                  <span>
                     <Users />
                     Clientes
-                  </>
+                  </span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <Link href="/pricing" passHref>
                 <SidebarMenuButton asChild isActive={isActive('/pricing')}>
-                  <>
+                  <span>
                     <Tags />
                     Precificação
-                  </>
+                  </span>
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
