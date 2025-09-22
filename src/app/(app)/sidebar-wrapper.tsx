@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  SidebarProvider,
   Sidebar,
   SidebarHeader,
   SidebarContent,
@@ -13,17 +12,15 @@ import { SidebarNavigation } from './sidebar-navigation';
 
 export function SidebarWrapper() {
   return (
-    <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-          <Logo />
-          <SidebarTrigger/>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarNavigation />
-        </SidebarContent>
-        <SidebarFooter>{/* Footer content can be added here */}</SidebarFooter>
-      </Sidebar>
-    </SidebarProvider>
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <Logo />
+        <SidebarTrigger />
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarNavigation />
+      </SidebarContent>
+      <SidebarFooter>{/* Footer content can be added here */}</SidebarFooter>
+    </Sidebar>
   );
 }
