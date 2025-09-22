@@ -4,6 +4,13 @@ import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { 
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue 
+} from '@/components/ui/select';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -14,43 +21,34 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    // Renderiza um placeholder ou nada enquanto o componente não estiver montado no cliente
-    return (
-        <div className="inline-flex items-center rounded-md bg-secondary p-1 h-11 w-[284px]">
-            {/* Você pode adicionar um Skeleton/Loader aqui se preferir */}
-        </div>
-    );
+    return <div className="h-10 w-full rounded-md border bg-background" />;
   }
 
   return (
-    <div className="inline-flex items-center rounded-md bg-secondary p-1">
-      <Button
-        variant={theme === 'light' ? 'default' : 'ghost'}
-        size="sm"
-        onClick={() => setTheme('light')}
-        className="rounded-sm"
-      >
-        <Sun className="h-4 w-4" />
-        <span className="ml-2">Claro</span>
-      </Button>
-      <Button
-         variant={theme === 'dark' ? 'default' : 'ghost'}
-         size="sm"
-         onClick={() => setTheme('dark')}
-         className="rounded-sm"
-      >
-        <Moon className="h-4 w-4" />
-         <span className="ml-2">Escuro</span>
-      </Button>
-       <Button
-         variant={theme === 'system' ? 'default' : 'ghost'}
-         size="sm"
-         onClick={() => setTheme('system')}
-         className="rounded-sm"
-      >
-        <Monitor className="h-4 w-4" />
-         <span className="ml-2">Sistema</span>
-      </Button>
-    </div>
+    <Select value={theme} onValueChange={setTheme}>
+      <SelectTrigger>
+        <SelectValue placeholder="Selecione um tema" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="light">
+          <div className="flex items-center gap-2">
+            <Sun className="h-4 w-4" />
+            <span>Claro</span>
+          </div>
+        </SelectItem>
+        <SelectItem value="dark">
+           <div className="flex items-center gap-2">
+            <Moon className="h-4 w-4" />
+            <span>Escuro</span>
+          </div>
+        </SelectItem>
+        <SelectItem value="system">
+           <div className="flex items-center gap-2">
+            <Monitor className="h-4 w-4" />
+            <span>Sistema</span>
+          </div>
+        </SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
