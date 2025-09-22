@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { PageHeader } from '@/components/shared/page-header';
+import { BackButton } from '@/components/shared/back-button';
 
 export default function CustomerDetailPage({ params }: { params: { id: string } }) {
   const customer = customers.find((c) => c.id === params.id);
@@ -16,7 +17,9 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
 
   return (
     <div>
-      <PageHeader title="Detalhes do Cliente" />
+      <PageHeader title="Detalhes do Cliente">
+        <BackButton />
+      </PageHeader>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1">
