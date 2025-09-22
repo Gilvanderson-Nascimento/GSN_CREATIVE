@@ -24,9 +24,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { MoreHorizontal, Pencil, PlusCircle, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search } from 'lucide-react';
 import { ProductForm } from './product-form';
 import type { Product } from '@/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 
 type ProductTableProps = {
   initialProducts: Product[];
@@ -69,66 +70,93 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
-        <Input
-          placeholder="Filtrar produtos por nome ou código..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="max-w-sm"
-        />
-        <Button onClick={handleAddProduct}>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Adicionar Produto
-        </Button>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Categoria</TableHead>
-              <TableHead>Qtde.</TableHead>
-              <TableHead>Vl. Compra</TableHead>
-              <TableHead>Vl. Venda</TableHead>
-              <TableHead>Cód. Barras</TableHead>
-              <TableHead>
-                <span className="sr-only">Ações</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.quantity}</TableCell>
-                <TableCell>R$ {product.purchasePrice.toFixed(2)}</TableCell>
-                <TableCell>R$ {product.salePrice.toFixed(2)}</TableCell>
-                <TableCell>{product.barcode}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                      <DropdownMenuItem onSelect={() => handleEditProduct(product)}>
-                        <Pencil className="mr-2 h-4 w-4" /> Editar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => handleDeleteProduct(product.id)} className="text-destructive">
-                         <Trash2 className="mr-2 h-4 w-4" /> Excluir
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Gerenciamento de Estoque</CardTitle>
+          <CardDescription>
+            Visualize, adicione, edite e exclua os produtos do seu estabelecimento.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="flex items-center justify-between mb-4 gap-4">
+                <div className="relative w-full max-w-sm">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Filtrar produtos por nome ou código..."
+                        value={filter}
+                        onChange={(e) => setFilter(e.target.value)}
+                        className="pl-8"
+                    />
+                </div>
+                <Button onClick={handleAddProduct}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Adicionar Produto
+                </Button>
+            </div>
+            <div className="rounded-md border">
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead className="text-center">Qtde.</TableHead>
+                    <TableHead className="text-right">Vl. Compra</TableHead>
+                    <TableHead className="text-right">Vl. Venda</TableHead>
+                    <TableHead>Cód. Barras</TableHead>
+                    <TableHead>
+                        <span className="sr-only">Ações</span>
+                    </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {filteredProducts.map((product) => (
+                    <TableRow key={product.id}>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.category}</TableCell>
+                        <TableCell className="text-center">{product.quantity}</TableCell>
+                        <TableCell className="text-right">R$ {product.purchasePrice.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">R$ {product.salePrice.toFixed(2)}</TableCell>
+                        <TableCell>{product.barcode}</TableCell>
+                        <TableCell>
+                        <div className="flex justify-end">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuItem onSelect={() => handleEditProduct(product)}>
+                                    <Pencil className="mr-2 h-4 w-4" /> Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => handleDeleteProduct(product.id)} className="text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" /> Excluir
+                                </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                        </TableCell>
+                    </TableRow>
+                    ))}
+                     {filteredProducts.length === 0 && (
+                        <TableRow>
+                            <TableCell colSpan={7} className="h-24 text-center">
+                                Nenhum produto encontrado.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+                </Table>
+            </div>
+        </CardContent>
+        <CardFooter>
+            <div className="text-xs text-muted-foreground">
+                Mostrando <strong>{filteredProducts.length}</strong> de <strong>{products.length}</strong> produtos.
+            </div>
+        </CardFooter>
+      </Card>
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent>
           <SheetHeader>

@@ -7,9 +7,6 @@ export default function StockPage() {
   const initialProducts = products;
 
   return (
-    <div>
-      <PageHeader title="Gerenciamento de Estoque" />
       <ProductTable initialProducts={initialProducts} />
-    </div>
   );
 }
