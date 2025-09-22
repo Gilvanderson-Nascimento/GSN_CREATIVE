@@ -2,8 +2,9 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useEffect, useState } from 'react';
 
-const monthlyData = [
+const generateMonthlyData = () => [
   { month: 'Jan', total: Math.floor(Math.random() * 5000) + 1000 },
   { month: 'Fev', total: Math.floor(Math.random() * 5000) + 1000 },
   { month: 'Mar', total: Math.floor(Math.random() * 5000) + 1000 },
@@ -18,7 +19,7 @@ const monthlyData = [
   { month: 'Dez', total: Math.floor(Math.random() * 5000) + 1000 },
 ];
 
-const weeklyData = [
+const generateWeeklyData = () => [
   { day: 'Dom', total: Math.floor(Math.random() * 1000) + 200 },
   { day: 'Seg', total: Math.floor(Math.random() * 1000) + 200 },
   { day: 'Ter', total: Math.floor(Math.random() * 1000) + 200 },
@@ -26,9 +27,33 @@ const weeklyData = [
   { day: 'Qui', total: Math.floor(Math.random() * 1000) + 200 },
   { day: 'Sex', total: Math.floor(Math.random() * 1000) + 200 },
   { day: 'Sáb', total: Math.floor(Math.random() * 1000) + 200 },
-]
+];
+
 
 export function SalesChart() {
+  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [weeklyData, setWeeklyData] = useState<any[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setMonthlyData(generateMonthlyData());
+    setWeeklyData(generateWeeklyData());
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Vendas por Período</CardTitle>
+            </CardHeader>
+            <CardContent className="pl-2">
+                <div className="w-full h-[350px] bg-muted animate-pulse rounded-md" />
+            </CardContent>
+        </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
