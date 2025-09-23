@@ -49,12 +49,16 @@ export default function SettingsPage() {
         customers,
         sales
     };
+    
+    const fileName = `backup-gsn-gestor-${new Date().toISOString().split('T')[0]}`;
 
     if (format === 'json') {
         const jsonString = JSON.stringify(dataToExport, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
-        saveAs(blob, `backup-gsn-gestor-${new Date().toISOString().split('T')[0]}.json`);
-    } else if (format === 'csv') {
+        saveAs(blob, `${fileName}.json`);
+        toast({ title: "Exportação Concluída", description: `Os dados foram exportados para ${fileName}.json` });
+
+    } else {
         const productSheet = XLSX.utils.json_to_sheet(products);
         const customerSheet = XLSX.utils.json_to_sheet(customers);
         const salesSheet = XLSX.utils.json_to_sheet(sales.map(s => ({...s, items: JSON.stringify(s.items), customer: s.customerId || ''})));
@@ -64,19 +68,12 @@ export default function SettingsPage() {
         XLSX.utils.book_append_sheet(wb, customerSheet, "Clientes");
         XLSX.utils.book_append_sheet(wb, salesSheet, "Vendas");
 
-        toast({ title: "Exportação CSV", description: "CSV é exportado como um arquivo Excel com abas separadas."})
-        XLSX.writeFile(wb, `backup-csv-gsn-gestor-${new Date().toISOString().split('T')[0]}.xlsx`);
-
-    } else if (format === 'excel') {
-        const productSheet = XLSX.utils.json_to_sheet(products);
-        const customerSheet = XLSX.utils.json_to_sheet(customers);
-        const salesSheet = XLSX.utils.json_to_sheet(sales.map(s => ({...s, items: JSON.stringify(s.items), customer: s.customerId || ''})));
+        if (format === 'csv') {
+            toast({ title: "Exportação CSV", description: "O formato CSV é exportado como um arquivo Excel (.xlsx) com abas separadas para melhor compatibilidade."})
+        }
         
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, productSheet, "Produtos");
-        XLSX.utils.book_append_sheet(wb, customerSheet, "Clientes");
-        XLSX.utils.book_append_sheet(wb, salesSheet, "Vendas");
-        XLSX.writeFile(wb, `backup-excel-gsn-gestor-${new Date().toISOString().split('T')[0]}.xlsx`);
+        XLSX.writeFile(wb, `${fileName}.xlsx`);
+        toast({ title: "Exportação Concluída", description: `Os dados foram exportados para ${fileName}.xlsx` });
     }
   }
 
