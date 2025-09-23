@@ -82,15 +82,17 @@ const generateStaticData = (period: 'daily' | 'weekly' | 'monthly'): ChartData[]
 
 export function SalesChart() {
   const [data, setData] = useState<ChartData[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: addDays(new Date(), -29),
-    to: new Date(),
-  });
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<string>('custom');
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
+    // Set initial date range only on the client to avoid hydration mismatch
+    setDateRange({
+        from: addDays(new Date(), -29),
+        to: new Date(),
+    });
   }, []);
 
   useEffect(() => {
