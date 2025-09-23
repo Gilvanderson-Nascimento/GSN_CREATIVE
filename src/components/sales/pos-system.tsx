@@ -106,7 +106,7 @@ export function PosSystem() {
         </CardHeader>
         <CardContent className="flex-grow">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {searchedProducts.map((product) => (
                 <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow flex flex-col" onClick={() => addToCart(product)}>
                   <CardContent className="p-2 flex flex-col items-center text-center flex-grow">
