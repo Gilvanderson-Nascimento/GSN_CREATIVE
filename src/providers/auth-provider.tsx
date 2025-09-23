@@ -36,24 +36,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
-         if (pathname === '/login') {
-            const firstAllowedPage = orderedPages.find(page => parsedUser.permissions?.[page]) || 'dashboard';
-            router.replace(`/${firstAllowedPage}`);
-        }
-      } else {
-        if (pathname !== '/login') {
-            router.replace('/login');
-        }
       }
     } catch (e) {
         console.error("Failed to parse user from session storage", e);
         sessionStorage.removeItem('user');
-         if (pathname !== '/login') {
-            router.replace('/login');
-        }
     }
     setIsLoading(false);
-  }, [pathname, router]);
+  }, []);
 
   const login = async (username: string, pass: string): Promise<void> => {
     const users = getInitialUsers();
@@ -76,17 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAuthenticated = !!user;
-
-  if (isLoading && pathname !== '/login') {
-      return (
-        <div className="flex h-screen w-screen items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-                 <Skeleton className="h-16 w-[250px]" />
-                 <Skeleton className="h-8 w-[200px]" />
-            </div>
-        </div>
-      );
-  }
   
   const value = { user, isAuthenticated, isLoading, login, logout };
 
