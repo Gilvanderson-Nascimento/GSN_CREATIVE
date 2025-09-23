@@ -50,11 +50,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
         email: user?.email || '',
         password: '', // Always empty for security
         role: user?.role || 'vendedor',
-        permissions: user?.permissions || {
-          dashboard: true,
-          sales: true,
-          customers: true,
-        },
+        permissions: user?.permissions || {}, // Start with no permissions for new users
     },
   });
   
