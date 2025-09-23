@@ -10,6 +10,18 @@ type SaleData = {
   total: number;
 }
 
+// Defining a simplified settings type for the context
+export type AppSettings = {
+  estoque: {
+    notificar_estoque_minimo: boolean;
+    estoque_minimo_padrao: number;
+    permitir_estoque_negativo: boolean;
+  };
+  // Add other settings sections as needed
+  [key: string]: any; 
+};
+
+
 type DataContextType = {
   products: Product[];
   setProducts: (products: Product[]) => void;
@@ -18,6 +30,8 @@ type DataContextType = {
   sales: Sale[];
   setSales: (sales: Sale[]) => void;
   completeSale: (saleData: SaleData) => void;
+  settings: AppSettings;
+  setSettings: (settings: AppSettings) => void;
 };
 
 export const DataContext = createContext<DataContextType>({
@@ -28,4 +42,12 @@ export const DataContext = createContext<DataContextType>({
   sales: [],
   setSales: () => {},
   completeSale: () => {},
+  settings: {
+    estoque: {
+      notificar_estoque_minimo: true,
+      estoque_minimo_padrao: 10,
+      permitir_estoque_negativo: false,
+    },
+  },
+  setSettings: () => {},
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useContext, useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/settings/theme-toggle';
@@ -10,67 +10,26 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { DataContext } from '@/context/data-context';
+import { DataContext, type AppSettings } from '@/context/data-context';
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { products, customers, sales, setProducts, setCustomers, setSales } = useContext(DataContext);
+  const { products, customers, sales, setProducts, setCustomers, setSales, settings, setSettings } = useContext(DataContext);
   const restoreInputRef = useRef<HTMLInputElement>(null);
 
-  // State for all settings
-  const [settings, setSettings] = useState({
-    sistema: {
-      nome_empresa: "Minha Empresa",
-      idioma: "pt-BR",
-      moeda: "BRL",
-    },
-    precificacao: {
-      margem_lucro: 20,
-      imposto_padrao: 10,
-      arredondar_valores: true,
-      permitir_venda_abaixo_custo: false,
-    },
-    estoque: {
-      notificar_estoque_minimo: true,
-      estoque_minimo_padrao: 5,
-      permitir_estoque_negativo: false,
-    },
-    vendas: {
-      venda_sem_cliente: true,
-      desconto_maximo_percentual: 15,
-      associar_vendedor: true,
-    },
-    usuarios: {
-      multiusuario: true,
-      autenticacao_2_etapas: false,
-    },
-    backup_exportacao: {
-      frequencia: "semanal",
-      permitir_importacao: true,
-    },
-    integracoes: {
-      api_nfe: false,
-      webhooks: false,
-      impressora_cupom: false,
-    },
-    ambiente_teste: {
-      modo_teste: false,
-    },
-  });
-
   // Generic handler for nested state
-  const handleSettingChange = <T extends keyof typeof settings, K extends keyof (typeof settings)[T]>(
+  const handleSettingChange = <T extends keyof AppSettings, K extends keyof (AppSettings)[T]>(
     section: T,
     key: K,
-    value: (typeof settings)[T][K]
+    value: (AppSettings)[T][K]
   ) => {
-    setSettings(prev => ({
-      ...prev,
+    setSettings({
+      ...settings,
       [section]: {
-        ...prev[section],
+        ...settings[section],
         [key]: value,
       },
-    }));
+    });
   };
 
   const handleResetData = () => {
@@ -96,7 +55,6 @@ export default function SettingsPage() {
         const blob = new Blob([jsonString], { type: 'application/json' });
         saveAs(blob, `backup-gsn-gestor-${new Date().toISOString().split('T')[0]}.json`);
     } else if (format === 'csv') {
-        // For CSV, we'll export each data type as a separate file, as CSV is flat.
         const productSheet = XLSX.utils.json_to_sheet(products);
         const customerSheet = XLSX.utils.json_to_sheet(customers);
         const salesSheet = XLSX.utils.json_to_sheet(sales.map(s => ({...s, items: JSON.stringify(s.items), customer: s.customerId || ''})));
@@ -106,8 +64,6 @@ export default function SettingsPage() {
         XLSX.utils.book_append_sheet(wb, customerSheet, "Clientes");
         XLSX.utils.book_append_sheet(wb, salesSheet, "Vendas");
 
-        // We can't save multiple CSVs at once, so we'll save an Excel file with CSV-like sheets.
-        // Or we can create a zip, which is more complex. Let's export as excel with multiple sheets.
         toast({ title: "Exportação CSV", description: "CSV é exportado como um arquivo Excel com abas separadas."})
         XLSX.writeFile(wb, `backup-csv-gsn-gestor-${new Date().toISOString().split('T')[0]}.xlsx`);
 
@@ -157,7 +113,6 @@ export default function SettingsPage() {
     };
     reader.readAsText(file);
     
-    // Reset file input
     if(restoreInputRef.current) {
         restoreInputRef.current.value = '';
     }
@@ -169,7 +124,6 @@ export default function SettingsPage() {
       <PageHeader title="Configurações" />
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        {/* Sistema */}
         <Card>
           <CardHeader>
             <CardTitle>Sistema</CardTitle>
@@ -207,7 +161,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
         
-        {/* Aparência */}
         <Card>
           <CardHeader>
             <CardTitle>Aparência</CardTitle>
@@ -221,7 +174,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Precificação */}
         <Card>
           <CardHeader>
             <CardTitle>Precificação</CardTitle>
@@ -249,7 +201,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Estoque */}
         <Card>
           <CardHeader>
             <CardTitle>Estoque</CardTitle>
@@ -271,7 +222,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Vendas */}
         <Card>
           <CardHeader>
             <CardTitle>Vendas</CardTitle>
@@ -293,7 +243,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Usuários */}
         <Card>
           <CardHeader>
             <CardTitle>Usuários e Permissões</CardTitle>
@@ -320,7 +269,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Backup e Exportação */}
         <Card>
           <CardHeader>
             <CardTitle>Backup e Exportação</CardTitle>
@@ -353,7 +301,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
         
-        {/* Integrações */}
         <Card>
             <CardHeader>
                 <CardTitle>Integrações</CardTitle>
@@ -375,7 +322,6 @@ export default function SettingsPage() {
             </CardContent>
         </Card>
 
-        {/* Ambiente de Teste */}
         <Card>
             <CardHeader>
                 <CardTitle>Ambiente de Teste</CardTitle>

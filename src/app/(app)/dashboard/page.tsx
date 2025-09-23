@@ -5,7 +5,6 @@ import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataContext } from '@/context/data-context';
 
-// Lazy load components
 const StatsCards = React.lazy(() => 
   import('@/components/dashboard/stats-cards').then(module => ({ default: module.StatsCards }))
 );
@@ -17,6 +16,9 @@ const RecentSales = React.lazy(() =>
 );
 const SalesInsights = React.lazy(() => 
   import('@/components/dashboard/sales-insights').then(module => ({ default: module.SalesInsights }))
+);
+const LowStockList = React.lazy(() =>
+  import('@/components/dashboard/low-stock-list').then(module => ({ default: module.LowStockList }))
 );
 
 function StatsCardsSkeleton() {
@@ -32,15 +34,16 @@ function StatsCardsSkeleton() {
 
 function MainContentSkeleton() {
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Skeleton className="lg:col-span-4 h-[440px]" />
-            <Skeleton className="lg:col-span-3 h-[440px]" />
+        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            <Skeleton className="xl:col-span-2 h-[440px]" />
+            <Skeleton className="h-[440px]" />
         </div>
     )
 }
 
 export default function DashboardPage() {
-  const { sales, products, customers } = useContext(DataContext);
+  const { sales, products, customers, settings } = useContext(DataContext);
+  const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
   const totalProfit = sales.reduce((acc, sale) => {
@@ -54,7 +57,7 @@ export default function DashboardPage() {
     return acc + saleProfit;
   }, 0);
   const newCustomers = customers.length;
-  const lowStockItems = products.filter(p => p.quantity < 10).length;
+  const lowStockItemsCount = products.filter(p => p.quantity < lowStockThreshold).length;
 
   return (
     <div className="flex-1 space-y-4">
@@ -65,24 +68,36 @@ export default function DashboardPage() {
               totalSales={totalSales} 
               totalProfit={totalProfit}
               newCustomers={newCustomers}
-              lowStockItems={lowStockItems}
+              lowStockItems={lowStockItemsCount}
           />
         </Suspense>
         
         <Suspense fallback={<MainContentSkeleton />}>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <div className="lg:col-span-4">
+            <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+                <div className="xl:col-span-2">
                     <SalesChart />
                 </div>
-                <div className="lg:col-span-3">
+                <div>
                     <RecentSales />
                 </div>
             </div>
         </Suspense>
-        
-        <Suspense fallback={<Skeleton className="h-[220px]" />}>
-          <SalesInsights />
-        </Suspense>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <div className="lg:col-span-4">
+                <Suspense fallback={<Skeleton className="h-[320px]" />}>
+                    <SalesInsights />
+                </Suspense>
+            </div>
+            <div className="lg:col-span-3">
+                 <Suspense fallback={<Skeleton className="h-[320px]" />}>
+                    <LowStockList 
+                        products={products}
+                        lowStockThreshold={lowStockThreshold} 
+                    />
+                </Suspense>
+            </div>
+        </div>
       </div>
     </div>
   );

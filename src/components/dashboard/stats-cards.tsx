@@ -49,7 +49,7 @@ export function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItem
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{lowStockItems}</div>
-          <p className="text-xs text-muted-foreground">Itens com menos de 10 unidades</p>
+          <p className="text-xs text-muted-foreground">Itens abaixo do nível mínimo</p>
         </CardContent>
       </Card>
     </div>
