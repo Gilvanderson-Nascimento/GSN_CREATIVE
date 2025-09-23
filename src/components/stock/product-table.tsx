@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo, useContext } from 'react';
 import Image from 'next/image';
 import {
   Table,
@@ -24,10 +24,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, TriangleAlert } from 'lucide-react';
 import { ProductForm } from './product-form';
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DataContext } from '@/context/data-context';
 
 type ProductTableProps = {
   initialProducts: Product[];
@@ -36,8 +39,12 @@ type ProductTableProps = {
 
 export function ProductTable({ initialProducts, setProducts }: ProductTableProps) {
   const [filter, setFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [sortOrder, setSortOrder] = useState('name-asc');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const { settings } = useContext(DataContext);
+  const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -62,11 +69,34 @@ export function ProductTable({ initialProducts, setProducts }: ProductTableProps
     setIsSheetOpen(false);
   }
 
-  const filteredProducts = initialProducts.filter(
-    (product) =>
-      product.name.toLowerCase().includes(filter.toLowerCase()) ||
-      product.barcode.includes(filter)
-  );
+  const categories = useMemo(() => 
+    ['all', ...Array.from(new Set(initialProducts.map(p => p.category)))]
+  , [initialProducts]);
+
+  const filteredProducts = useMemo(() => {
+    let products = initialProducts
+      .filter(
+        (product) =>
+          (product.name.toLowerCase().includes(filter.toLowerCase()) ||
+          product.barcode.includes(filter)) &&
+          (categoryFilter === 'all' || product.category === categoryFilter)
+      );
+
+      switch (sortOrder) {
+        case 'quantity-asc':
+          products.sort((a,b) => a.quantity - b.quantity);
+          break;
+        case 'quantity-desc':
+          products.sort((a,b) => b.quantity - a.quantity);
+          break;
+        case 'name-asc':
+        default:
+          products.sort((a,b) => a.name.localeCompare(b.name));
+          break;
+      }
+    
+    return products;
+  }, [initialProducts, filter, categoryFilter, sortOrder]);
 
   return (
     <>
@@ -78,19 +108,41 @@ export function ProductTable({ initialProducts, setProducts }: ProductTableProps
           </CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="flex items-center justify-between mb-4 gap-4">
-                <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Filtrar produtos por nome ou código..."
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="pl-8"
-                    />
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+                <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-4">
+                  <div className="relative w-full sm:w-auto sm:max-w-xs">
+                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                          placeholder="Filtrar por nome ou código..."
+                          value={filter}
+                          onChange={(e) => setFilter(e.target.value)}
+                          className="pl-8 w-full"
+                      />
+                  </div>
+                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                      <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map(cat => (
+                           <SelectItem key={cat} value={cat}>{cat === 'all' ? 'Todas as Categorias' : cat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                  </Select>
+                  <Select value={sortOrder} onValueChange={setSortOrder}>
+                      <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Ordenar por" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="name-asc">Nome (A-Z)</SelectItem>
+                        <SelectItem value="quantity-asc">Quantidade (Baixa)</SelectItem>
+                        <SelectItem value="quantity-desc">Quantidade (Alta)</SelectItem>
+                      </SelectContent>
+                  </Select>
                 </div>
-                <Button onClick={handleAddProduct}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Adicionar Produto
+                <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Adicionar Produto
                 </Button>
             </div>
             <div className="rounded-md border">
@@ -130,7 +182,14 @@ export function ProductTable({ initialProducts, setProducts }: ProductTableProps
                         </TableCell>
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{product.category}</TableCell>
-                        <TableCell className="text-center">{product.quantity}</TableCell>
+                        <TableCell className="text-center">
+                           <Badge variant={product.quantity <= lowStockThreshold ? (product.quantity === 0 ? "destructive" : "secondary") : "outline"} className="gap-1">
+                                {product.quantity <= lowStockThreshold && (
+                                    <TriangleAlert className="h-3 w-3" />
+                                )}
+                                {product.quantity}
+                            </Badge>
+                        </TableCell>
                         <TableCell className="text-right">R$ {product.purchasePrice.toFixed(2)}</TableCell>
                         <TableCell className="text-right">R$ {product.salePrice.toFixed(2)}</TableCell>
                         <TableCell>{product.barcode}</TableCell>
