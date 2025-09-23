@@ -11,8 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext } from '@/context/data-context';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -83,7 +81,10 @@ export default function SettingsPage() {
     })
   }
 
-  const exportData = (format: 'json' | 'csv' | 'excel') => {
+  const exportData = async (format: 'json' | 'csv' | 'excel') => {
+    const { saveAs } = await import('file-saver');
+    const XLSX = await import('xlsx');
+
     const dataToExport = {
         products,
         customers,
