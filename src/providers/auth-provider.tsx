@@ -2,8 +2,24 @@
 import { useState, useEffect } from 'react';
 import { AuthContext, type AuthUser } from '@/context/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
-import { users as initialUsers } from '@/lib/data'; // Import users directly
 import { Skeleton } from '@/components/ui/skeleton';
+
+const getInitialUsers = () => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const storedUsers = localStorage.getItem('app_users');
+    if(storedUsers) return JSON.parse(storedUsers);
+  } catch (error) {
+    console.error("Error reading users from local storage", error);
+  }
+  // Fallback to empty or initial data if needed, but for auth it should rely on what's persisted
+  // For this app, we assume if nothing is in local storage, we need to populate it.
+  // This is a simplified approach. A real app would have a more robust user provisioning.
+  const initialUsersFromData = require('@/lib/data').users;
+  localStorage.setItem('app_users', JSON.stringify(initialUsersFromData));
+  return initialUsersFromData;
+}
+
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -30,8 +46,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [pathname, router]);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    // Check against the directly imported list of users
-    const foundUser = initialUsers.find(u => u.username === username && u.password === pass);
+    const users = getInitialUsers();
+    const foundUser = users.find(u => u.username === username && u.password === pass);
 
     if (foundUser) {
       sessionStorage.setItem('user', JSON.stringify(foundUser));
@@ -50,9 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAuthenticated = !!user;
 
-  // This check prevents flickering on the login page if the user is already authenticated.
-  // It shows a loader while verifying the session, then redirects if necessary.
-  if (isLoading && pathname === '/login') {
+  if (isLoading) {
       return (
         <div className="flex h-screen w-screen items-center justify-center">
             <div className="flex flex-col items-center gap-4">
@@ -62,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         </div>
       );
   }
-
+  
   const value = { user, isAuthenticated, isLoading, login, logout };
 
   return (

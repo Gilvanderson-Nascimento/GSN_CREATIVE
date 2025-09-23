@@ -1,12 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataContext, type AppSettings } from '@/context/data-context';
 import type { Product, Customer, Sale, SaleItem, User } from '@/lib/types';
 import { 
     products as initialProducts, 
     customers as initialCustomers, 
     sales as initialSales,
-    users as initialUsers
+    users as initialUsersData
 } from '@/lib/data';
 
 type SaleData = {
@@ -57,13 +57,40 @@ const initialSettings: AppSettings = {
     },
 };
 
+const getInitialUsers = (): User[] => {
+    if (typeof window === 'undefined') {
+      return initialUsersData;
+    }
+    try {
+      const storedUsers = localStorage.getItem('app_users');
+      if (storedUsers) {
+        return JSON.parse(storedUsers);
+      }
+    } catch (e) {
+      console.error("Failed to parse users from localStorage", e);
+    }
+    return initialUsersData;
+};
+
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [sales, setSales] = useState<Sale[]>(initialSales);
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsersState] = useState<User[]>(getInitialUsers);
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
+  
+  const setUsers = (newUsers: User[] | ((prevUsers: User[]) => User[])) => {
+    setUsersState(prevUsers => {
+      const updatedUsers = typeof newUsers === 'function' ? newUsers(prevUsers) : newUsers;
+      try {
+        localStorage.setItem('app_users', JSON.stringify(updatedUsers));
+      } catch (e) {
+        console.error("Failed to save users to localStorage", e);
+      }
+      return updatedUsers;
+    });
+  };
 
   const completeSale = (saleData: SaleData) => {
     // 1. Create the new sale object
