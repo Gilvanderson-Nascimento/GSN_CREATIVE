@@ -195,7 +195,7 @@ export default function CustomerTable() {
           />
         </SheetContent>
       </Sheet>
-      <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingCustomer(null)}>
+      <AlertDialog open={!!deletingCustomer} onOpenChange={(open) => !open && setDeletingCustomer(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
