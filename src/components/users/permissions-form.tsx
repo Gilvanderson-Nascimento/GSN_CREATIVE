@@ -1,6 +1,5 @@
 'use client';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +15,6 @@ import { allPermissions } from '@/lib/types';
 
 const permissionKeys = Object.keys(allPermissions) as PagePermission[];
 
-// Updated schema to be more flexible
 const formSchema = z.object({
   permissions: z.record(z.string(), z.boolean()).optional(),
 });
@@ -30,10 +28,16 @@ type PermissionsFormProps = {
 };
 
 export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps) {
+  // Ensure all possible permissions are accounted for, defaulting to false.
+  const defaultPermissions = permissionKeys.reduce((acc, key) => {
+    acc[key] = user.permissions?.[key] || false;
+    return acc;
+  }, {} as Record<PagePermission, boolean>);
+
   const form = useForm<PermissionsFormValues>({
-    resolver: zodResolver(formSchema),
+    // No resolver needed, as we just need to capture the state of checkboxes.
     defaultValues: {
-      permissions: user.permissions,
+      permissions: defaultPermissions,
     },
   });
 
