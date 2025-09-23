@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { AuthContext, type AuthUser } from '@/context/auth-context';
 import { useRouter, usePathname } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { PagePermission } from '@/lib/types';
+import { users as initialUsersData } from '@/lib/data';
 
 const getInitialUsers = () => {
   if (typeof window === 'undefined') return [];
@@ -15,11 +17,11 @@ const getInitialUsers = () => {
   // Fallback to empty or initial data if needed, but for auth it should rely on what's persisted
   // For this app, we assume if nothing is in local storage, we need to populate it.
   // This is a simplified approach. A real app would have a more robust user provisioning.
-  const initialUsersFromData = require('@/lib/data').users;
-  localStorage.setItem('app_users', JSON.stringify(initialUsersFromData));
-  return initialUsersFromData;
+  localStorage.setItem('app_users', JSON.stringify(initialUsersData));
+  return initialUsersData;
 }
 
+const orderedPages: PagePermission[] = ['dashboard', 'stock', 'sales', 'customers', 'pricing', 'users', 'settings'];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -35,12 +37,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
          if (pathname === '/login') {
-            router.replace('/dashboard');
+            const firstAllowedPage = orderedPages.find(page => parsedUser.permissions?.[page]) || 'dashboard';
+            router.replace(`/${firstAllowedPage}`);
+        }
+      } else {
+        if (pathname !== '/login') {
+            router.replace('/login');
         }
       }
     } catch (e) {
         console.error("Failed to parse user from session storage", e);
         sessionStorage.removeItem('user');
+         if (pathname !== '/login') {
+            router.replace('/login');
+        }
     }
     setIsLoading(false);
   }, [pathname, router]);
@@ -52,7 +62,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (foundUser) {
       sessionStorage.setItem('user', JSON.stringify(foundUser));
       setUser(foundUser);
-      router.push('/dashboard');
+      const firstAllowedPage = orderedPages.find(page => foundUser.permissions?.[page]) || 'dashboard';
+      router.push(`/${firstAllowedPage}`);
     } else {
       throw new Error('Usuário ou senha inválidos.');
     }
@@ -66,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAuthenticated = !!user;
 
-  if (isLoading) {
+  if (isLoading && pathname !== '/login') {
       return (
         <div className="flex h-screen w-screen items-center justify-center">
             <div className="flex flex-col items-center gap-4">
