@@ -14,7 +14,7 @@ import { SidebarNavigation } from './sidebar-navigation';
 
 export function SidebarWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <Logo />
