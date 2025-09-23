@@ -15,6 +15,8 @@ type SaleData = {
   subtotal: number;
   discount: number;
   total: number;
+  sellerId?: string;
+  sellerName?: string;
 }
 
 const initialSettings: AppSettings = {
@@ -57,40 +59,54 @@ const initialSettings: AppSettings = {
     },
 };
 
-const getInitialUsers = (): User[] => {
+const getInitialState = <T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') {
-      return initialUsersData;
+      return fallback;
     }
     try {
-      const storedUsers = localStorage.getItem('app_users');
-      if (storedUsers) {
-        return JSON.parse(storedUsers);
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        return JSON.parse(stored);
       }
     } catch (e) {
-      console.error("Failed to parse users from localStorage", e);
+      console.error(`Failed to parse ${key} from localStorage`, e);
     }
-    return initialUsersData;
+    return fallback;
 };
 
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
-  const [sales, setSales] = useState<Sale[]>(initialSales);
-  const [users, setUsersState] = useState<User[]>(getInitialUsers);
-  const [settings, setSettings] = useState<AppSettings>(initialSettings);
+  const [products, setProductsState] = useState<Product[]>(() => getInitialState('app_products', initialProducts));
+  const [customers, setCustomersState] = useState<Customer[]>(() => getInitialState('app_customers', initialCustomers));
+  const [sales, setSalesState] = useState<Sale[]>(() => getInitialState('app_sales', initialSales));
+  const [users, setUsersState] = useState<User[]>(() => getInitialState('app_users', initialUsersData));
+  const [settings, setSettingsState] = useState<AppSettings>(() => getInitialState('app_settings', initialSettings));
   
-  const setUsers = (newUsers: User[] | ((prevUsers: User[]) => User[])) => {
-    setUsersState(prevUsers => {
-      const updatedUsers = typeof newUsers === 'function' ? newUsers(prevUsers) : newUsers;
-      try {
-        localStorage.setItem('app_users', JSON.stringify(updatedUsers));
-      } catch (e) {
-        console.error("Failed to save users to localStorage", e);
-      }
-      return updatedUsers;
-    });
-  };
+  useEffect(() => {
+    localStorage.setItem('app_products', JSON.stringify(products));
+  }, [products]);
+
+  useEffect(() => {
+    localStorage.setItem('app_customers', JSON.stringify(customers));
+  }, [customers]);
+
+  useEffect(() => {
+    localStorage.setItem('app_sales', JSON.stringify(sales));
+  }, [sales]);
+
+  useEffect(() => {
+    localStorage.setItem('app_users', JSON.stringify(users));
+  }, [users]);
+  
+  useEffect(() => {
+    localStorage.setItem('app_settings', JSON.stringify(settings));
+  }, [settings]);
+
+  const setProducts = (newProducts: Product[]) => setProductsState(newProducts);
+  const setCustomers = (newCustomers: Customer[]) => setCustomersState(newCustomers);
+  const setSales = (newSales: Sale[]) => setSalesState(newSales);
+  const setUsers = (newUsers: User[] | ((prevUsers: User[]) => User[])) => setUsersState(newUsers);
+  const setSettings = (newSettings: AppSettings) => setSettingsState(newSettings);
 
   const completeSale = (saleData: SaleData) => {
     // 1. Create the new sale object

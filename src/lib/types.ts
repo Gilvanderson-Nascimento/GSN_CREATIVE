@@ -22,6 +22,8 @@ export type Sale = {
   items: SaleItem[];
   customer?: Customer;
   customerId?: string;
+  sellerId?: string;
+  sellerName?: string;
   subtotal: number;
   discount: number;
   total: number;

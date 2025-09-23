@@ -8,6 +8,8 @@ type SaleData = {
   subtotal: number;
   discount: number;
   total: number;
+  sellerId?: string;
+  sellerName?: string;
 }
 
 // Defining a simplified settings type for the context
@@ -30,7 +32,7 @@ type DataContextType = {
   sales: Sale[];
   setSales: (sales: Sale[]) => void;
   users: User[];
-  setUsers: (users: User[]) => void;
+  setUsers: (users: User[] | ((prevUsers: User[]) => User[])) => void;
   completeSale: (saleData: SaleData) => void;
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;

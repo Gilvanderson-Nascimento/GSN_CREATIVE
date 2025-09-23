@@ -16,6 +16,26 @@ export const customers: Customer[] = [
   { id: 'CUST003', name: 'Pedro Souza', nickname: 'Pedrinho', phone: '(31) 99999-8888', address: 'Praça da Matriz, 789', salesCount: 2, totalSpent: 80.00 },
 ];
 
+export const users: User[] = [
+    {
+        id: 'USER001',
+        name: 'Admin GSN',
+        username: 'GSN_CREATIVE',
+        password: 'Gsn@6437#',
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+        permissions: {
+            dashboard: true,
+            stock: true,
+            sales: true,
+            customers: true,
+            pricing: true,
+            users: true,
+            settings: true,
+        },
+    }
+]
+
 export const sales: Sale[] = [
   {
     id: 'SALE001',
@@ -29,6 +49,8 @@ export const sales: Sale[] = [
     discount: 0,
     total: 17.5,
     date: '2023-10-26T10:00:00Z',
+    sellerId: users[0].id,
+    sellerName: users[0].name,
   },
   {
     id: 'SALE002',
@@ -55,23 +77,3 @@ export const sales: Sale[] = [
     date: '2023-10-28T09:15:00Z',
   },
 ];
-
-export const users: User[] = [
-    {
-        id: 'USER001',
-        name: 'Admin GSN',
-        username: 'GSN_CREATIVE',
-        password: 'Gsn@6437#',
-        role: 'admin',
-        createdAt: new Date().toISOString(),
-        permissions: {
-            dashboard: true,
-            stock: true,
-            sales: true,
-            customers: true,
-            pricing: true,
-            users: true,
-            settings: true,
-        },
-    }
-]

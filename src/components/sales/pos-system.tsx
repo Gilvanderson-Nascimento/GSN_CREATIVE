@@ -11,9 +11,11 @@ import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext } from '@/context/data-context';
+import { useAuth } from '@/hooks/use-auth';
 
 export function PosSystem() {
-  const { products, customers, completeSale } = useContext(DataContext);
+  const { products, customers, completeSale, settings } = useContext(DataContext);
+  const { user } = useAuth();
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
@@ -104,13 +106,17 @@ export function PosSystem() {
         return;
     }
    
-    completeSale({
+    const salePayload = {
       items: cart,
       customerId: selectedCustomer,
       subtotal,
       discount,
       total,
-    });
+      sellerId: settings.vendas.associar_vendedor && user ? user.id : undefined,
+      sellerName: settings.vendas.associar_vendedor && user ? user.name : undefined,
+    };
+
+    completeSale(salePayload);
     
     toast({
       title: "Venda Realizada com Sucesso!",

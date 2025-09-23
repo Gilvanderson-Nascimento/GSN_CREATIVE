@@ -20,6 +20,10 @@ const SalesInsights = React.lazy(() =>
 const LowStockList = React.lazy(() =>
   import('@/components/dashboard/low-stock-list').then(module => ({ default: module.LowStockList }))
 );
+const SellerPerformance = React.lazy(() =>
+  import('@/components/dashboard/seller-performance').then(module => ({ default: module.SellerPerformance }))
+);
+
 
 function StatsCardsSkeleton() {
   return (
@@ -42,7 +46,7 @@ function MainContentSkeleton() {
 }
 
 export default function DashboardPage() {
-  const { sales, products, customers, settings } = useContext(DataContext);
+  const { sales, products, customers, settings, users } = useContext(DataContext);
   const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
@@ -81,6 +85,10 @@ export default function DashboardPage() {
                     <RecentSales />
                 </div>
             </div>
+        </Suspense>
+        
+         <Suspense fallback={<Skeleton className="h-[320px]" />}>
+            <SellerPerformance sales={sales} users={users} />
         </Suspense>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
