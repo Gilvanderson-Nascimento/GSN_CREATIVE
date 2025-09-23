@@ -1,6 +1,6 @@
 
 import { createContext } from 'react';
-import type { Product, Customer, Sale, SaleItem } from '@/lib/types';
+import type { Product, Customer, Sale, SaleItem, User } from '@/lib/types';
 
 type SaleData = {
   items: SaleItem[];
@@ -29,6 +29,8 @@ type DataContextType = {
   setCustomers: (customers: Customer[]) => void;
   sales: Sale[];
   setSales: (sales: Sale[]) => void;
+  users: User[];
+  setUsers: (users: User[]) => void;
   completeSale: (saleData: SaleData) => void;
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
@@ -41,6 +43,8 @@ export const DataContext = createContext<DataContextType>({
   setCustomers: () => {},
   sales: [],
   setSales: () => {},
+  users: [],
+  setUsers: () => {},
   completeSale: () => {},
   settings: {
     estoque: {

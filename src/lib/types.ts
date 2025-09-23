@@ -37,3 +37,15 @@ export type Customer = {
   salesCount: number;
   totalSpent: number;
 };
+
+export type UserRole = 'admin' | 'gerente' | 'vendedor' | 'estoquista';
+
+export type User = {
+  id: string;
+  name: string;
+  username: string;
+  password?: string; // Should be handled securely, not stored plaintext
+  email?: string;
+  role: UserRole | string; // Allow custom roles
+  createdAt: string;
+}

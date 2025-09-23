@@ -1,13 +1,13 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Boxes, LayoutDashboard, LogOut, Settings, ShoppingCart, Tags, Users } from 'lucide-react';
+import { Boxes, LayoutDashboard, LogOut, Settings, ShoppingCart, Tags, Users, UserCog } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
 
 export function SidebarNavigation() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const isActive = (path: string) => pathname === path;
 
   return (
@@ -63,6 +63,18 @@ export function SidebarNavigation() {
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>
+        {user?.role === 'admin' && (
+          <SidebarMenuItem>
+            <Link href="/users" passHref>
+              <SidebarMenuButton asChild isActive={isActive('/users')} tooltip="Usuários">
+                <span>
+                  <UserCog />
+                  Usuários
+                </span>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+        )}
       </SidebarMenu>
       <div className="flex-grow" />
       <SidebarMenu>

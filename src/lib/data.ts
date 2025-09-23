@@ -1,4 +1,4 @@
-import type { Product, Customer, Sale } from './types';
+import type { Product, Customer, Sale, User } from './types';
 
 export const products: Product[] = [
   { id: 'PROD001', name: 'Arroz Parboilizado', category: 'Grãos', quantity: 100, purchasePrice: 3.5, salePrice: 5.0, barcode: '7890123456789', imageUrl: 'https://picsum.photos/seed/PROD001/200/200' },
@@ -55,3 +55,14 @@ export const sales: Sale[] = [
     date: '2023-10-28T09:15:00Z',
   },
 ];
+
+export const users: User[] = [
+    {
+        id: 'USER001',
+        name: 'Admin GSN',
+        username: 'GSN_CREATIVE',
+        password: 'Gsn@6437#',
+        role: 'admin',
+        createdAt: new Date().toISOString(),
+    }
+]

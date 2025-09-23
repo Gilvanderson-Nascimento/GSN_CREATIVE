@@ -5,12 +5,12 @@ import { PrivateRoute } from '@/components/shared/private-route';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <PrivateRoute>
-        <DataProvider>
+    <DataProvider>
+      <AuthProvider>
+        <PrivateRoute>
           <SidebarWrapper>{children}</SidebarWrapper>
-        </DataProvider>
-      </PrivateRoute>
-    </AuthProvider>
+        </PrivateRoute>
+      </AuthProvider>
+    </DataProvider>
   );
 }

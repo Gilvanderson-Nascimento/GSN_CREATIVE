@@ -1,8 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { DataContext, type AppSettings } from '@/context/data-context';
-import type { Product, Customer, Sale, SaleItem } from '@/lib/types';
-import { products as initialProducts, customers as initialCustomers, sales as initialSales } from '@/lib/data';
+import type { Product, Customer, Sale, SaleItem, User } from '@/lib/types';
+import { 
+    products as initialProducts, 
+    customers as initialCustomers, 
+    sales as initialSales,
+    users as initialUsers
+} from '@/lib/data';
 
 type SaleData = {
   items: SaleItem[];
@@ -57,6 +62,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [sales, setSales] = useState<Sale[]>(initialSales);
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [settings, setSettings] = useState<AppSettings>(initialSettings);
 
   const completeSale = (saleData: SaleData) => {
@@ -97,7 +103,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <DataContext.Provider value={{ products, setProducts, customers, setCustomers, sales, setSales, completeSale, settings, setSettings }}>
+    <DataContext.Provider value={{ products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, settings, setSettings }}>
       {children}
     </DataContext.Provider>
   );

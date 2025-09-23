@@ -1,20 +1,19 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AuthContext, type AuthUser } from '@/context/auth-context';
+import { DataContext } from '@/context/data-context';
 import { useRouter, usePathname } from 'next/navigation';
-
-// Hardcoded master user
-const MASTER_USER = {
-  username: 'GSN_CREATIVE',
-  password: 'Gsn@6437#',
-  role: 'admin' as const,
-};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const dataContext = useContext(DataContext);
+  
+  // In a real app, this would be undefined if DataContext is not available
+  // But since we wrap this in AppLayout which has DataProvider, it's safe.
+  const allUsers = dataContext?.users || [];
 
   useEffect(() => {
     // Check for user session on initial load
@@ -31,9 +30,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    // Simple hardcoded check
-    if (username === MASTER_USER.username && pass === MASTER_USER.password) {
-      const userData: AuthUser = { username: MASTER_USER.username, role: MASTER_USER.role };
+    // Check against the list of users from DataContext
+    const foundUser = allUsers.find(u => u.username === username && u.password === pass);
+
+    if (foundUser) {
+      const userData: AuthUser = { username: foundUser.username, role: foundUser.role as 'admin' | 'vendedor' | 'estoquista' };
       sessionStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
       router.push('/dashboard');
@@ -57,8 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isLoading, isAuthenticated, pathname, router]);
 
+  const value = { user, isAuthenticated, isLoading, login, logout };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
