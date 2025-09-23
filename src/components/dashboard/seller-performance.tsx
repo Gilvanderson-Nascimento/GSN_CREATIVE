@@ -57,6 +57,9 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
   const totalSalesCount = useMemo(() => sales.length, [sales]);
   const totalSalesValue = useMemo(() => sales.reduce((acc, sale) => acc + sale.total, 0), [sales]);
 
+  // Filter out sellers with 0 sales and 0 value unless it's the 'unidentified' one with actual sales
+  const activeSellers = sellerStats.filter(stat => stat.totalValue > 0 || (stat.id === 'unidentified' && stat.salesCount > 0));
+
   return (
     <Card>
       <CardHeader>
@@ -78,7 +81,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sellerStats.map(stat => (
+            {activeSellers.map(stat => (
               <TableRow key={stat.id}>
                 <TableCell className="font-medium">{stat.name}</TableCell>
                 <TableCell className="text-center">
@@ -87,6 +90,13 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
                 <TableCell className="text-right">R$ {stat.totalValue.toFixed(2)}</TableCell>
               </TableRow>
             ))}
+             {activeSellers.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                        Nenhuma venda registrada no período.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
