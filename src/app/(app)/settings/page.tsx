@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/settings/theme-toggle';
@@ -10,9 +10,14 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { DataContext } from '@/context/data-context';
+import { saveAs } from 'file-saver';
+import * as XLSX from 'xlsx';
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const { products, customers, sales, setProducts, setCustomers, setSales } = useContext(DataContext);
+  const restoreInputRef = useRef<HTMLInputElement>(null);
 
   // State for all settings
   const [settings, setSettings] = useState({
@@ -77,6 +82,86 @@ export default function SettingsPage() {
         description: "A funcionalidade de resetar dados ainda não foi implementada.",
     })
   }
+
+  const exportData = (format: 'json' | 'csv' | 'excel') => {
+    const dataToExport = {
+        products,
+        customers,
+        sales
+    };
+
+    if (format === 'json') {
+        const jsonString = JSON.stringify(dataToExport, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        saveAs(blob, `backup-gsn-gestor-${new Date().toISOString().split('T')[0]}.json`);
+    } else if (format === 'csv') {
+        // For CSV, we'll export each data type as a separate file, as CSV is flat.
+        const productSheet = XLSX.utils.json_to_sheet(products);
+        const customerSheet = XLSX.utils.json_to_sheet(customers);
+        const salesSheet = XLSX.utils.json_to_sheet(sales.map(s => ({...s, items: JSON.stringify(s.items), customer: s.customerId || ''})));
+        
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, productSheet, "Produtos");
+        XLSX.utils.book_append_sheet(wb, customerSheet, "Clientes");
+        XLSX.utils.book_append_sheet(wb, salesSheet, "Vendas");
+
+        // We can't save multiple CSVs at once, so we'll save an Excel file with CSV-like sheets.
+        // Or we can create a zip, which is more complex. Let's export as excel with multiple sheets.
+        toast({ title: "Exportação CSV", description: "CSV é exportado como um arquivo Excel com abas separadas."})
+        XLSX.writeFile(wb, `backup-csv-gsn-gestor-${new Date().toISOString().split('T')[0]}.xlsx`);
+
+    } else if (format === 'excel') {
+        const productSheet = XLSX.utils.json_to_sheet(products);
+        const customerSheet = XLSX.utils.json_to_sheet(customers);
+        const salesSheet = XLSX.utils.json_to_sheet(sales.map(s => ({...s, items: JSON.stringify(s.items), customer: s.customerId || ''})));
+        
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, productSheet, "Produtos");
+        XLSX.utils.book_append_sheet(wb, customerSheet, "Clientes");
+        XLSX.utils.book_append_sheet(wb, salesSheet, "Vendas");
+        XLSX.writeFile(wb, `backup-excel-gsn-gestor-${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+  }
+
+  const handleRestore = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const text = e.target?.result;
+            if (typeof text !== 'string') {
+                throw new Error("Falha ao ler o arquivo.");
+            }
+            const data = JSON.parse(text);
+            if (data.products && data.customers && data.sales) {
+                setProducts(data.products);
+                setCustomers(data.customers);
+                setSales(data.sales);
+                toast({
+                    title: "Backup Restaurado",
+                    description: "Os dados foram importados com sucesso.",
+                });
+            } else {
+                throw new Error("Formato de arquivo de backup inválido.");
+            }
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Erro na Restauração",
+                description: error instanceof Error ? error.message : "Ocorreu um erro desconhecido.",
+            });
+        }
+    };
+    reader.readAsText(file);
+    
+    // Reset file input
+    if(restoreInputRef.current) {
+        restoreInputRef.current.value = '';
+    }
+  };
+
 
   return (
     <div>
@@ -241,29 +326,28 @@ export default function SettingsPage() {
             <CardDescription>Gerencie cópias de segurança e exporte seus dados.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-                <label className="text-sm font-medium">Frequência do Backup Automático</label>
-                <Select value={settings.backup_exportacao.frequencia} onValueChange={(v) => handleSettingChange('backup_exportacao', 'frequencia', v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="diario">Diário</SelectItem>
-                        <SelectItem value="semanal">Semanal</SelectItem>
-                        <SelectItem value="mensal">Mensal</SelectItem>
-                        <SelectItem value="nunca">Nunca</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="flex items-center justify-between">
-                <label htmlFor="permitir-importacao" className="text-sm font-medium">Permitir importação de dados</label>
-                <Switch id="permitir-importacao" checked={settings.backup_exportacao.permitir_importacao} onCheckedChange={(c) => handleSettingChange('backup_exportacao', 'permitir_importacao', c)} />
-            </div>
-            <div className="space-y-2">
-                <label className="text-sm font-medium">Exportar Dados</label>
+             <div className="space-y-2">
+                <label className="text-sm font-medium">Exportar Todos os Dados</label>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm">CSV</Button>
-                    <Button variant="outline" size="sm">Excel</Button>
-                    <Button variant="outline" size="sm">JSON</Button>
+                    <Button variant="outline" size="sm" onClick={() => exportData('csv')}>CSV</Button>
+                    <Button variant="outline" size="sm" onClick={() => exportData('excel')}>Excel</Button>
+                    <Button variant="outline" size="sm" onClick={() => exportData('json')}>JSON</Button>
                 </div>
+            </div>
+            <Separator />
+             <div className="space-y-2">
+                <label className="text-sm font-medium">Restaurar Backup</label>
+                <Button variant="outline" className="w-full" onClick={() => restoreInputRef.current?.click()}>
+                    Carregar Arquivo de Backup (.json)
+                </Button>
+                <input
+                    type="file"
+                    ref={restoreInputRef}
+                    onChange={handleRestore}
+                    className="hidden"
+                    accept=".json"
+                />
+                <p className="text-xs text-muted-foreground">Carregue um arquivo JSON para restaurar todos os dados.</p>
             </div>
           </CardContent>
         </Card>
