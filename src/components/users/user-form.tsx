@@ -28,7 +28,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "E-mail inválido." }).optional().or(z.literal('')),
   password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }).optional().or(z.literal('')),
   role: z.string().min(1, { message: 'Função é obrigatória.'}),
-  permissions: z.record(z.boolean()).default({}),
+  permissions: z.record(z.boolean()).optional(),
 });
 
 type UserFormValues = Omit<User, 'id' | 'createdAt'>;
@@ -62,7 +62,10 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onSave(values);
+    onSave({
+        ...values,
+        permissions: values.permissions || {}
+    });
   }
 
   const canEditPermissions = currentUser?.role === 'admin';
