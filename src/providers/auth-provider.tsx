@@ -1,19 +1,14 @@
 'use client';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthContext, type AuthUser } from '@/context/auth-context';
-import { DataContext } from '@/context/data-context';
 import { useRouter, usePathname } from 'next/navigation';
+import { users as initialUsers } from '@/lib/data'; // Import users directly
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const dataContext = useContext(DataContext);
-  
-  // In a real app, this would be undefined if DataContext is not available
-  // But since we wrap this in AppLayout which has DataProvider, it's safe.
-  const allUsers = dataContext?.users || [];
 
   useEffect(() => {
     // Check for user session on initial load
@@ -30,8 +25,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    // Check against the list of users from DataContext
-    const foundUser = allUsers.find(u => u.username === username && u.password === pass);
+    // Check against the directly imported list of users
+    const foundUser = initialUsers.find(u => u.username === username && u.password === pass);
 
     if (foundUser) {
       const userData: AuthUser = { username: foundUser.username, role: foundUser.role as 'admin' | 'vendedor' | 'estoquista' };
