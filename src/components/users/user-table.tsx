@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -56,6 +56,11 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPermissionsSheetOpen, setIsPermissionsSheetOpen] = useState(false);
   const { user: currentUser } = useAuth();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const usersToDisplay = useMemo(() => 
     initialUsers.filter(user => user.username !== 'GSN_CREATIVE'),
@@ -116,6 +121,8 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
       user.username.toLowerCase().includes(filter.toLowerCase()) ||
       (user.email && user.email.toLowerCase().includes(filter.toLowerCase()))
   );
+  
+  const isCurrentUserAdmin = isClient && currentUser?.role === 'admin';
 
   return (
     <>
@@ -166,7 +173,7 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
                          <div className="flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={currentUser?.role !== 'admin'}>
+                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!isCurrentUserAdmin}>
                                     <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
