@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { User as UserIcon } from 'lucide-react';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 type SellerPerformanceProps = {
   sales: Sale[];
@@ -68,7 +71,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
             Desempenho por Vendedor
         </CardTitle>
         <CardDescription>
-          Análise das vendas realizadas por cada membro da equipe.
+          Análise das vendas realizadas por cada membro da equipe. Clique no nome para ver detalhes.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -83,7 +86,15 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
           <TableBody>
             {activeSellers.map(stat => (
               <TableRow key={stat.id}>
-                <TableCell className="font-medium">{stat.name}</TableCell>
+                <TableCell className="font-medium">
+                  {stat.id !== 'unidentified' ? (
+                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto")}>
+                        {stat.name}
+                    </Link>
+                  ) : (
+                    <span>{stat.name}</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-center">
                     <Badge variant="secondary">{stat.salesCount}</Badge>
                 </TableCell>
