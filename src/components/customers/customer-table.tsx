@@ -42,10 +42,10 @@ import { CustomerForm } from './customer-form';
 
 type CustomerTableProps = {
   initialCustomers: Customer[];
+  setCustomers: (customers: Customer[]) => void;
 };
 
-export function CustomerTable({ initialCustomers }: CustomerTableProps) {
-  const [customers, setCustomers] = useState(initialCustomers);
+export function CustomerTable({ initialCustomers, setCustomers }: CustomerTableProps) {
   const [filter, setFilter] = useState('');
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
@@ -67,14 +67,14 @@ export function CustomerTable({ initialCustomers }: CustomerTableProps) {
 
   const handleDeleteCustomer = () => {
     if (deletingCustomer) {
-      setCustomers(customers.filter((c) => c.id !== deletingCustomer.id));
+      setCustomers(initialCustomers.filter((c) => c.id !== deletingCustomer.id));
       setDeletingCustomer(null);
     }
   };
   
   const handleSaveCustomer = (customerData: Omit<Customer, 'id' | 'salesCount' | 'totalSpent'>) => {
     if(editingCustomer) {
-        setCustomers(customers.map(c => c.id === editingCustomer.id ? { ...editingCustomer, ...customerData } : c));
+        setCustomers(initialCustomers.map(c => c.id === editingCustomer.id ? { ...editingCustomer, ...customerData } : c));
     } else {
         const newCustomer: Customer = {
           ...customerData,
@@ -82,12 +82,12 @@ export function CustomerTable({ initialCustomers }: CustomerTableProps) {
           salesCount: 0,
           totalSpent: 0,
         }
-        setCustomers([...customers, newCustomer]);
+        setCustomers([...initialCustomers, newCustomer]);
     }
     setIsSheetOpen(false);
   }
 
-  const filteredCustomers = customers.filter(
+  const filteredCustomers = initialCustomers.filter(
     (customer) =>
       customer.name.toLowerCase().includes(filter.toLowerCase()) ||
       customer.nickname.toLowerCase().includes(filter.toLowerCase()) ||
@@ -182,7 +182,7 @@ export function CustomerTable({ initialCustomers }: CustomerTableProps) {
         </CardContent>
         <CardFooter>
             <div className="text-xs text-muted-foreground">
-                Mostrando <strong>{filteredCustomers.length}</strong> de <strong>{customers.length}</strong> clientes.
+                Mostrando <strong>{filteredCustomers.length}</strong> de <strong>{initialCustomers.length}</strong> clientes.
             </div>
         </CardFooter>
       </Card>

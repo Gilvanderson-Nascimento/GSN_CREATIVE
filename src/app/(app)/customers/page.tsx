@@ -1,10 +1,12 @@
-import { customers } from '@/lib/data';
+'use client';
 import { CustomerTable } from '@/components/customers/customer-table';
+import { DataContext } from '@/context/data-context';
+import { useContext } from 'react';
 
 export default function CustomersPage() {
-  const initialCustomers = customers;
+  const { customers, setCustomers } = useContext(DataContext);
 
   return (
-    <CustomerTable initialCustomers={initialCustomers} />
+    <CustomerTable initialCustomers={customers} setCustomers={setCustomers} />
   );
 }

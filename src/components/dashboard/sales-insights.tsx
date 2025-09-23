@@ -1,14 +1,15 @@
 'use client';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Wand2, TrendingUp, Clock, Users } from 'lucide-react';
 import { generateSalesReportInsights, type GenerateSalesReportInsightsOutput } from '@/ai/flows/generate-sales-report-insights';
-import { sales } from '@/lib/data';
+import { DataContext } from '@/context/data-context';
 
 export function SalesInsights() {
+  const { sales } = useContext(DataContext);
   const [insights, setInsights] = useState<GenerateSalesReportInsightsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -105,7 +106,7 @@ export function SalesInsights() {
         </CardContent>
       )}
       <CardFooter>
-        <Button onClick={handleGenerateInsights} disabled={isLoading}>
+        <Button onClick={handleGenerateInsights} disabled={isLoading || sales.length === 0}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

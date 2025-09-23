@@ -1,8 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import Image from 'next/image';
 import type { Product, SaleItem, Customer } from '@/lib/types';
-import { products, customers } from '@/lib/data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,8 +10,10 @@ import { Separator } from '@/components/ui/separator';
 import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { DataContext } from '@/context/data-context';
 
 export function PosSystem() {
+  const { products, customers, completeSale } = useContext(DataContext);
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
@@ -26,13 +27,24 @@ export function PosSystem() {
   const searchedProducts = searchQuery
     ? products.filter(
         (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.barcode.includes(searchQuery)
+          (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.barcode.includes(searchQuery)) && p.quantity > 0
       )
-    : products;
+    : products.filter(p => p.quantity > 0);
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find((item) => item.productId === product.id);
+    const productInStock = products.find(p => p.id === product.id);
+    
+    if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
+        toast({
+            variant: "destructive",
+            title: "Produto Fora de Estoque",
+            description: "Não há mais unidades disponíveis para este produto.",
+        });
+        return;
+    }
+
     if (existingItem) {
       setCart(
         cart.map((item) =>
@@ -56,6 +68,20 @@ export function PosSystem() {
   };
   
   const updateQuantity = (productId: string, amount: number) => {
+      const existingItem = cart.find((item) => item.productId === productId);
+      const productInStock = products.find(p => p.id === productId);
+
+      if (amount > 0) {
+          if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
+              toast({
+                  variant: "destructive",
+                  title: "Produto Fora de Estoque",
+                  description: "Não há mais unidades disponíveis para este produto.",
+              });
+              return;
+          }
+      }
+
       setCart(cart.map(item => {
           if (item.productId === productId) {
               const newQuantity = item.quantity + amount;
@@ -68,7 +94,7 @@ export function PosSystem() {
   const subtotal = cart.reduce((acc, item) => acc + item.totalPrice, 0);
   const total = subtotal - (subtotal * (discount / 100));
 
-  const completeSale = () => {
+  const handleCompleteSale = () => {
     if (cart.length === 0) {
         toast({
             variant: "destructive",
@@ -77,14 +103,13 @@ export function PosSystem() {
         });
         return;
     }
-    // Here you would typically send the sale data to your backend
-    // and update stock levels.
-    console.log({
-        cart,
-        customerId: selectedCustomer,
-        subtotal,
-        discount,
-        total,
+   
+    completeSale({
+      items: cart,
+      customerId: selectedCustomer,
+      subtotal,
+      discount,
+      total,
     });
     
     toast({
@@ -206,7 +231,7 @@ export function PosSystem() {
             <span>Total</span>
             <span>R$ {total.toFixed(2)}</span>
           </div>
-          <Button size="lg" className="w-full" onClick={completeSale}>
+          <Button size="lg" className="w-full" onClick={handleCompleteSale}>
             Finalizar Venda
           </Button>
         </CardFooter>

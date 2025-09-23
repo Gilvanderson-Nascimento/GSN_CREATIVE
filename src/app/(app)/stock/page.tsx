@@ -1,12 +1,13 @@
-import { products } from '@/lib/data';
+'use client';
 import { PageHeader } from '@/components/shared/page-header';
 import { ProductTable } from '@/components/stock/product-table';
+import { DataContext } from '@/context/data-context';
+import { useContext } from 'react';
 
 export default function StockPage() {
-  // In a real app, you'd fetch this data from your database.
-  const initialProducts = products;
+  const { products, setProducts } = useContext(DataContext);
 
   return (
-      <ProductTable initialProducts={initialProducts} />
+      <ProductTable initialProducts={products} setProducts={setProducts} />
   );
 }

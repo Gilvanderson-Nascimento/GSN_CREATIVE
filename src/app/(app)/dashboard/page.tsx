@@ -1,8 +1,9 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useContext } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DataContext } from '@/context/data-context';
 
 // Lazy load components
 const StatsCards = React.lazy(() => 
@@ -17,24 +18,6 @@ const RecentSales = React.lazy(() =>
 const SalesInsights = React.lazy(() => 
   import('@/components/dashboard/sales-insights').then(module => ({ default: module.SalesInsights }))
 );
-
-// Mock data fetching for props - in a real app this would be in a Server Component or hook
-import { sales, products, customers } from '@/lib/data';
-
-const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
-const totalProfit = sales.reduce((acc, sale) => {
-    const saleProfit = sale.items.reduce((itemAcc, item) => {
-      const product = products.find(p => p.id === item.productId);
-      if (product) {
-        return itemAcc + (item.unitPrice - product.purchasePrice) * item.quantity;
-      }
-      return itemAcc;
-    }, 0);
-    return acc + saleProfit;
-  }, 0);
-const newCustomers = customers.length;
-const lowStockItems = products.filter(p => p.quantity < 10).length;
-
 
 function StatsCardsSkeleton() {
   return (
@@ -57,6 +40,21 @@ function MainContentSkeleton() {
 }
 
 export default function DashboardPage() {
+  const { sales, products, customers } = useContext(DataContext);
+
+  const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
+  const totalProfit = sales.reduce((acc, sale) => {
+    const saleProfit = sale.items.reduce((itemAcc, item) => {
+      const product = products.find(p => p.id === item.productId);
+      if (product) {
+        return itemAcc + (item.unitPrice - product.purchasePrice) * item.quantity;
+      }
+      return itemAcc;
+    }, 0);
+    return acc + saleProfit;
+  }, 0);
+  const newCustomers = customers.length;
+  const lowStockItems = products.filter(p => p.quantity < 10).length;
 
   return (
     <div className="flex-1 space-y-4">

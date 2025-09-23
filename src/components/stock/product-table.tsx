@@ -23,7 +23,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from '@/components/ui/sheet';
 import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon } from 'lucide-react';
 import { ProductForm } from './product-form';
@@ -32,10 +31,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 
 type ProductTableProps = {
   initialProducts: Product[];
+  setProducts: (products: Product[]) => void;
 };
 
-export function ProductTable({ initialProducts }: ProductTableProps) {
-  const [products, setProducts] = useState(initialProducts);
+export function ProductTable({ initialProducts, setProducts }: ProductTableProps) {
   const [filter, setFilter] = useState('');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -51,19 +50,19 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
   };
 
   const handleDeleteProduct = (productId: string) => {
-    setProducts(products.filter((p) => p.id !== productId));
+    setProducts(initialProducts.filter((p) => p.id !== productId));
   };
   
   const handleSaveProduct = (productData: Product) => {
     if(editingProduct) {
-        setProducts(products.map(p => p.id === productData.id ? productData : p));
+        setProducts(initialProducts.map(p => p.id === productData.id ? productData : p));
     } else {
-        setProducts([...products, { ...productData, id: `PROD${Date.now()}` }]);
+        setProducts([...initialProducts, { ...productData, id: `PROD${Date.now()}` }]);
     }
     setIsSheetOpen(false);
   }
 
-  const filteredProducts = products.filter(
+  const filteredProducts = initialProducts.filter(
     (product) =>
       product.name.toLowerCase().includes(filter.toLowerCase()) ||
       product.barcode.includes(filter)
@@ -171,7 +170,7 @@ export function ProductTable({ initialProducts }: ProductTableProps) {
         </CardContent>
         <CardFooter>
             <div className="text-xs text-muted-foreground">
-                Mostrando <strong>{filteredProducts.length}</strong> de <strong>{products.length}</strong> produtos.
+                Mostrando <strong>{filteredProducts.length}</strong> de <strong>{initialProducts.length}</strong> produtos.
             </div>
         </CardFooter>
       </Card>
