@@ -1,7 +1,7 @@
 'use client';
+import { useContext } from 'react';
 import { UserTable } from '@/components/users/user-table';
 import { DataContext } from '@/context/data-context';
-import { useContext } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 
 export default function UsersPage() {

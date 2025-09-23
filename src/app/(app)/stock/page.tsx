@@ -1,8 +1,8 @@
 'use client';
+import { useContext } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { ProductTable } from '@/components/stock/product-table';
 import { DataContext } from '@/context/data-context';
-import { useContext } from 'react';
 
 export default function StockPage() {
   const { products, setProducts } = useContext(DataContext);
