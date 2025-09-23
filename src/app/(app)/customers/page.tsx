@@ -1,12 +1,18 @@
 'use client';
-import { CustomerTable } from '@/components/customers/customer-table';
-import { DataContext } from '@/context/data-context';
-import { useContext } from 'react';
+import React, { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const CustomerTable = React.lazy(() => import('@/components/customers/customer-table'));
+
+function CustomerTableSkeleton() {
+    return <Skeleton className="h-[calc(100vh-10rem)]" />;
+}
 
 export default function CustomersPage() {
-  const { customers, setCustomers } = useContext(DataContext);
 
   return (
-    <CustomerTable initialCustomers={customers} setCustomers={setCustomers} />
+    <Suspense fallback={<CustomerTableSkeleton />}>
+      <CustomerTable />
+    </Suspense>
   );
 }

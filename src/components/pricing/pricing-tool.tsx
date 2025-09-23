@@ -25,7 +25,7 @@ const formSchema = z.object({
   profitMargin: z.coerce.number().min(0, { message: 'Margem de lucro não pode ser negativa.' }),
 });
 
-export function PricingTool() {
+export default function PricingTool() {
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();

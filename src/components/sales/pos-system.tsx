@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { DataContext } from '@/context/data-context';
 import { useAuth } from '@/hooks/use-auth';
 
-export function PosSystem() {
+export default function PosSystem() {
   const { products, customers, completeSale, settings } = useContext(DataContext);
   const { user } = useAuth();
   const [cart, setCart] = useState<SaleItem[]>([]);

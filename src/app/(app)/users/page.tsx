@@ -1,17 +1,22 @@
 'use client';
-import { useContext } from 'react';
-import { UserTable } from '@/components/users/user-table';
-import { DataContext } from '@/context/data-context';
+import React, { Suspense } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const UserTable = React.lazy(() => import('@/components/users/user-table'));
+
+function UserTableSkeleton() {
+    return <Skeleton className="h-[calc(100vh-10rem)]" />;
+}
 
 export default function UsersPage() {
-  const { users, setUsers } = useContext(DataContext);
-  // In a real app, you'd fetch this. For now, we get it from context.
 
   return (
     <div>
         <PageHeader title="Gerenciamento de Usuários" />
-        <UserTable initialUsers={users} setUsers={setUsers} />
+        <Suspense fallback={<UserTableSkeleton />}>
+            <UserTable />
+        </Suspense>
     </div>
   );
 }

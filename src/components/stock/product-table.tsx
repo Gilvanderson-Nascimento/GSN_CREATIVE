@@ -32,18 +32,13 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataContext } from '@/context/data-context';
 
-type ProductTableProps = {
-  initialProducts: Product[];
-  setProducts: (products: Product[]) => void;
-};
-
-export function ProductTable({ initialProducts, setProducts }: ProductTableProps) {
+export default function ProductTable() {
+  const { products: initialProducts, setProducts, settings } = useContext(DataContext);
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState('name-asc');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const { settings } = useContext(DataContext);
   const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const handleAddProduct = () => {

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import Link from 'next/link';
 import {
   Table,
@@ -39,13 +39,10 @@ import { Eye, MoreHorizontal, Pencil, PlusCircle, Trash2, Search } from 'lucide-
 import type { Customer } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { CustomerForm } from './customer-form';
+import { DataContext } from '@/context/data--context';
 
-type CustomerTableProps = {
-  initialCustomers: Customer[];
-  setCustomers: (customers: Customer[]) => void;
-};
-
-export function CustomerTable({ initialCustomers, setCustomers }: CustomerTableProps) {
+export default function CustomerTable() {
+  const { customers: initialCustomers, setCustomers } = useContext(DataContext);
   const [filter, setFilter] = useState('');
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);

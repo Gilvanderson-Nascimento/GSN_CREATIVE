@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useContext } from 'react';
 import {
   Table,
   TableBody,
@@ -42,13 +42,10 @@ import { UserForm } from './user-form';
 import { PermissionsForm } from './permissions-form';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
+import { DataContext } from '@/context/data-context';
 
-type UserTableProps = {
-  initialUsers: User[];
-  setUsers: (users: User[]) => void;
-};
-
-export function UserTable({ initialUsers, setUsers }: UserTableProps) {
+export default function UserTable() {
+  const { users: initialUsers, setUsers } = useContext(DataContext);
   const [filter, setFilter] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [managingPermissionsFor, setManagingPermissionsFor] = useState<User | null>(null);

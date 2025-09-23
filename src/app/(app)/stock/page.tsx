@@ -1,13 +1,18 @@
 'use client';
-import { useContext } from 'react';
-import { PageHeader } from '@/components/shared/page-header';
-import { ProductTable } from '@/components/stock/product-table';
-import { DataContext } from '@/context/data-context';
+import React, { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const ProductTable = React.lazy(() => import('@/components/stock/product-table'));
+
+function ProductTableSkeleton() {
+    return <Skeleton className="h-[calc(100vh-10rem)]" />;
+}
 
 export default function StockPage() {
-  const { products, setProducts } = useContext(DataContext);
 
   return (
-      <ProductTable initialProducts={products} setProducts={setProducts} />
+      <Suspense fallback={<ProductTableSkeleton />}>
+        <ProductTable />
+      </Suspense>
   );
 }
