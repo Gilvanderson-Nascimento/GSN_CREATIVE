@@ -1,11 +1,13 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Boxes, LayoutDashboard, Settings, ShoppingCart, Tags, Users } from 'lucide-react';
+import { Boxes, LayoutDashboard, LogOut, Settings, ShoppingCart, Tags, Users } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { useAuth } from '@/hooks/use-auth';
 
 export function SidebarNavigation() {
   const pathname = usePathname();
+  const { logout } = useAuth();
   const isActive = (path: string) => pathname === path;
 
   return (
@@ -73,6 +75,14 @@ export function SidebarNavigation() {
               </span>
             </SidebarMenuButton>
           </Link>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+           <SidebarMenuButton onClick={logout} tooltip="Sair">
+              <span>
+                <LogOut />
+                Sair
+              </span>
+            </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </>
