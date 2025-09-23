@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'MarketEase',
+  title: 'GSN_GESTOR',
   description: 'Sistema de gestão de vendas e estoque para mercearia.',
 };
 
