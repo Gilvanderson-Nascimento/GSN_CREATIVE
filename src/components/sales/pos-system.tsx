@@ -106,28 +106,28 @@ export function PosSystem() {
         </CardHeader>
         <CardContent className="flex-grow">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
               {searchedProducts.map((product) => (
                 <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow flex flex-col" onClick={() => addToCart(product)}>
-                  <CardContent className="p-2 flex flex-col items-center text-center flex-grow">
-                    <div className="w-full aspect-square bg-muted rounded-md mb-2 flex items-center justify-center overflow-hidden">
+                  <CardContent className="p-1 flex flex-col items-center text-center flex-grow">
+                    <div className="w-full aspect-square bg-muted rounded-md mb-1 flex items-center justify-center overflow-hidden">
                         {product.imageUrl ? (
                              <Image 
                                 src={product.imageUrl} 
                                 alt={product.name} 
-                                width={150} 
-                                height={150} 
+                                width={100} 
+                                height={100} 
                                 className="object-cover h-full w-full"
                                 data-ai-hint="product image"
                             />
                         ) : (
-                            <ImageIcon className="h-10 w-10 text-muted-foreground"/>
+                            <ImageIcon className="h-8 w-8 text-muted-foreground"/>
                         )}
                     </div>
-                    <div className="font-semibold text-sm leading-tight">{product.name}</div>
+                    <div className="font-semibold text-xs leading-tight">{product.name}</div>
                     <div className="text-xs text-muted-foreground">Estoque: {product.quantity}</div>
                   </CardContent>
-                  <div className="p-2 border-t font-bold text-sm text-center">
+                  <div className="p-1 border-t font-bold text-xs text-center">
                     R$ {product.salePrice.toFixed(2)}
                   </div>
                 </Card>
