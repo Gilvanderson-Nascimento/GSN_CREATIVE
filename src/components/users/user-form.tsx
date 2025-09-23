@@ -22,11 +22,10 @@ import { useAuth } from '@/hooks/use-auth';
 const roles: UserRole[] = ['admin', 'gerente', 'vendedor', 'estoquista'];
 const permissionKeys = Object.keys(allPermissions) as PagePermission[];
 
-const formSchema = z.object({
+const baseFormSchema = z.object({
   name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
   username: z.string().min(3, { message: 'Usuário deve ter pelo menos 3 caracteres.' }),
   email: z.string().email({ message: "E-mail inválido." }).optional().or(z.literal('')),
-  password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }).optional().or(z.literal('')),
   role: z.string().min(1, { message: 'Função é obrigatória.'}),
   permissions: z.record(z.boolean()).optional(),
 });
@@ -42,6 +41,13 @@ type UserFormProps = {
 export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   const { user: currentUser } = useAuth();
   
+  // Dynamically adjust schema for password requirement
+  const formSchema = baseFormSchema.extend({
+      password: user
+      ? z.string().optional().or(z.literal('')) // Password is optional when editing
+      : z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }), // Password is required for new users
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,16 +56,9 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
         email: user?.email || '',
         password: '', // Always empty for security
         role: user?.role || 'vendedor',
-        permissions: user?.permissions || {}, // Start with no permissions for new users
+        permissions: user ? user.permissions : {},
     },
   });
-  
-  // If editing, password is not required
-  if (user) {
-    formSchema.shape.password = z.string().optional().or(z.literal(''));
-  } else {
-    formSchema.shape.password = z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' });
-  }
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave({
