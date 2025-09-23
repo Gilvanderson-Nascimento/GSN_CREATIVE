@@ -105,7 +105,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const setProducts = (newProducts: Product[]) => setProductsState(newProducts);
   const setCustomers = (newCustomers: Customer[]) => setCustomersState(newCustomers);
   const setSales = (newSales: Sale[]) => setSalesState(newSales);
-  const setUsers = (newUsers: User[] | ((prevUsers: User[]) => User[])) => setUsersState(newUsers);
+  const setUsers = (newUsers: User[]) => setUsersState(newUsers);
   const setSettings = (newSettings: AppSettings) => setSettingsState(newSettings);
 
   const completeSale = (saleData: SaleData) => {
