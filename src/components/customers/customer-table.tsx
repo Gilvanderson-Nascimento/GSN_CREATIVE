@@ -39,7 +39,7 @@ import { Eye, MoreHorizontal, Pencil, PlusCircle, Trash2, Search } from 'lucide-
 import type { Customer } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { CustomerForm } from './customer-form';
-import { DataContext } from '@/context/data--context';
+import { DataContext } from '@/context/data-context';
 
 export default function CustomerTable() {
   const { customers: initialCustomers, setCustomers } = useContext(DataContext);
@@ -195,7 +195,7 @@ export default function CustomerTable() {
           />
         </SheetContent>
       </Sheet>
-      <AlertDialog open={!!deletingCustomer} onOpenChange={(open) => !open && setDeletingCustomer(null)}>
+      <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingCustomer(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
