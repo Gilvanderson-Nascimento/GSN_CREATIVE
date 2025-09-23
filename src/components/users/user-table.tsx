@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -51,6 +51,12 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
+  // Filter out the master admin user from being displayed
+  const usersToDisplay = useMemo(() => 
+    initialUsers.filter(user => user.username !== 'GSN_CREATIVE'),
+    [initialUsers]
+  );
+
   const handleAddUser = () => {
     setEditingUser(null);
     setIsSheetOpen(true);
@@ -67,13 +73,6 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
 
   const handleDeleteUser = () => {
     if (deletingUser) {
-        // Prevent deleting the master admin user
-      if (deletingUser.username === 'GSN_CREATIVE') {
-        // Here you can show a toast or alert
-        console.error("Cannot delete the master admin account.");
-        setDeletingUser(null);
-        return;
-      }
       setUsers(initialUsers.filter((c) => c.id !== deletingUser.id));
       setDeletingUser(null);
     }
@@ -94,7 +93,7 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
     setIsSheetOpen(false);
   }
 
-  const filteredUsers = initialUsers.filter(
+  const filteredUsers = usersToDisplay.filter(
     (user) =>
       user.name.toLowerCase().includes(filter.toLowerCase()) ||
       user.username.toLowerCase().includes(filter.toLowerCase()) ||
@@ -182,7 +181,7 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
         </CardContent>
         <CardFooter>
             <div className="text-xs text-muted-foreground">
-                Mostrando <strong>{filteredUsers.length}</strong> de <strong>{initialUsers.length}</strong> usuários.
+                Mostrando <strong>{filteredUsers.length}</strong> de <strong>{usersToDisplay.length}</strong> usuários.
             </div>
         </CardFooter>
       </Card>
