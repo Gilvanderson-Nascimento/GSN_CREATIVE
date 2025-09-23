@@ -16,8 +16,9 @@ import { allPermissions } from '@/lib/types';
 
 const permissionKeys = Object.keys(allPermissions) as PagePermission[];
 
+// Updated schema to be more flexible
 const formSchema = z.object({
-  permissions: z.record(z.boolean()).optional(),
+  permissions: z.record(z.string(), z.boolean()).optional(),
 });
 
 type PermissionsFormValues = z.infer<typeof formSchema>;
