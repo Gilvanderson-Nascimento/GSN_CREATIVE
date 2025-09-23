@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Sheet,
@@ -34,10 +35,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search } from 'lucide-react';
-import type { User } from '@/lib/types';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, ShieldCheck } from 'lucide-react';
+import type { User, PagePermission } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { UserForm } from './user-form';
+import { PermissionsForm } from './permissions-form';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 
@@ -49,11 +51,12 @@ type UserTableProps = {
 export function UserTable({ initialUsers, setUsers }: UserTableProps) {
   const [filter, setFilter] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [managingPermissionsFor, setManagingPermissionsFor] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isPermissionsSheetOpen, setIsPermissionsSheetOpen] = useState(false);
   const { user: currentUser } = useAuth();
 
-  // Filter out the master admin user from being displayed
   const usersToDisplay = useMemo(() => 
     initialUsers.filter(user => user.username !== 'GSN_CREATIVE'),
     [initialUsers]
@@ -69,6 +72,11 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
     setIsSheetOpen(true);
   };
 
+  const handleManagePermissions = (user: User) => {
+    setManagingPermissionsFor(user);
+    setIsPermissionsSheetOpen(true);
+  }
+
   const confirmDeleteUser = (user: User) => {
     setDeletingUser(user);
   }
@@ -80,19 +88,26 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
     }
   };
   
-  const handleSaveUser = (userData: Omit<User, 'id' | 'createdAt'>) => {
+  const handleSaveUser = (userData: Omit<User, 'id' | 'createdAt' | 'permissions'>) => {
     if(editingUser) {
-        // Update existing user, keeping original password if not changed
         setUsers(initialUsers.map(u => u.id === editingUser.id ? { ...editingUser, ...userData, password: userData.password || editingUser.password } : u));
     } else {
         const newUser: User = {
           ...userData,
           id: `USER${Date.now()}`,
           createdAt: new Date().toISOString(),
+          permissions: {}, // Start with no permissions
         }
         setUsers([...initialUsers, newUser]);
     }
     setIsSheetOpen(false);
+  }
+
+  const handleSavePermissions = (permissions: Partial<Record<PagePermission, boolean>>) => {
+    if (managingPermissionsFor) {
+      setUsers(initialUsers.map(u => u.id === managingPermissionsFor.id ? { ...u, permissions } : u));
+    }
+    setIsPermissionsSheetOpen(false);
   }
 
   const filteredUsers = usersToDisplay.filter(
@@ -157,13 +172,17 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
                                 </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                                <DropdownMenuItem onSelect={() => handleEditUser(user)}>
-                                    <Pencil className="mr-2 h-4 w-4" /> Editar
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => confirmDeleteUser(user)} className="text-destructive">
-                                    <Trash2 className="mr-2 h-4 w-4" /> Excluir
-                                </DropdownMenuItem>
+                                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                    <DropdownMenuItem onSelect={() => handleEditUser(user)}>
+                                        <Pencil className="mr-2 h-4 w-4" /> Editar Usuário
+                                    </DropdownMenuItem>
+                                     <DropdownMenuItem onSelect={() => handleManagePermissions(user)}>
+                                        <ShieldCheck className="mr-2 h-4 w-4" /> Gerenciar Permissões
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onSelect={() => confirmDeleteUser(user)} className="text-destructive">
+                                        <Trash2 className="mr-2 h-4 w-4" /> Excluir Usuário
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
@@ -187,8 +206,10 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
             </div>
         </CardFooter>
       </Card>
+      
+      {/* Sheet para Adicionar/Editar Usuário */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="overflow-y-auto w-full max-w-2xl sm:max-w-2xl">
+        <SheetContent className="overflow-y-auto w-full max-w-md sm:max-w-md">
           <SheetHeader>
             <SheetTitle>{editingUser ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</SheetTitle>
           </SheetHeader>
@@ -199,6 +220,24 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
           />
         </SheetContent>
       </Sheet>
+
+      {/* Sheet para Gerenciar Permissões */}
+       <Sheet open={isPermissionsSheetOpen} onOpenChange={setIsPermissionsSheetOpen}>
+        <SheetContent className="overflow-y-auto w-full max-w-md sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Gerenciar Permissões</SheetTitle>
+            <CardDescription>Defina quais abas {managingPermissionsFor?.name} pode acessar.</CardDescription>
+          </SheetHeader>
+          {managingPermissionsFor && (
+            <PermissionsForm
+                user={managingPermissionsFor}
+                onSave={handleSavePermissions}
+                onCancel={() => setIsPermissionsSheetOpen(false)}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+
       <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
