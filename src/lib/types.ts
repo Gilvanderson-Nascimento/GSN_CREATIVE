@@ -38,6 +38,19 @@ export type Customer = {
   totalSpent: number;
 };
 
+export type PagePermission = 'dashboard' | 'stock' | 'sales' | 'customers' | 'pricing' | 'users' | 'settings';
+
+export const allPermissions: Record<PagePermission, string> = {
+  dashboard: 'Dashboard',
+  stock: 'Estoque',
+  sales: 'Vendas',
+  customers: 'Clientes',
+  pricing: 'Precificação',
+  users: 'Usuários',
+  settings: 'Configurações',
+};
+
+
 export type UserRole = 'admin' | 'gerente' | 'vendedor' | 'estoquista';
 
 export type User = {
@@ -48,4 +61,5 @@ export type User = {
   email?: string;
   role: UserRole | string; // Allow custom roles
   createdAt: string;
+  permissions: Partial<Record<PagePermission, boolean>>;
 }

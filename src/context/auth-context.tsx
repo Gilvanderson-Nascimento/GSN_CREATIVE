@@ -1,9 +1,7 @@
 import { createContext } from 'react';
+import type { User } from '@/lib/types';
 
-export type AuthUser = {
-  username: string;
-  role: 'admin' | 'vendedor' | 'estoquista';
-};
+export type AuthUser = User;
 
 type AuthContextType = {
   user: AuthUser | null;

@@ -29,9 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const foundUser = initialUsers.find(u => u.username === username && u.password === pass);
 
     if (foundUser) {
-      const userData: AuthUser = { username: foundUser.username, role: foundUser.role as 'admin' | 'vendedor' | 'estoquista' };
-      sessionStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
+      sessionStorage.setItem('user', JSON.stringify(foundUser));
+      setUser(foundUser);
       router.push('/dashboard');
     } else {
       throw new Error('Usuário ou senha inválidos.');

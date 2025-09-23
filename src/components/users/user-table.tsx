@@ -39,6 +39,7 @@ import type { User } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { UserForm } from './user-form';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/hooks/use-auth';
 
 type UserTableProps = {
   initialUsers: User[];
@@ -50,6 +51,7 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const { user: currentUser } = useAuth();
 
   // Filter out the master admin user from being displayed
   const usersToDisplay = useMemo(() => 
@@ -143,13 +145,13 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
                     <TableRow key={user.id}>
                         <TableCell className="font-medium">{user.name}</TableCell>
                         <TableCell>{user.username}</TableCell>
-                        <TableCell><Badge variant="secondary">{user.role}</Badge></TableCell>
+                        <TableCell><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
                         <TableCell>{user.email || 'N/A'}</TableCell>
                         <TableCell>
                          <div className="flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={user.username === 'GSN_CREATIVE'}>
+                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={currentUser?.role !== 'admin'}>
                                     <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
@@ -186,7 +188,7 @@ export function UserTable({ initialUsers, setUsers }: UserTableProps) {
         </CardFooter>
       </Card>
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="overflow-y-auto">
+        <SheetContent className="overflow-y-auto w-full max-w-2xl sm:max-w-2xl">
           <SheetHeader>
             <SheetTitle>{editingUser ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</SheetTitle>
           </SheetHeader>

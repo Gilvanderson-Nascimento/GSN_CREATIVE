@@ -13,9 +13,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { User, UserRole } from '@/lib/types';
+import type { User, UserRole, PagePermission } from '@/lib/types';
+import { allPermissions } from '@/lib/types';
+import { Separator } from '../ui/separator';
+import { Checkbox } from '../ui/checkbox';
+import { useAuth } from '@/hooks/use-auth';
 
 const roles: UserRole[] = ['admin', 'gerente', 'vendedor', 'estoquista'];
+const permissionKeys = Object.keys(allPermissions) as PagePermission[];
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
@@ -23,6 +28,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "E-mail inválido." }).optional().or(z.literal('')),
   password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }).optional().or(z.literal('')),
   role: z.string().min(1, { message: 'Função é obrigatória.'}),
+  permissions: z.record(z.boolean()).default({}),
 });
 
 type UserFormValues = Omit<User, 'id' | 'createdAt'>;
@@ -34,6 +40,8 @@ type UserFormProps = {
 };
 
 export function UserForm({ user, onSave, onCancel }: UserFormProps) {
+  const { user: currentUser } = useAuth();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,6 +50,11 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
         email: user?.email || '',
         password: '', // Always empty for security
         role: user?.role || 'vendedor',
+        permissions: user?.permissions || {
+          dashboard: true,
+          sales: true,
+          customers: true,
+        },
     },
   });
   
@@ -52,10 +65,11 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
     formSchema.shape.password = z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' });
   }
 
-
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave(values);
   }
+
+  const canEditPermissions = currentUser?.role === 'admin';
 
   return (
     <Form {...form}>
@@ -118,7 +132,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             render={({ field }) => (
                 <FormItem>
                     <FormLabel>Função</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canEditPermissions}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder="Selecione uma função" />
@@ -134,6 +148,44 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
                 </FormItem>
             )}
         />
+
+        {canEditPermissions && (
+            <>
+                <Separator />
+                <div className="space-y-4">
+                    <div>
+                        <FormLabel>Permissões de Acesso</FormLabel>
+                        <p className="text-sm text-muted-foreground">
+                            Defina quais abas este usuário poderá visualizar.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                    {permissionKeys.map((key) => (
+                        <FormField
+                            key={key}
+                            control={form.control}
+                            name={`permissions.${key}`}
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                    <FormLabel>
+                                        {allPermissions[key as PagePermission]}
+                                    </FormLabel>
+                                </div>
+                                </FormItem>
+                            )}
+                        />
+                    ))}
+                    </div>
+                </div>
+            </>
+        )}
        
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>

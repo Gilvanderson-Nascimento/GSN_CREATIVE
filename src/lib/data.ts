@@ -64,5 +64,14 @@ export const users: User[] = [
         password: 'Gsn@6437#',
         role: 'admin',
         createdAt: new Date().toISOString(),
+        permissions: {
+            dashboard: true,
+            stock: true,
+            sales: true,
+            customers: true,
+            pricing: true,
+            users: true,
+            settings: true,
+        },
     }
 ]
