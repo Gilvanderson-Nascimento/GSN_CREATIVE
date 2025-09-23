@@ -32,7 +32,7 @@ type DataContextType = {
   sales: Sale[];
   setSales: (sales: Sale[]) => void;
   users: User[];
-  setUsers: (users: User[] | ((prevUsers: User[]) => User[])) => void;
+  setUsers: (users: User[]) => void;
   completeSale: (saleData: SaleData) => void;
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
