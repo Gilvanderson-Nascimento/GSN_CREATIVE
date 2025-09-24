@@ -30,7 +30,7 @@ type PosSystemProps = {
 export default function PosSystem({ isEditing = false, existingSale, onSave }: PosSystemProps) {
   const { products, customers, completeSale, settings } = useContext(DataContext);
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
@@ -149,13 +149,13 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
         onSave(salePayload);
          toast({
           title: t('sales.sale_update_success_title'),
-          description: t('sales.sale_update_success_description', { total: total.toFixed(2) }),
+          description: t('sales.sale_update_success_description', { total: formatCurrency(total) }),
         });
     } else {
         completeSale(salePayload);
         toast({
           title: t('sales.sale_success_title'),
-          description: t('sales.sale_success_description', { total: total.toFixed(2) }),
+          description: t('sales.sale_success_description', { total: formatCurrency(total) }),
           action: <div className="p-2 bg-green-500 rounded-full"><CheckCircle className="text-white"/></div>
         });
         setCart([]);
@@ -199,7 +199,7 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
                   <div className="p-2 text-center w-full">
                     <p className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</p>
                     <p className="text-xs text-muted-foreground">{t('stock.quantity')}: {product.quantity}</p>
-                    <p className="text-primary font-bold text-base mt-2">R$ {product.salePrice.toFixed(2)}</p>
+                    <p className="text-primary font-bold text-base mt-2">{formatCurrency(product.salePrice)}</p>
                   </div>
                 </Card>
               ))}
@@ -243,15 +243,15 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
             <div className="w-full space-y-2 text-sm">
                 <div className="flex justify-between text-muted-foreground">
                 <span>{t('sales.subtotal')}</span>
-                <span>R$ {subtotal.toFixed(2)}</span>
+                <span>{formatCurrency(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                 <span>{t('sales.discount')}</span>
-                <span>- R$ {(subtotal - total).toFixed(2)} ({discount}%)</span>
+                <span>- {formatCurrency(subtotal - total)} ({discount}%)</span>
                 </div>
                 <div className="flex justify-between font-bold text-xl">
                 <span>{t('sales.total')}</span>
-                <span>R$ {total.toFixed(2)}</span>
+                <span>{formatCurrency(total)}</span>
                 </div>
             </div>
             <Button size="lg" className="w-full" onClick={handleCompleteSale}>
@@ -277,13 +277,13 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
                         <div key={item.productId} className="flex items-center text-sm">
                         <div className="flex-grow">
                             <p className="font-medium leading-tight line-clamp-2">{item.productName}</p>
-                            <p className="text-xs text-muted-foreground">R$ {item.unitPrice.toFixed(2)} x {item.quantity}</p>
+                            <p className="text-xs text-muted-foreground">{formatCurrency(item.unitPrice)} x {item.quantity}</p>
                         </div>
                         <div className="ml-4 flex items-center gap-1">
                             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-4 w-4"/></Button>
                             <span className="font-medium w-4 text-center">{item.quantity}</span>
                             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-4 w-4"/></Button>
-                            <div className="font-bold w-14 text-right">R$ {item.totalPrice.toFixed(2)}</div>
+                            <div className="font-bold w-14 text-right">{formatCurrency(item.totalPrice)}</div>
                         </div>
                         </div>
                     ))}

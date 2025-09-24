@@ -31,7 +31,7 @@ type SaleDetailClientProps = {
 };
 
 export default function SaleDetailClient({ sale, customer, seller, onCancelSale, companyName }: SaleDetailClientProps) {
-  const { t, language } = useTranslation();
+  const { t, language, formatCurrency } = useTranslation();
   const locale = language === 'pt-BR' ? ptBR : enUS;
 
   const handlePrint = () => {
@@ -51,13 +51,13 @@ export default function SaleDetailClient({ sale, customer, seller, onCancelSale,
       printWindow.document.write(`<th>${t('sales.receipt_product')}</th><th>${t('sales.receipt_qty')}</th><th>${t('sales.receipt_unit_price')}</th><th>${t('sales.receipt_total')}</th>`);
       printWindow.document.write('</tr></thead><tbody>');
       sale.items.forEach(item => {
-        printWindow.document.write(`<tr><td>${item.productName}</td><td>${item.quantity}</td><td>R$ ${item.unitPrice.toFixed(2)}</td><td>R$ ${item.totalPrice.toFixed(2)}</td></tr>`);
+        printWindow.document.write(`<tr><td>${item.productName}</td><td>${item.quantity}</td><td>${formatCurrency(item.unitPrice)}</td><td>${formatCurrency(item.totalPrice)}</td></tr>`);
       });
       printWindow.document.write('</tbody></table>');
 
-      printWindow.document.write(`<p><strong>${t('sales.subtotal')}:</strong> R$ ${sale.subtotal.toFixed(2)}</p>`);
+      printWindow.document.write(`<p><strong>${t('sales.subtotal')}:</strong> ${formatCurrency(sale.subtotal)}</p>`);
       printWindow.document.write(`<p><strong>${t('sales.discount')}:</strong> ${sale.discount}%</p>`);
-      printWindow.document.write(`<h3 class="total">${t('sales.total')}: R$ ${sale.total.toFixed(2)}</h3>`);
+      printWindow.document.write(`<h3 class="total">${t('sales.total')}: ${formatCurrency(sale.total)}</h3>`);
 
       printWindow.document.write('</body></html>');
       printWindow.document.close();
@@ -92,8 +92,8 @@ export default function SaleDetailClient({ sale, customer, seller, onCancelSale,
                                 <TableRow key={item.productId}>
                                     <TableCell className="font-medium">{item.productName}</TableCell>
                                     <TableCell className="text-center">{item.quantity}</TableCell>
-                                    <TableCell className="text-right">R$ {item.unitPrice.toFixed(2)}</TableCell>
-                                    <TableCell className="text-right font-medium">R$ {item.totalPrice.toFixed(2)}</TableCell>
+                                    <TableCell className="text-right">{formatCurrency(item.unitPrice)}</TableCell>
+                                    <TableCell className="text-right font-medium">{formatCurrency(item.totalPrice)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -129,15 +129,15 @@ export default function SaleDetailClient({ sale, customer, seller, onCancelSale,
                     <hr className="my-4"/>
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">{t('sales.subtotal')}</span>
-                        <span>R$ {sale.subtotal.toFixed(2)}</span>
+                        <span>{formatCurrency(sale.subtotal)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="text-muted-foreground">{t('sales.discount')} ({sale.discount}%)</span>
-                        <span>- R$ {(sale.subtotal - sale.total).toFixed(2)}</span>
+                        <span>- {formatCurrency(sale.subtotal - sale.total)}</span>
                     </div>
                     <div className="flex justify-between text-xl font-bold">
                         <span>{t('sales.total')}</span>
-                        <span>R$ {sale.total.toFixed(2)}</span>
+                        <span>{formatCurrency(sale.total)}</span>
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-2">

@@ -10,7 +10,7 @@ type StatsCardsProps = {
 }
 
 export function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItems }: StatsCardsProps) {
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <Card>
@@ -19,7 +19,7 @@ export function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItem
           <DollarSign className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <div className="text-2xl font-bold">R$ {totalSales.toFixed(2)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totalSales)}</div>
           <p className="text-xs text-muted-foreground">+20.1% {t('dashboard.from_last_month')}</p>
         </CardContent>
       </Card>
@@ -29,7 +29,7 @@ export function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItem
           <ShoppingBag className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent className="p-6 pt-0">
-          <div className="text-2xl font-bold">R$ {totalProfit.toFixed(2)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(totalProfit)}</div>
           <p className="text-xs text-muted-foreground">+180.1% {t('dashboard.from_last_month')}</p>
         </CardContent>
       </Card>

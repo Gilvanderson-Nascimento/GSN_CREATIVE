@@ -29,7 +29,7 @@ import { ptBR, enUS } from 'date-fns/locale';
 
 export default function SalesHistoryTable() {
   const { sales, customers, users } = useContext(DataContext);
-  const { t, language } = useTranslation();
+  const { t, language, formatCurrency } = useTranslation();
   const [filter, setFilter] = useState('');
   const locale = language === 'pt-BR' ? ptBR : enUS;
 
@@ -104,7 +104,7 @@ export default function SalesHistoryTable() {
                                 {t(`sales.status_${sale.status || 'completed'}`)}
                             </Badge>
                         </TableCell>
-                        <TableCell className="text-right font-medium">R$ {sale.total.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-medium">{formatCurrency(sale.total)}</TableCell>
                         <TableCell>
                          <div className="flex justify-end">
                             <Button asChild variant="ghost" size="sm">

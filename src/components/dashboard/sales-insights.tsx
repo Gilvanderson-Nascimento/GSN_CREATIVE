@@ -12,7 +12,7 @@ import { useTranslation } from '@/providers/translation-provider';
 
 export function SalesInsights() {
   const { sales } = useContext(DataContext);
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   const [insights, setInsights] = useState<GenerateSalesReportInsightsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,7 +62,7 @@ export function SalesInsights() {
                         <TableRow key={p.name} className="text-sm">
                           <TableCell className="font-medium">{p.name}</TableCell>
                           <TableCell className="text-center text-muted-foreground">{p.quantity}</TableCell>
-                          <TableCell className="text-right font-medium">R$ {p.revenue.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-medium">{formatCurrency(p.revenue)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

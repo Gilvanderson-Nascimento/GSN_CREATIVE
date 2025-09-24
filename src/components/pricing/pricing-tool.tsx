@@ -30,7 +30,7 @@ export default function PricingTool() {
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -124,12 +124,12 @@ export default function PricingTool() {
                  <div className="flex items-center justify-center gap-4 text-center">
                     <div className="space-y-1">
                         <div className="text-sm text-muted-foreground">{t('pricing.total_cost')}</div>
-                        <div className="text-2xl font-bold">R$ {(form.getValues('purchasePrice') * (1 + form.getValues('taxRate')/100)).toFixed(2)}</div>
+                        <div className="text-2xl font-bold">{formatCurrency(form.getValues('purchasePrice') * (1 + form.getValues('taxRate')/100))}</div>
                     </div>
                     <ArrowRight className="h-6 w-6 text-muted-foreground shrink-0"/>
                      <div className="p-4 bg-primary/10 rounded-lg space-y-1">
                         <div className="text-sm text-primary font-semibold">{t('pricing.suggested_sale_price')}</div>
-                        <div className="text-3xl font-bold text-primary">R$ {suggestedPrice.toFixed(2)}</div>
+                        <div className="text-3xl font-bold text-primary">{formatCurrency(suggestedPrice)}</div>
                     </div>
                 </div>
             )}

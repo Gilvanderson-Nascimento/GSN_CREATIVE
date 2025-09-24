@@ -44,7 +44,7 @@ import { useTranslation } from '@/providers/translation-provider';
 
 export default function CustomerTable() {
   const { customers: initialCustomers, setCustomers } = useContext(DataContext);
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   const [filter, setFilter] = useState('');
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
@@ -110,7 +110,7 @@ export default function CustomerTable() {
                         placeholder={t('customers.filter_placeholder')}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="pl-9 w-full"
+                        className="pl-9"
                     />
                 </div>
                 <Button onClick={handleAddCustomer}>
@@ -133,13 +133,13 @@ export default function CustomerTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {filteredCustomers.map((customer, index) => (
+                    {filteredCustomers.map((customer) => (
                     <TableRow key={customer.id} className="transition hover:bg-muted/10">
                         <TableCell className="font-medium text-foreground">{customer.name}</TableCell>
                         <TableCell className="text-muted-foreground">{customer.nickname}</TableCell>
                         <TableCell className="text-muted-foreground">{customer.phone}</TableCell>
                         <TableCell className="text-muted-foreground">{customer.salesCount}</TableCell>
-                        <TableCell className="font-medium text-foreground">R$ {customer.totalSpent.toFixed(2)}</TableCell>
+                        <TableCell className="font-medium text-foreground">{formatCurrency(customer.totalSpent)}</TableCell>
                         <TableCell>
                          <div className="flex justify-end">
                             <DropdownMenu>

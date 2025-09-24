@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext, type AppSettings } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
+import { Label } from '@/components/ui/label';
 
 export default function SettingsPage() {
   const { toast } = useToast();

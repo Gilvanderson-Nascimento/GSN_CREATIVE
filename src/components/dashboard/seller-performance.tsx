@@ -23,7 +23,7 @@ type SellerStats = {
 };
 
 export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   const sellerStats = useMemo(() => {
     const stats: Record<string, SellerStats> = {};
 
@@ -97,7 +97,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
                 <TableCell className="text-center">
                     <Badge variant="secondary">{stat.salesCount}</Badge>
                 </TableCell>
-                <TableCell className="text-right font-medium">R$ {stat.totalValue.toFixed(2)}</TableCell>
+                <TableCell className="text-right font-medium">{formatCurrency(stat.totalValue)}</TableCell>
               </TableRow>
             ))}
              {activeSellers.length === 0 && (
@@ -115,7 +115,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
                 {t('dashboard.total_general_sales')}: <Badge className="bg-primary/10 text-primary">{totalSalesCount}</Badge>
             </div>
              <div className="text-xs text-muted-foreground">
-                {t('dashboard.total_general_value')}: <span className="text-primary font-bold">R$ {totalSalesValue.toFixed(2)}</span>
+                {t('dashboard.total_general_value')}: <span className="text-primary font-bold">{formatCurrency(totalSalesValue)}</span>
             </div>
        </CardFooter>
     </Card>

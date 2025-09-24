@@ -81,7 +81,7 @@ const generateStaticData = (period: 'daily' | 'weekly' | 'monthly', locale: Loca
 
 
 export function SalesChart() {
-  const { t, language } = useTranslation();
+  const { t, language, formatCurrency } = useTranslation();
   const [data, setData] = useState<ChartData[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<string>('custom');
@@ -196,17 +196,17 @@ export function SalesChart() {
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
-            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => formatCurrency(value, 0)} />
             <Tooltip
               cursor={{ fill: 'hsla(var(--muted), 0.5)' }}
               contentStyle={{ 
-                  backgroundColor: "hsl(var(--background))", 
+                  backgroundColor: "hsl(var(--card))", 
                   borderColor: "hsl(var(--border))",
                   borderRadius: 'var(--radius)',
                   fontSize: '12px'
               }}
               labelStyle={{ fontWeight: 'bold' }}
-              formatter={(value: number) => [`R$${value.toFixed(2)}`, t('dashboard.total')]}
+              formatter={(value: number) => [formatCurrency(value), t('dashboard.total')]}
             />
             <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="hsl(var(--primary))" />
             <ReferenceLine y={average} label={{ value: t('dashboard.average'), position: 'insideTopLeft', fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} stroke="hsl(var(--destructive))" strokeDasharray="3 3" />

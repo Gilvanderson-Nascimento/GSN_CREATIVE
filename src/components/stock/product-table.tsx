@@ -35,7 +35,7 @@ import { useTranslation } from '@/providers/translation-provider';
 
 export default function ProductTable() {
   const { products: initialProducts, setProducts, settings } = useContext(DataContext);
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState('name-asc');
@@ -188,8 +188,8 @@ export default function ProductTable() {
                                     {product.quantity}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right">R$ {product.purchasePrice.toFixed(2)}</TableCell>
-                            <TableCell className="text-right font-medium">R$ {product.salePrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">{formatCurrency(product.purchasePrice)}</TableCell>
+                            <TableCell className="text-right font-medium">{formatCurrency(product.salePrice)}</TableCell>
                             <TableCell>{product.barcode}</TableCell>
                             <TableCell>
                             <div className="flex justify-end">

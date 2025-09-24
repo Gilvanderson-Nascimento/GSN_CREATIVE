@@ -8,7 +8,7 @@ import { useTranslation } from '@/providers/translation-provider';
 
 export function RecentSales() {
   const { sales, customers } = useContext(DataContext);
-  const { t } = useTranslation();
+  const { t, formatCurrency } = useTranslation();
   const recentSales = sales.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
 
   const getCustomer = (customerId?: string) => {
@@ -38,7 +38,7 @@ export function RecentSales() {
                     <p className="text-xs text-muted-foreground">{customer ? customer.nickname : 'ID: ' + sale.id}</p>
                     </div>
                     <div className="ml-auto font-medium text-sm">
-                    +R$ {sale.total.toFixed(2)}
+                    +{formatCurrency(sale.total)}
                     </div>
                 </div>
                 )

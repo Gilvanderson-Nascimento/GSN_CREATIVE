@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { DataContext } from '@/context/data-context';
 import en from '@/locales/en-US.json';
 import pt from '@/locales/pt-BR.json';
@@ -11,10 +11,12 @@ const translations = {
 };
 
 type Language = 'en-US' | 'pt-BR';
+type Currency = 'USD' | 'BRL';
 
 type TranslationContextType = {
   language: Language;
   t: (key: string, options?: { [key: string]: string | number }) => string;
+  formatCurrency: (value: number, precision?: number) => string;
 };
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
@@ -30,12 +32,14 @@ export const useTranslation = () => {
 export const TranslationProvider = ({ children }: { children: ReactNode }) => {
   const { settings } = useContext(DataContext);
   const [language, setLanguage] = useState<Language>(settings.sistema.idioma as Language || 'pt-BR');
+  const [currency, setCurrency] = useState<Currency>(settings.sistema.moeda as Currency || 'BRL');
 
   useEffect(() => {
     setLanguage(settings.sistema.idioma as Language || 'pt-BR');
-  }, [settings.sistema.idioma]);
+    setCurrency(settings.sistema.moeda as Currency || 'BRL');
+  }, [settings.sistema.idioma, settings.sistema.moeda]);
 
-  const t = (key: string, options?: { [key: string]: string | number }) => {
+  const t = useCallback((key: string, options?: { [key: string]: string | number }) => {
     const keys = key.split('.');
     let result: any = translations[language];
     for (const k of keys) {
@@ -52,14 +56,17 @@ export const TranslationProvider = ({ children }: { children: ReactNode }) => {
     }
 
     return result || key;
-  };
+  }, [language]);
+
+  const formatCurrency = useCallback((value: number, precision: number = 2) => {
+    const prefix = currency === 'USD' ? '$' : 'R$';
+    return `${prefix} ${value.toFixed(precision)}`;
+  }, [currency]);
   
 
   return (
-    <TranslationContext.Provider value={{ language, t }}>
+    <TranslationContext.Provider value={{ language, t, formatCurrency }}>
       {children}
     </TranslationContext.Provider>
   );
 };
-
-    
