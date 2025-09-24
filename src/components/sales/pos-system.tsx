@@ -175,7 +175,7 @@ export default function PosSystem() {
             Carrinho de Compras
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-grow">
+        <CardContent className="flex-grow overflow-hidden">
           <ScrollArea className="h-full">
             {cart.length === 0 ? (
                 <div className="text-center text-muted-foreground h-full flex items-center justify-center">
