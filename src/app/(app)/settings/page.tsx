@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/settings/theme-toggle';
@@ -12,12 +12,23 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext, type AppSettings } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { t } = useTranslation();
   const { products, customers, sales, setProducts, setCustomers, setSales, settings, setSettings } = useContext(DataContext);
   const restoreInputRef = useRef<HTMLInputElement>(null);
+  const [isResetAlertOpen, setIsResetAlertOpen] = useState(false);
 
   // Generic handler for nested state
   const handleSettingChange = <T extends keyof AppSettings, K extends keyof (AppSettings)[T]>(
@@ -38,6 +49,7 @@ export default function SettingsPage() {
     setProducts([]);
     setCustomers([]);
     setSales([]);
+    setIsResetAlertOpen(false);
     toast({
         title: t('settings.data_reset_success_title'),
         description: t('settings.data_reset_success_description'),
@@ -338,12 +350,27 @@ export default function SettingsPage() {
                 </div>
                  <div className="space-y-2">
                     <label className="text-sm font-medium">{t('settings.reset_database')}</label>
-                    <Button variant="destructive" className="w-full" onClick={handleResetData}>{t('settings.reset_test_data')}</Button>
+                    <Button variant="destructive" className="w-full" onClick={() => setIsResetAlertOpen(true)}>{t('settings.reset_test_data')}</Button>
                     <p className="text-xs text-muted-foreground">{t('settings.reset_warning')}</p>
                 </div>
             </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={isResetAlertOpen} onOpenChange={setIsResetAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('settings.delete_dialog_title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('settings.reset_warning')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsResetAlertOpen(false)}>{t('global.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleResetData} className="bg-destructive hover:bg-destructive/90">{t('settings.reset_test_data')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

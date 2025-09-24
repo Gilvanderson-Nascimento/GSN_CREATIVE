@@ -345,9 +345,9 @@
         "reset_test_data": "Reset Test Data",
         "reset_warning": "Warning: This action is irreversible and will delete all data in the test environment.",
         "dangerous_action_title": "Dangerous Action",
-        "reset_not_implemented": "The data reset functionality has not been implemented yet.",
         "data_reset_success_title": "Data Reset",
-        "data_reset_success_description": "All test data (products, customers, sales) has been cleared."
+        "data_reset_success_description": "All test data (products, customers, sales) has been cleared.",
+        "delete_dialog_title": "Are you sure?"
     },
     "login": {
         "title": "System Access",
