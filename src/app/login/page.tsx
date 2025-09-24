@@ -32,19 +32,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
+    <div 
+        className="flex min-h-screen items-center justify-center bg-gray-100 p-4 relative bg-cover bg-center"
+        style={{ backgroundImage: "url('https://picsum.photos/seed/market-bg/1920/1080')"}}
+    >
+      <div className="absolute inset-0 bg-black/40"></div>
+      <Card className="relative z-10 w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+        <CardHeader className="text-center p-0 mb-6">
+            <div className="flex justify-center mb-6">
                 <Logo />
             </div>
-          <CardTitle className="text-2xl">Acesso ao Sistema</CardTitle>
-          <CardDescription>Use suas credenciais para entrar.</CardDescription>
+          <CardTitle className="text-2xl font-bold text-gray-800">Acesso ao Sistema</CardTitle>
+          <CardDescription className="text-sm text-gray-500 mt-2">Use suas credenciais para entrar.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Usuário</Label>
+              <Label htmlFor="username" className="text-sm font-medium text-gray-700">Usuário</Label>
               <Input
                 id="username"
                 type="text"
@@ -52,6 +56,7 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="w-full mt-1 rounded-md border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="space-y-2">
@@ -63,13 +68,17 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="w-full mt-1 rounded-md border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-blue-600 text-white font-semibold rounded-md py-2.5 mt-6 hover:bg-blue-700 transition shadow-md" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Entrar
             </Button>
+            <div className="text-center mt-4">
+                 <a href="#" className="text-xs text-gray-500 hover:text-blue-600">Esqueceu a senha?</a>
+            </div>
           </form>
         </CardContent>
       </Card>
