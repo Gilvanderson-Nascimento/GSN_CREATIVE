@@ -176,23 +176,23 @@ export default function PosSystem() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-full max-h-[300px]">
             {cart.length === 0 ? (
                 <div className="text-center text-muted-foreground h-full flex items-center justify-center">
                     Seu carrinho está vazio.
                 </div>
             ) : (
-                <div className="space-y-4">
+                <div className="space-y-2">
                 {cart.map((item) => (
-                    <div key={item.productId} className="flex items-center">
+                    <div key={item.productId} className="flex items-center text-sm">
                     <div>
-                        <div className="font-medium">{item.productName}</div>
-                        <div className="text-sm text-muted-foreground">R$ {item.unitPrice.toFixed(2)} x {item.quantity}</div>
+                        <div className="font-medium leading-tight">{item.productName}</div>
+                        <div className="text-xs text-muted-foreground">R$ {item.unitPrice.toFixed(2)} x {item.quantity}</div>
                     </div>
-                    <div className="ml-auto flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-4 w-4"/></Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-4 w-4"/></Button>
-                        <div className="font-bold w-16 text-right">R$ {item.totalPrice.toFixed(2)}</div>
+                    <div className="ml-auto flex items-center gap-1">
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-3 w-3"/></Button>
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-3 w-3"/></Button>
+                        <div className="font-bold w-14 text-right text-xs">R$ {item.totalPrice.toFixed(2)}</div>
                     </div>
                     </div>
                 ))}
