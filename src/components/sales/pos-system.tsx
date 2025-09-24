@@ -181,7 +181,50 @@ export default function PosSystem() {
             Carrinho de Compras
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-grow overflow-hidden p-6 pt-0">
+        <div className="flex flex-col gap-4 p-6 pt-0 border-b border-gray-200">
+            <div className="w-full">
+                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                    <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500">
+                        <SelectValue placeholder={<div className="flex items-center gap-2"><UserPlus className="h-4 w-4"/>Associar Cliente</div>} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="w-full flex items-center">
+                <Input 
+                    type="number" 
+                    placeholder="Desconto %" 
+                    className="rounded-r-none w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500" 
+                    value={discount || ''}
+                    onChange={(e) => setDiscount(Number(e.target.value))}
+                />
+                <span className="p-2.5 inline-flex items-center justify-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50">
+                    <Percent className="h-4 w-4 text-gray-500"/>
+                </span>
+            </div>
+
+            <Separator className="my-2 bg-gray-200" />
+            <div className="w-full space-y-2 text-sm">
+                <div className="flex justify-between text-gray-700">
+                <span>Subtotal</span>
+                <span>R$ {subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-700">
+                <span>Desconto</span>
+                <span>- R$ {(subtotal - total).toFixed(2)} ({discount}%)</span>
+                </div>
+                <div className="flex justify-between font-bold text-xl text-gray-900">
+                <span>Total</span>
+                <span>R$ {total.toFixed(2)}</span>
+                </div>
+            </div>
+            <Button size="lg" className="w-full bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition" onClick={handleCompleteSale}>
+                Finalizar Venda
+            </Button>
+        </div>
+        <CardContent className="flex-grow overflow-hidden p-6 pt-4">
              <ScrollArea className="h-full pr-4">
                 {cart.length === 0 ? (
                     <div className="text-center text-gray-500 italic h-full flex items-center justify-center">
@@ -207,49 +250,6 @@ export default function PosSystem() {
                 )}
             </ScrollArea>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4 p-6 border-t border-gray-200 mt-auto">
-          <div className="w-full">
-            <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500">
-                    <SelectValue placeholder={<div className="flex items-center gap-2"><UserPlus className="h-4 w-4"/>Associar Cliente</div>} />
-                </SelectTrigger>
-                <SelectContent>
-                    {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full flex items-center">
-            <Input 
-                type="number" 
-                placeholder="Desconto %" 
-                className="rounded-r-none w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500" 
-                value={discount || ''}
-                onChange={(e) => setDiscount(Number(e.target.value))}
-            />
-            <span className="p-2.5 inline-flex items-center justify-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50">
-                <Percent className="h-4 w-4 text-gray-500"/>
-            </span>
-          </div>
-
-          <Separator className="my-2 bg-gray-200" />
-          <div className="w-full space-y-2 text-sm">
-            <div className="flex justify-between text-gray-700">
-              <span>Subtotal</span>
-              <span>R$ {subtotal.toFixed(2)}</span>
-            </div>
-             <div className="flex justify-between text-gray-700">
-              <span>Desconto</span>
-              <span>- R$ {(subtotal - total).toFixed(2)} ({discount}%)</span>
-            </div>
-            <div className="flex justify-between font-bold text-xl text-gray-900">
-              <span>Total</span>
-              <span>R$ {total.toFixed(2)}</span>
-            </div>
-          </div>
-          <Button size="lg" className="w-full bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition" onClick={handleCompleteSale}>
-            Finalizar Venda
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
