@@ -6,7 +6,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <DataProvider>
       <PrivateRoute>
-        <SidebarWrapper>{children}</SidebarWrapper>
+        <div className="bg-gray-50 text-gray-800 font-sans">
+            <SidebarWrapper>{children}</SidebarWrapper>
+        </div>
       </PrivateRoute>
     </DataProvider>
   );

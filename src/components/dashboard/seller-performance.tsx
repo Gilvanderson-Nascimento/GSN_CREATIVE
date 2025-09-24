@@ -61,46 +61,46 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
   const activeSellers = sellerStats.filter(stat => stat.totalValue > 0 || (stat.id === 'unidentified' && stat.salesCount > 0));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl">
+    <Card className="bg-white rounded-xl shadow-md">
+      <CardHeader className="p-6">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
             <UserIcon className="h-5 w-5"/>
             Desempenho por Vendedor
         </CardTitle>
-        <CardDescription className="text-sm">
+        <CardDescription className="text-sm text-gray-500">
           Análise das vendas realizadas por cada membro da equipe. Clique no nome para ver detalhes.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6 pt-0">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="text-xs">Vendedor</TableHead>
-              <TableHead className="text-center text-xs">Nº de Vendas</TableHead>
-              <TableHead className="text-right text-xs">Valor Total Vendido</TableHead>
+            <TableRow className="border-gray-200">
+              <TableHead className="text-xs text-gray-500 font-semibold">Vendedor</TableHead>
+              <TableHead className="text-center text-xs text-gray-500 font-semibold">Nº de Vendas</TableHead>
+              <TableHead className="text-right text-xs text-gray-500 font-semibold">Valor Total Vendido</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {activeSellers.map(stat => (
-              <TableRow key={stat.id} className="text-sm">
-                <TableCell className="font-medium">
+              <TableRow key={stat.id} className="text-sm border-gray-200 hover:bg-gray-50">
+                <TableCell className="font-medium text-gray-800">
                   {stat.id !== 'unidentified' ? (
-                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto text-sm")}>
+                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto text-sm text-blue-600 hover:text-blue-700")}>
                         {stat.name}
                     </Link>
                   ) : (
-                    <span className="text-muted-foreground">{stat.name}</span>
+                    <span className="text-gray-500">{stat.name}</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
-                    <Badge variant="secondary">{stat.salesCount}</Badge>
+                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">{stat.salesCount}</Badge>
                 </TableCell>
-                <TableCell className="text-right font-medium">R$ {stat.totalValue.toFixed(2)}</TableCell>
+                <TableCell className="text-right font-medium text-gray-800">R$ {stat.totalValue.toFixed(2)}</TableCell>
               </TableRow>
             ))}
              {activeSellers.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center text-sm">
+                    <TableCell colSpan={3} className="h-24 text-center text-sm text-gray-500">
                         Nenhuma venda registrada no período.
                     </TableCell>
                 </TableRow>
@@ -108,12 +108,12 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
           </TableBody>
         </Table>
       </CardContent>
-       <CardFooter className="font-semibold text-right flex justify-end gap-6 bg-muted/50 py-3">
-            <div className="text-xs">
-                Total Geral de Vendas: <Badge>{totalSalesCount}</Badge>
+       <CardFooter className="font-semibold text-right flex justify-end gap-6 bg-gray-50 py-4 px-6 border-t border-gray-200 rounded-b-xl">
+            <div className="text-xs text-gray-600">
+                Total Geral de Vendas: <Badge className="bg-blue-100 text-blue-600">{totalSalesCount}</Badge>
             </div>
-             <div className="text-xs">
-                Valor Total Geral: <span className="text-primary">R$ {totalSalesValue.toFixed(2)}</span>
+             <div className="text-xs text-gray-600">
+                Valor Total Geral: <span className="text-blue-600 font-bold">R$ {totalSalesValue.toFixed(2)}</span>
             </div>
        </CardFooter>
     </Card>

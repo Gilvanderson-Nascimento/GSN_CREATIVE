@@ -14,10 +14,7 @@ import { ptBR } from 'date-fns/locale';
 type ChartData = {
   name: string;
   total: number;
-  color?: string;
 };
-
-const chartColors = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"];
 
 const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
   const data: ChartData[] = [];
@@ -29,7 +26,6 @@ const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
       data.push({
         name: format(currentDate, 'dd/MM'),
         total: Math.floor(Math.random() * 800) + 100,
-        color: chartColors[i % chartColors.length]
       });
       currentDate = addDays(currentDate, 1);
     }
@@ -41,10 +37,8 @@ const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
         monthMap.set(monthName, currentTotal + (Math.floor(Math.random() * 200) + 20));
         currentDate = addDays(currentDate, 1);
     }
-    let colorIndex = 0;
      monthMap.forEach((total, name) => {
-        data.push({ name, total: Math.round(total), color: chartColors[colorIndex % chartColors.length] });
-        colorIndex++;
+        data.push({ name, total: Math.round(total) });
     });
   } else { // Yearly
      const yearMap = new Map<string, number>();
@@ -54,10 +48,8 @@ const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
         yearMap.set(yearName, currentTotal + (Math.floor(Math.random() * 50) + 10));
         currentDate = addDays(currentDate, 1);
     }
-    let colorIndex = 0;
     yearMap.forEach((total, name) => {
-        data.push({ name, total: Math.round(total), color: chartColors[colorIndex % chartColors.length] });
-        colorIndex++;
+        data.push({ name, total: Math.round(total) });
     });
   }
 
@@ -69,23 +61,20 @@ const generateStaticData = (period: 'daily' | 'weekly' | 'monthly'): ChartData[]
         return Array.from({ length: 24 }, (_, i) => ({
             name: `${i}:00`,
             total: Math.floor(Math.random() * 500) + 50,
-            color: chartColors[i % chartColors.length]
         }));
     }
     if (period === 'weekly') {
         const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-        return days.map((day, i) => ({
+        return days.map((day) => ({
             name: day,
             total: Math.floor(Math.random() * 1000) + 200,
-            color: chartColors[i % chartColors.length]
         }));
     }
     // monthly
     const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    return months.map((month, i) => ({
+    return months.map((month) => ({
         name: month,
         total: Math.floor(Math.random() * 5000) + 1000,
-        color: chartColors[i % chartColors.length]
     }));
 };
 
@@ -129,35 +118,35 @@ export function SalesChart() {
 
   if (!isClient) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-xl">Visão Geral das Vendas</CardTitle>
-                 <CardDescription>Carregando dados do gráfico...</CardDescription>
+        <Card className="bg-white rounded-xl shadow-md p-4">
+            <CardHeader className="p-2">
+                <CardTitle className="text-lg font-semibold text-gray-800">Visão Geral das Vendas</CardTitle>
+                 <CardDescription className="text-sm text-gray-500">Carregando dados do gráfico...</CardDescription>
             </CardHeader>
-            <CardContent className="pl-2">
-                <div className="w-full h-[350px] bg-muted animate-pulse rounded-md" />
+            <CardContent className="pl-2 pt-4">
+                <div className="w-full h-[350px] bg-gray-100 animate-pulse rounded-md" />
             </CardContent>
         </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="bg-white rounded-xl shadow-md h-full">
+      <CardHeader className="p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <CardTitle className="text-xl">Visão Geral das Vendas</CardTitle>
-                {chartTitle && <CardDescription className="text-sm mt-1">{chartTitle}</CardDescription>}
+                <CardTitle className="text-lg font-semibold text-gray-800">Visão Geral das Vendas</CardTitle>
+                {chartTitle && <CardDescription className="text-sm text-gray-500 mt-1">{chartTitle}</CardDescription>}
             </div>
             <div className="flex items-center gap-2 mt-4 sm:mt-0">
                 <Tabs value={activeTab} onValueChange={(value) => {
                     setActiveTab(value);
                     if(value !== 'custom') setDateRange(undefined);
                 }} className="hidden sm:block">
-                    <TabsList>
-                        <TabsTrigger value="daily" className="text-xs">Diário</TabsTrigger>
-                        <TabsTrigger value="weekly" className="text-xs">Semanal</TabsTrigger>
-                        <TabsTrigger value="monthly" className="text-xs">Mensal</TabsTrigger>
+                    <TabsList className="bg-gray-100 p-1">
+                        <TabsTrigger value="daily" className="text-xs px-3 py-1">Diário</TabsTrigger>
+                        <TabsTrigger value="weekly" className="text-xs px-3 py-1">Semanal</TabsTrigger>
+                        <TabsTrigger value="monthly" className="text-xs px-3 py-1">Mensal</TabsTrigger>
                     </TabsList>
                 </Tabs>
 
@@ -166,7 +155,7 @@ export function SalesChart() {
                     <Button
                         id="date"
                         variant={"outline"}
-                        className="w-full sm:w-[260px] justify-start text-left font-normal text-xs"
+                        className="w-full sm:w-[260px] justify-start text-left font-normal text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg"
                         onClick={() => setActiveTab('custom')}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -198,23 +187,26 @@ export function SalesChart() {
             </div>
         </div>
       </CardHeader>
-      <CardContent className="pl-2">
-        <ResponsiveContainer width="100%" height={260}>
+      <CardContent className="pl-2 pr-6 pb-6">
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
             <Tooltip
+              cursor={{ fill: 'rgba(179, 195, 212, 0.2)' }}
               contentStyle={{ 
-                  background: "hsl(var(--background))", 
+                  background: "white", 
                   borderColor: "hsl(var(--border))",
+                  borderRadius: '0.75rem',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
                   fontSize: '12px'
               }}
               labelStyle={{ fontWeight: 'bold' }}
               formatter={(value: number) => [`R$${value.toFixed(2)}`, 'Total']}
             />
-            <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="var(--color-total)" />
-             <ReferenceLine y={average} label={{ value: 'Média', position: 'insideTopLeft', fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} stroke="hsl(var(--destructive))" strokeDasharray="3 3" />
+            <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="#60A5FA" />
+            <ReferenceLine y={average} label={{ value: 'Média', position: 'insideTopLeft', fill: '#6B7280', fontSize: 10 }} stroke="#F87171" strokeDasharray="3 3" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

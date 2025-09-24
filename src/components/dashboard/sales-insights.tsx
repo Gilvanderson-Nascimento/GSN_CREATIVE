@@ -30,37 +30,37 @@ export function SalesInsights() {
   };
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
-        <CardTitle className="text-xl">Análise de Vendas com IA</CardTitle>
-        <CardDescription className="text-sm">
+    <Card className="h-full flex flex-col bg-white rounded-xl shadow-md">
+      <CardHeader className="p-6">
+        <CardTitle className="text-lg font-semibold text-gray-800">Análise de Vendas com IA</CardTitle>
+        <CardDescription className="text-sm text-gray-500">
           Clique no botão para gerar insights sobre seus dados de vendas, como produtos mais vendidos e tendências de compra.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow overflow-hidden">
-        <ScrollArea className="h-full max-h-[280px]">
+      <CardContent className="flex-grow overflow-hidden p-6 pt-0">
+        <ScrollArea className="h-full max-h-[280px] -mr-6 pr-6">
           {insights ? (
-            <div className="space-y-4 pr-4">
-              <Card>
-                <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  <CardTitle className="text-base font-semibold">Produtos Mais Vendidos</CardTitle>
+            <div className="space-y-4">
+              <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2 p-4">
+                  <TrendingUp className="h-5 w-5 text-blue-500" />
+                  <CardTitle className="text-base font-semibold text-gray-800">Produtos Mais Vendidos</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4 pt-0">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">Produto</TableHead>
-                        <TableHead className="text-center text-xs">Qtde.</TableHead>
-                        <TableHead className="text-right text-xs">Receita</TableHead>
+                      <TableRow className="border-gray-200">
+                        <TableHead className="text-xs font-semibold text-gray-600">Produto</TableHead>
+                        <TableHead className="text-center text-xs font-semibold text-gray-600">Qtde.</TableHead>
+                        <TableHead className="text-right text-xs font-semibold text-gray-600">Receita</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {insights.bestSellingProducts.map(p => (
-                        <TableRow key={p.name} className="text-sm">
-                          <TableCell className="font-medium">{p.name}</TableCell>
-                          <TableCell className="text-center">{p.quantity}</TableCell>
-                          <TableCell className="text-right font-medium">R$ {p.revenue.toFixed(2)}</TableCell>
+                        <TableRow key={p.name} className="text-sm border-gray-200">
+                          <TableCell className="font-medium text-gray-800">{p.name}</TableCell>
+                          <TableCell className="text-center text-gray-700">{p.quantity}</TableCell>
+                          <TableCell className="text-right font-medium text-gray-800">R$ {p.revenue.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -69,21 +69,21 @@ export function SalesInsights() {
               </Card>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <Card>
-                  <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
-                    <Clock className="h-4 w-4 text-primary" />
-                    <CardTitle className="text-base font-semibold">Horários de Pico</CardTitle>
+                <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
+                  <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2 p-4">
+                    <Clock className="h-5 w-5 text-blue-500" />
+                    <CardTitle className="text-base font-semibold text-gray-800">Horários de Pico</CardTitle>
                   </CardHeader>
-                  <CardContent className="text-sm pt-4">
-                    <p><Badge variant="secondary">{insights.peakSalesTimes.trend}</Badge> {insights.peakSalesTimes.details}</p>
+                  <CardContent className="text-sm p-4 pt-2 text-gray-700">
+                    <p><Badge variant="secondary" className="bg-blue-100 text-blue-600">{insights.peakSalesTimes.trend}</Badge> {insights.peakSalesTimes.details}</p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
-                    <Users className="h-4 w-4 text-primary" />
-                    <CardTitle className="text-base font-semibold">Tendências dos Clientes</CardTitle>
+                <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
+                  <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2 p-4">
+                    <Users className="h-5 w-5 text-blue-500" />
+                    <CardTitle className="text-base font-semibold text-gray-800">Tendências dos Clientes</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-xs pt-4">
+                  <CardContent className="space-y-2 text-xs p-4 pt-2 text-gray-700">
                     {insights.customerTrends.map(c => (
                       <p key={c.customer}><strong>{c.customer}:</strong> {c.trend}</p>
                     ))}
@@ -91,24 +91,24 @@ export function SalesInsights() {
                 </Card>
               </div>
               
-              <Card className="bg-secondary/50 border-dashed">
-                <CardHeader>
-                  <CardTitle className="text-base font-semibold">Resumo Geral da IA</CardTitle>
+              <Card className="bg-gray-50 border-dashed border-gray-300 rounded-xl">
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-base font-semibold text-gray-800">Resumo Geral da IA</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{insights.overallSummary}</p>
+                <CardContent className="p-4 pt-0">
+                  <p className="text-sm text-gray-600">{insights.overallSummary}</p>
                 </CardContent>
               </Card>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                <p className="text-sm text-muted-foreground">Clique no botão abaixo para usar a IA.</p>
+                <p className="text-sm text-gray-500">Clique no botão abaixo para usar a IA.</p>
             </div>
           )}
         </ScrollArea>
       </CardContent>
-      <CardFooter>
-        <Button onClick={handleGenerateInsights} disabled={isLoading || sales.length === 0} size="sm">
+      <CardFooter className="p-6">
+        <Button onClick={handleGenerateInsights} disabled={isLoading || sales.length === 0} size="sm" className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-4 py-2 text-sm font-medium">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

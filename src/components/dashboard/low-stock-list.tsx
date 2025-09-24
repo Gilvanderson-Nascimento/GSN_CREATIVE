@@ -20,32 +20,32 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
     .sort((a,b) => a.quantity - b.quantity);
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
+    <Card className="h-full flex flex-col bg-red-50 border border-red-200 text-red-600 rounded-xl shadow-sm">
+      <CardHeader className="p-6">
         <div className="flex items-center gap-2">
-            <TriangleAlert className="h-5 w-5 text-destructive" />
-            <CardTitle className="text-xl">Alerta de Estoque Baixo</CardTitle>
+            <TriangleAlert className="h-6 w-6 text-red-500" />
+            <CardTitle className="text-lg font-semibold text-gray-800">Alerta de Estoque Baixo</CardTitle>
         </div>
-        <CardDescription className="text-sm">
+        <CardDescription className="text-sm text-red-500">
           Produtos que atingiram o nível mínimo de estoque de {lowStockThreshold} unidades.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow overflow-hidden">
+      <CardContent className="flex-grow overflow-hidden p-6 pt-0">
         <ScrollArea className="h-full max-h-[280px]">
             {lowStockProducts.length > 0 ? (
             <Table>
                 <TableHeader>
-                <TableRow>
-                    <TableHead className="w-[64px] text-xs">Imagem</TableHead>
-                    <TableHead className="text-xs">Produto</TableHead>
-                    <TableHead className="text-right text-xs">Qtde. Restante</TableHead>
+                <TableRow className="border-red-200">
+                    <TableHead className="w-[64px] text-xs font-semibold text-gray-600">Imagem</TableHead>
+                    <TableHead className="text-xs font-semibold text-gray-600">Produto</TableHead>
+                    <TableHead className="text-right text-xs font-semibold text-gray-600">Qtde. Restante</TableHead>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
                 {lowStockProducts.map((product) => (
-                    <TableRow key={product.id} className="text-sm">
+                    <TableRow key={product.id} className="text-sm border-red-200">
                     <TableCell>
-                        <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden">
+                        <div className="flex items-center justify-center h-10 w-10 bg-white rounded-lg overflow-hidden border border-gray-200">
                         {product.imageUrl ? (
                             <Image
                             src={product.imageUrl}
@@ -56,13 +56,13 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
                             data-ai-hint="product"
                             />
                         ) : (
-                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                            <ImageIcon className="h-5 w-5 text-gray-400" />
                         )}
                         </div>
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="font-medium text-gray-800">{product.name}</TableCell>
                     <TableCell className="text-right">
-                        <Badge variant={product.quantity === 0 ? "destructive" : "secondary"}>
+                        <Badge variant={product.quantity === 0 ? "destructive" : "secondary"} className="bg-red-100 text-red-600">
                         {product.quantity}
                         </Badge>
                     </TableCell>
@@ -72,15 +72,15 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
             </Table>
             ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                <p className="text-lg font-semibold">Estoque em dia!</p>
-                <p className="text-sm text-muted-foreground">Nenhum produto com estoque baixo no momento.</p>
+                <p className="text-lg font-semibold text-gray-800">Estoque em dia!</p>
+                <p className="text-sm text-gray-500">Nenhum produto com estoque baixo no momento.</p>
             </div>
             )}
         </ScrollArea>
       </CardContent>
       {lowStockProducts.length > 0 && (
-          <CardFooter>
-              <Button asChild variant="outline" size="sm" className="w-full">
+          <CardFooter className="p-6 pt-0">
+              <Button asChild variant="outline" size="sm" className="w-full bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg px-4 py-2 text-sm font-medium">
                   <Link href="/stock">Ver Estoque Completo</Link>
               </Button>
           </CardFooter>

@@ -15,34 +15,34 @@ export function RecentSales() {
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="text-xl">Vendas Recentes</CardTitle>
-        <CardDescription className="text-sm">Você fez {sales.length} vendas no total.</CardDescription>
+    <Card className="h-full bg-white rounded-xl shadow-md">
+      <CardHeader className="p-6">
+        <CardTitle className="text-lg font-semibold text-gray-800">Vendas Recentes</CardTitle>
+        <CardDescription className="text-sm text-gray-500">Você fez {sales.length} vendas no total.</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[240px]">
+      <CardContent className="p-6 pt-0">
+        <ScrollArea className="h-[280px] -mr-6 pr-6">
             <div className="space-y-6">
             {recentSales.map((sale) => {
                 const customer = getCustomer(sale.customerId);
                 return (
                 <div key={sale.id} className="flex items-center">
-                    <Avatar className="h-9 w-9">
+                    <Avatar className="h-10 w-10">
                     <AvatarImage src={`https://picsum.photos/seed/${sale.customerId || 'guest'}/40/40`} alt="Avatar" data-ai-hint="person" />
                     <AvatarFallback>{customer ? customer.name.charAt(0) : 'S'}</AvatarFallback>
                     </Avatar>
                     <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">{customer ? customer.name : 'Venda no balcão'}</p>
-                    <p className="text-xs text-muted-foreground">{customer ? customer.nickname : 'ID: ' + sale.id}</p>
+                    <p className="text-sm font-semibold leading-none text-gray-800">{customer ? customer.name : 'Venda no balcão'}</p>
+                    <p className="text-xs text-gray-500">{customer ? customer.nickname : 'ID: ' + sale.id}</p>
                     </div>
-                    <div className="ml-auto font-medium text-sm">
+                    <div className="ml-auto font-medium text-sm text-gray-700">
                     +R$ {sale.total.toFixed(2)}
                     </div>
                 </div>
                 )
             })}
             {recentSales.length === 0 && (
-                <div className="text-center text-sm text-muted-foreground h-full flex items-center justify-center">
+                <div className="text-center text-sm text-gray-500 h-full flex items-center justify-center">
                     Nenhuma venda recente.
                 </div>
             )}
