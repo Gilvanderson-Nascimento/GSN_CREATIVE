@@ -25,7 +25,6 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
   const sellerStats = useMemo(() => {
     const stats: Record<string, SellerStats> = {};
 
-    // Initialize stats for all sellers to ensure they appear even with 0 sales
     users
       .filter(u => ['vendedor', 'gerente', 'admin'].includes(u.role as string))
       .forEach(user => {
@@ -37,7 +36,6 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
         };
       });
       
-    // For sales without a specific seller
     stats['unidentified'] = { id: 'unidentified', name: 'Vendedor não identificado', salesCount: 0, totalValue: 0 };
 
 
@@ -60,17 +58,16 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
   const totalSalesCount = useMemo(() => sales.length, [sales]);
   const totalSalesValue = useMemo(() => sales.reduce((acc, sale) => acc + sale.total, 0), [sales]);
 
-  // Filter out sellers with 0 sales and 0 value unless it's the 'unidentified' one with actual sales
   const activeSellers = sellerStats.filter(stat => stat.totalValue > 0 || (stat.id === 'unidentified' && stat.salesCount > 0));
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-            <UserIcon className="h-6 w-6"/>
+        <CardTitle className="flex items-center gap-2 text-xl">
+            <UserIcon className="h-5 w-5"/>
             Desempenho por Vendedor
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm">
           Análise das vendas realizadas por cada membro da equipe. Clique no nome para ver detalhes.
         </CardDescription>
       </CardHeader>
@@ -78,32 +75,32 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Vendedor</TableHead>
-              <TableHead className="text-center">Nº de Vendas</TableHead>
-              <TableHead className="text-right">Valor Total Vendido</TableHead>
+              <TableHead className="text-xs">Vendedor</TableHead>
+              <TableHead className="text-center text-xs">Nº de Vendas</TableHead>
+              <TableHead className="text-right text-xs">Valor Total Vendido</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {activeSellers.map(stat => (
-              <TableRow key={stat.id}>
+              <TableRow key={stat.id} className="text-sm">
                 <TableCell className="font-medium">
                   {stat.id !== 'unidentified' ? (
-                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto")}>
+                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto text-sm")}>
                         {stat.name}
                     </Link>
                   ) : (
-                    <span>{stat.name}</span>
+                    <span className="text-muted-foreground">{stat.name}</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
                     <Badge variant="secondary">{stat.salesCount}</Badge>
                 </TableCell>
-                <TableCell className="text-right">R$ {stat.totalValue.toFixed(2)}</TableCell>
+                <TableCell className="text-right font-medium">R$ {stat.totalValue.toFixed(2)}</TableCell>
               </TableRow>
             ))}
              {activeSellers.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center">
+                    <TableCell colSpan={3} className="h-24 text-center text-sm">
                         Nenhuma venda registrada no período.
                     </TableCell>
                 </TableRow>
@@ -111,11 +108,11 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
           </TableBody>
         </Table>
       </CardContent>
-       <CardFooter className="font-semibold text-right flex justify-end gap-8 bg-muted/50 py-4">
-            <div className="text-sm">
+       <CardFooter className="font-semibold text-right flex justify-end gap-6 bg-muted/50 py-3">
+            <div className="text-xs">
                 Total Geral de Vendas: <Badge>{totalSalesCount}</Badge>
             </div>
-             <div className="text-sm">
+             <div className="text-xs">
                 Valor Total Geral: <span className="text-primary">R$ {totalSalesValue.toFixed(2)}</span>
             </div>
        </CardFooter>

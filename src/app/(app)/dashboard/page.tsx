@@ -38,9 +38,9 @@ function StatsCardsSkeleton() {
 
 function MainContentSkeleton() {
     return (
-        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-            <Skeleton className="xl:col-span-2 h-[440px]" />
-            <Skeleton className="h-[440px]" />
+        <div className="grid gap-4 lg:grid-cols-3 xl:grid-cols-3">
+            <Skeleton className="xl:col-span-2 h-[350px]" />
+            <Skeleton className="h-[350px]" />
         </div>
     )
 }
@@ -66,7 +66,7 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4">
       <PageHeader title="Dashboard" />
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Suspense fallback={<StatsCardsSkeleton />}>
           <StatsCards 
               totalSales={totalSales} 
@@ -76,29 +76,31 @@ export default function DashboardPage() {
           />
         </Suspense>
         
-        <Suspense fallback={<MainContentSkeleton />}>
-            <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-                <div className="xl:col-span-2">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+                <Suspense fallback={<Skeleton className="h-[350px]" />}>
                     <SalesChart />
-                </div>
-                <div>
-                    <RecentSales />
-                </div>
+                </Suspense>
             </div>
-        </Suspense>
+            <div className="lg:col-span-1">
+                <Suspense fallback={<Skeleton className="h-[350px]" />}>
+                    <RecentSales />
+                </Suspense>
+            </div>
+        </div>
         
          <Suspense fallback={<Skeleton className="h-[320px]" />}>
             <SellerPerformance sales={sales} users={users} />
         </Suspense>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
             <div className="lg:col-span-4">
-                <Suspense fallback={<Skeleton className="h-[320px]" />}>
+                <Suspense fallback={<Skeleton className="h-[400px]" />}>
                     <SalesInsights />
                 </Suspense>
             </div>
             <div className="lg:col-span-3">
-                 <Suspense fallback={<Skeleton className="h-[320px]" />}>
+                 <Suspense fallback={<Skeleton className="h-[400px]" />}>
                     <LowStockList 
                         products={products}
                         lowStockThreshold={lowStockThreshold} 

@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"PT Sans"', 'sans-serif'],
-        headline: ['"PT Sans"', 'sans-serif'],
+        body: ['Verdana', 'sans-serif'],
+        headline: ['Verdana', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

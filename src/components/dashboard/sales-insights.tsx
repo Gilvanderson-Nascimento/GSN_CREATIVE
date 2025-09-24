@@ -32,35 +32,35 @@ export function SalesInsights() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle>Análise de Vendas com IA</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl">Análise de Vendas com IA</CardTitle>
+        <CardDescription className="text-sm">
           Clique no botão para gerar insights sobre seus dados de vendas, como produtos mais vendidos e tendências de compra.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow overflow-hidden">
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-full max-h-[280px]">
           {insights ? (
             <div className="space-y-4 pr-4">
               <Card>
                 <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <TrendingUp className="h-4 w-4 text-primary" />
                   <CardTitle className="text-base font-semibold">Produtos Mais Vendidos</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Produto</TableHead>
-                        <TableHead className="text-center">Qtde.</TableHead>
-                        <TableHead className="text-right">Receita</TableHead>
+                        <TableHead className="text-xs">Produto</TableHead>
+                        <TableHead className="text-center text-xs">Qtde.</TableHead>
+                        <TableHead className="text-right text-xs">Receita</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {insights.bestSellingProducts.map(p => (
-                        <TableRow key={p.name}>
+                        <TableRow key={p.name} className="text-sm">
                           <TableCell className="font-medium">{p.name}</TableCell>
                           <TableCell className="text-center">{p.quantity}</TableCell>
-                          <TableCell className="text-right">R$ {p.revenue.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-medium">R$ {p.revenue.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -71,7 +71,7 @@ export function SalesInsights() {
               <div className="grid md:grid-cols-2 gap-4">
                 <Card>
                   <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
-                    <Clock className="h-5 w-5 text-primary" />
+                    <Clock className="h-4 w-4 text-primary" />
                     <CardTitle className="text-base font-semibold">Horários de Pico</CardTitle>
                   </CardHeader>
                   <CardContent className="text-sm pt-4">
@@ -80,10 +80,10 @@ export function SalesInsights() {
                 </Card>
                 <Card>
                   <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2">
-                    <Users className="h-5 w-5 text-primary" />
+                    <Users className="h-4 w-4 text-primary" />
                     <CardTitle className="text-base font-semibold">Tendências dos Clientes</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm pt-4">
+                  <CardContent className="space-y-2 text-xs pt-4">
                     {insights.customerTrends.map(c => (
                       <p key={c.customer}><strong>{c.customer}:</strong> {c.trend}</p>
                     ))}
@@ -102,17 +102,17 @@ export function SalesInsights() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                <p className="text-muted-foreground">Clique no botão abaixo para usar a IA.</p>
+                <p className="text-sm text-muted-foreground">Clique no botão abaixo para usar a IA.</p>
             </div>
           )}
         </ScrollArea>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleGenerateInsights} disabled={isLoading || sales.length === 0}>
+        <Button onClick={handleGenerateInsights} disabled={isLoading || sales.length === 0} size="sm">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Analisando Dados...
+              Analisando...
             </>
           ) : (
             <>
