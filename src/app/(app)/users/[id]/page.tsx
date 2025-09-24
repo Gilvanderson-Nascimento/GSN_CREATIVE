@@ -107,5 +107,3 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     </div>
   );
 }
-
-    
