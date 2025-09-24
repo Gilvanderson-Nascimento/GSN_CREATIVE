@@ -123,24 +123,24 @@ export default function SettingsPage() {
       <PageHeader title={t('settings.title')} />
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.system_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.system_description')}</CardDescription>
+            <CardTitle>{t('settings.system_title')}</CardTitle>
+            <CardDescription>{t('settings.system_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.company_name')}</label>
-                <Input value={settings.sistema.nome_empresa} onChange={e => handleSettingChange('sistema', 'nome_empresa', e.target.value)} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
+                <label className="text-sm font-medium">{t('settings.company_name')}</label>
+                <Input value={settings.sistema.nome_empresa} onChange={e => handleSettingChange('sistema', 'nome_empresa', e.target.value)} />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.company_logo')}</label>
-                <Input type="file" className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm file:font-medium file:text-sm file:text-gray-700" />
+                <label className="text-sm font-medium">{t('settings.company_logo')}</label>
+                <Input type="file" />
             </div>
             <div className="space-y-2">
-                 <label className="text-sm font-medium text-gray-700">{t('settings.language')}</label>
+                 <label className="text-sm font-medium">{t('settings.language')}</label>
                 <Select value={settings.sistema.idioma} onValueChange={(v) => handleSettingChange('sistema', 'idioma', v)}>
-                    <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="pt-BR">{t('settings.pt_br')}</SelectItem>
                         <SelectItem value="en-US">{t('settings.en_us')}</SelectItem>
@@ -148,9 +148,9 @@ export default function SettingsPage() {
                 </Select>
             </div>
             <div className="space-y-2">
-                 <label className="text-sm font-medium text-gray-700">{t('settings.currency')}</label>
+                 <label className="text-sm font-medium">{t('settings.currency')}</label>
                 <Select value={settings.sistema.moeda} onValueChange={(v) => handleSettingChange('sistema', 'moeda', v)}>
-                    <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"><SelectValue /></SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="BRL">{t('settings.brl')}</SelectItem>
                         <SelectItem value="USD">{t('settings.usd')}</SelectItem>
@@ -160,106 +160,106 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
         
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.appearance_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.appearance_description')}</CardDescription>
+            <CardTitle>{t('settings.appearance_title')}</CardTitle>
+            <CardDescription>{t('settings.appearance_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.theme')}</label>
+                <label className="text-sm font-medium">{t('settings.theme')}</label>
                 <ThemeToggle />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.pricing_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.pricing_description')}</CardDescription>
+            <CardTitle>{t('settings.pricing_title')}</CardTitle>
+            <CardDescription>{t('settings.pricing_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('settings.profit_margin_percent')}</label>
-                    <Input type="number" value={settings.precificacao.margem_lucro} onChange={e => handleSettingChange('precificacao', 'margem_lucro', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
+                    <label className="text-sm font-medium">{t('settings.profit_margin_percent')}</label>
+                    <Input type="number" value={settings.precificacao.margem_lucro} onChange={e => handleSettingChange('precificacao', 'margem_lucro', Number(e.target.value))} />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('settings.default_tax_percent')}</label>
-                    <Input type="number" value={settings.precificacao.imposto_padrao} onChange={e => handleSettingChange('precificacao', 'imposto_padrao', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
+                    <label className="text-sm font-medium">{t('settings.default_tax_percent')}</label>
+                    <Input type="number" value={settings.precificacao.imposto_padrao} onChange={e => handleSettingChange('precificacao', 'imposto_padrao', Number(e.target.value))} />
                 </div>
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="arredondar-valores" className="text-sm font-medium text-gray-700">{t('settings.round_prices')}</label>
+              <label htmlFor="arredondar-valores" className="text-sm font-medium">{t('settings.round_prices')}</label>
               <Switch id="arredondar-valores" checked={settings.precificacao.arredondar_valores} onCheckedChange={(c) => handleSettingChange('precificacao', 'arredondar_valores', c)} />
             </div>
              <div className="flex items-center justify-between">
-              <label htmlFor="permitir-venda-abaixo-custo" className="text-sm font-medium text-gray-700">{t('settings.allow_sale_below_cost')}</label>
+              <label htmlFor="permitir-venda-abaixo-custo" className="text-sm font-medium">{t('settings.allow_sale_below_cost')}</label>
               <Switch id="permitir-venda-abaixo-custo" checked={settings.precificacao.permitir_venda_abaixo_custo} onCheckedChange={(c) => handleSettingChange('precificacao', 'permitir_venda_abaixo_custo', c)} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.stock_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.stock_description')}</CardDescription>
+            <CardTitle>{t('settings.stock_title')}</CardTitle>
+            <CardDescription>{t('settings.stock_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="flex items-center justify-between">
-              <label htmlFor="notificar-estoque-minimo" className="text-sm font-medium text-gray-700">{t('settings.notify_low_stock')}</label>
+              <label htmlFor="notificar-estoque-minimo" className="text-sm font-medium">{t('settings.notify_low_stock')}</label>
               <Switch id="notificar-estoque-minimo" checked={settings.estoque.notificar_estoque_minimo} onCheckedChange={(c) => handleSettingChange('estoque', 'notificar_estoque_minimo', c)} />
             </div>
              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.min_stock_level')}</label>
-                <Input type="number" value={settings.estoque.estoque_minimo_padrao} onChange={e => handleSettingChange('estoque', 'estoque_minimo_padrao', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
+                <label className="text-sm font-medium">{t('settings.min_stock_level')}</label>
+                <Input type="number" value={settings.estoque.estoque_minimo_padrao} onChange={e => handleSettingChange('estoque', 'estoque_minimo_padrao', Number(e.target.value))} />
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="permitir-estoque-negativo" className="text-sm font-medium text-gray-700">{t('settings.allow_negative_stock')}</label>
+              <label htmlFor="permitir-estoque-negativo" className="text-sm font-medium">{t('settings.allow_negative_stock')}</label>
               <Switch id="permitir-estoque-negativo" checked={settings.estoque.permitir_estoque_negativo} onCheckedChange={(c) => handleSettingChange('estoque', 'permitir_estoque_negativo', c)} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.sales_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.sales_description')}</CardDescription>
+            <CardTitle>{t('settings.sales_title')}</CardTitle>
+            <CardDescription>{t('settings.sales_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <label htmlFor="venda-sem-cliente" className="text-sm font-medium text-gray-700">{t('settings.allow_sale_without_customer')}</label>
+              <label htmlFor="venda-sem-cliente" className="text-sm font-medium">{t('settings.allow_sale_without_customer')}</label>
               <Switch id="venda-sem-cliente" checked={settings.vendas.venda_sem_cliente} onCheckedChange={(c) => handleSettingChange('vendas', 'venda_sem_cliente', c)} />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.max_discount_percent')}</label>
-                <Input type="number" value={settings.vendas.desconto_maximo_percentual} onChange={e => handleSettingChange('vendas', 'desconto_maximo_percentual', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
+                <label className="text-sm font-medium">{t('settings.max_discount_percent')}</label>
+                <Input type="number" value={settings.vendas.desconto_maximo_percentual} onChange={e => handleSettingChange('vendas', 'desconto_maximo_percentual', Number(e.target.value))} />
             </div>
              <div className="flex items-center justify-between">
-              <label htmlFor="associar-vendedor" className="text-sm font-medium text-gray-700">{t('settings.associate_seller')}</label>
+              <label htmlFor="associar-vendedor" className="text-sm font-medium">{t('settings.associate_seller')}</label>
               <Switch id="associar-vendedor" checked={settings.vendas.associar_vendedor} onCheckedChange={(c) => handleSettingChange('vendas', 'associar_vendedor', c)} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.users_permissions_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.users_permissions_description')}</CardDescription>
+            <CardTitle>{t('settings.users_permissions_title')}</CardTitle>
+            <CardDescription>{t('settings.users_permissions_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-                <label htmlFor="multiusuario" className="text-sm font-medium text-gray-700">{t('settings.multi_user_system')}</label>
+                <label htmlFor="multiusuario" className="text-sm font-medium">{t('settings.multi_user_system')}</label>
                 <Switch id="multiusuario" checked={settings.usuarios.multiusuario} onCheckedChange={(c) => handleSettingChange('usuarios', 'multiusuario', c)} />
             </div>
             <div className="flex items-center justify-between">
-                <label htmlFor="autenticacao-2-etapas" className="text-sm font-medium text-gray-700">{t('settings.two_factor_auth')}</label>
+                <label htmlFor="autenticacao-2-etapas" className="text-sm font-medium">{t('settings.two_factor_auth')}</label>
                 <Switch id="autenticacao-2-etapas" checked={settings.usuarios.autenticacao_2_etapas} onCheckedChange={(c) => handleSettingChange('usuarios', 'autenticacao_2_etapas', c)} />
             </div>
             <Separator/>
             <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">{t('settings.roles_permissions')}</h4>
-                <div className="space-y-2 text-sm text-gray-500">
+                <h4 className="text-sm font-medium mb-2">{t('settings.roles_permissions')}</h4>
+                <div className="space-y-2 text-sm text-muted-foreground">
                     <p>{t('settings.role_admin')}</p>
                     <p>{t('settings.role_seller')}</p>
                     <p>{t('settings.role_stockist')}</p>
@@ -268,24 +268,24 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.backup_export_title')}</CardTitle>
-            <CardDescription className="text-sm text-gray-500">{t('settings.backup_export_description')}</CardDescription>
+            <CardTitle>{t('settings.backup_export_title')}</CardTitle>
+            <CardDescription>{t('settings.backup_export_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.export_all_data')}</label>
+                <label className="text-sm font-medium">{t('settings.export_all_data')}</label>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => exportData('csv')} className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md px-3 py-2">CSV</Button>
-                    <Button variant="outline" size="sm" onClick={() => exportData('excel')} className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md px-3 py-2">Excel</Button>
-                    <Button variant="outline" size="sm" onClick={() => exportData('json')} className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md px-3 py-2">JSON</Button>
+                    <Button variant="outline" size="sm" onClick={() => exportData('csv')}>CSV</Button>
+                    <Button variant="outline" size="sm" onClick={() => exportData('excel')}>Excel</Button>
+                    <Button variant="outline" size="sm" onClick={() => exportData('json')}>JSON</Button>
                 </div>
             </div>
             <Separator />
              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{t('settings.restore_backup')}</label>
-                <Button variant="outline" className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md px-3 py-2 text-sm" onClick={() => restoreInputRef.current?.click()}>
+                <label className="text-sm font-medium">{t('settings.restore_backup')}</label>
+                <Button variant="outline" className="w-full" onClick={() => restoreInputRef.current?.click()}>
                     {t('settings.load_backup_file')}
                 </Button>
                 <input
@@ -300,34 +300,34 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
         
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
             <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.integrations_title')}</CardTitle>
-                <CardDescription className="text-sm text-gray-500">{t('settings.integrations_description')}</CardDescription>
+                <CardTitle>{t('settings.integrations_title')}</CardTitle>
+                <CardDescription>{t('settings.integrations_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <label htmlFor="api-nfe" className="text-sm font-medium text-gray-700">{t('settings.einvoice_api')}</label>
+                    <label htmlFor="api-nfe" className="text-sm font-medium">{t('settings.einvoice_api')}</label>
                     <Switch id="api-nfe" checked={settings.integracoes.api_nfe} onCheckedChange={(c) => handleSettingChange('integracoes', 'api_nfe', c)} />
                 </div>
                 <div className="flex items-center justify-between">
-                    <label htmlFor="webhooks" className="text-sm font-medium text-gray-700">{t('settings.developer_webhooks')}</label>
+                    <label htmlFor="webhooks" className="text-sm font-medium">{t('settings.developer_webhooks')}</label>
                     <Switch id="webhooks" checked={settings.integracoes.webhooks} onCheckedChange={(c) => handleSettingChange('integracoes', 'webhooks', c)} />
                 </div>
                 <div className="flex items-center justify-between">
-                    <label htmlFor="impressora-cupom" className="text-sm font-medium text-gray-700">{t('settings.fiscal_printer')}</label>
+                    <label htmlFor="impressora-cupom" className="text-sm font-medium">{t('settings.fiscal_printer')}</label>
                     <Switch id="impressora-cupom" checked={settings.integracoes.impressora_cupom} onCheckedChange={(c) => handleSettingChange('integracoes', 'impressora_cupom', c)} />
                 </div>
             </CardContent>
         </Card>
 
-        <Card className="bg-white shadow-md rounded-xl">
+        <Card>
             <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.test_environment_title')}</CardTitle>
-                <CardDescription className="text-sm text-gray-500">{t('settings.test_environment_description')}</CardDescription>
+                <CardTitle>{t('settings.test_environment_title')}</CardTitle>
+                <CardDescription>{t('settings.test_environment_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-md">
+                <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg">
                     <div>
                         <label htmlFor="modo-teste" className="font-medium text-sm">{t('settings.test_mode')}</label>
                         <p className="text-xs text-yellow-700">{t('settings.test_mode_note')}</p>
@@ -335,7 +335,7 @@ export default function SettingsPage() {
                     <Switch id="modo-teste" checked={settings.ambiente_teste.modo_teste} onCheckedChange={(c) => handleSettingChange('ambiente_teste', 'modo_teste', c)} />
                 </div>
                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{t('settings.reset_database')}</label>
+                    <label className="text-sm font-medium">{t('settings.reset_database')}</label>
                     <Button variant="destructive" className="w-full" onClick={handleResetData}>{t('settings.reset_test_data')}</Button>
                     <p className="text-xs text-muted-foreground">{t('settings.reset_warning')}</p>
                 </div>
@@ -345,5 +345,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    

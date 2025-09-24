@@ -97,14 +97,14 @@ export default function ProductTable() {
 
   return (
     <>
-      <Card className="bg-white shadow-md rounded-xl">
-        <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-800">{t('stock.title')}</CardTitle>
-          <CardDescription className="text-base text-gray-600">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('stock.title')}</CardTitle>
+          <CardDescription>
             {t('stock.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent>
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-3">
                 <div className="flex flex-wrap w-full sm:w-auto gap-3">
                   <div className="relative w-full sm:w-auto sm:max-w-xs">
@@ -113,11 +113,11 @@ export default function ProductTable() {
                           placeholder={t('stock.filter_placeholder')}
                           value={filter}
                           onChange={(e) => setFilter(e.target.value)}
-                          className="pl-9 bg-white border border-gray-300 rounded-md py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500"
+                          className="pl-9"
                       />
                   </div>
                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                      <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-300">
+                      <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder={t('stock.category')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -127,7 +127,7 @@ export default function ProductTable() {
                       </SelectContent>
                   </Select>
                   <Select value={sortOrder} onValueChange={setSortOrder}>
-                      <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-300">
+                      <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder={t('stock.sort_by')} />
                       </SelectTrigger>
                       <SelectContent>
@@ -137,7 +137,7 @@ export default function ProductTable() {
                       </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium">
+                <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   {t('stock.add_product')}
                 </Button>
@@ -146,14 +146,14 @@ export default function ProductTable() {
                 <div className="overflow-x-auto">
                     <Table>
                     <TableHeader>
-                        <TableRow className="bg-gray-50 hover:bg-gray-50 border-b border-gray-200">
-                        <TableHead className="w-[80px] px-4 py-3 text-sm font-medium text-gray-600">Image</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-medium text-gray-600">Nome</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-medium text-gray-600">{t('stock.category')}</TableHead>
-                        <TableHead className="text-center px-4 py-3 text-sm font-medium text-gray-600">{t('stock.quantity')}</TableHead>
-                        <TableHead className="text-right px-4 py-3 text-sm font-medium text-gray-600">{t('stock.purchase_price')}</TableHead>
-                        <TableHead className="text-right px-4 py-3 text-sm font-medium text-gray-600">{t('stock.sale_price')}</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-medium text-gray-600">{t('stock.barcode')}</TableHead>
+                        <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableHead className="w-[80px]">Image</TableHead>
+                        <TableHead>Nome</TableHead>
+                        <TableHead>{t('stock.category')}</TableHead>
+                        <TableHead className="text-center">{t('stock.quantity')}</TableHead>
+                        <TableHead className="text-right">{t('stock.purchase_price')}</TableHead>
+                        <TableHead className="text-right">{t('stock.sale_price')}</TableHead>
+                        <TableHead>{t('stock.barcode')}</TableHead>
                         <TableHead>
                             <span className="sr-only">{t('global.actions')}</span>
                         </TableHead>
@@ -161,7 +161,7 @@ export default function ProductTable() {
                     </TableHeader>
                     <TableBody>
                         {filteredProducts.map((product, index) => (
-                        <TableRow key={product.id} className="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition border-b-0">
+                        <TableRow key={product.id}>
                             <TableCell className="p-2">
                             <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden">
                                 {product.imageUrl ? (
@@ -178,9 +178,9 @@ export default function ProductTable() {
                                 )}
                             </div>
                             </TableCell>
-                            <TableCell className="font-medium px-4 py-3 text-gray-800">{product.name}</TableCell>
-                            <TableCell className="px-4 py-3 text-gray-700">{product.category}</TableCell>
-                            <TableCell className="text-center px-4 py-3">
+                            <TableCell className="font-medium">{product.name}</TableCell>
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell className="text-center">
                                <Badge variant={product.quantity <= lowStockThreshold ? (product.quantity === 0 ? "destructive" : "warning") : "info"} className="gap-1">
                                     {product.quantity <= lowStockThreshold && (
                                         <TriangleAlert className="h-3 w-3" />
@@ -188,14 +188,14 @@ export default function ProductTable() {
                                     {product.quantity}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right px-4 py-3 text-gray-700">R$ {product.purchasePrice.toFixed(2)}</TableCell>
-                            <TableCell className="text-right px-4 py-3 font-medium text-gray-800">R$ {product.salePrice.toFixed(2)}</TableCell>
-                            <TableCell className="px-4 py-3 text-gray-700">{product.barcode}</TableCell>
-                            <TableCell className="px-4 py-3">
+                            <TableCell className="text-right">R$ {product.purchasePrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right font-medium">R$ {product.salePrice.toFixed(2)}</TableCell>
+                            <TableCell>{product.barcode}</TableCell>
+                            <TableCell>
                             <div className="flex justify-end">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost" className="text-gray-400 hover:text-gray-600">
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
                                         <MoreHorizontal className="h-4 w-4" />
                                         <span className="sr-only">Toggle menu</span>
                                     </Button>
@@ -226,8 +226,8 @@ export default function ProductTable() {
                 </div>
             </div>
         </CardContent>
-        <CardFooter className="p-6">
-            <div className="text-sm text-gray-500">
+        <CardFooter>
+            <div className="text-sm text-muted-foreground">
                 {t('stock.showing_products', { count: filteredProducts.length, total: initialProducts.length })}
             </div>
         </CardFooter>

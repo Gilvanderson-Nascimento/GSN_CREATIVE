@@ -1,7 +1,6 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { Button } from '@/components/ui/button';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { 
@@ -28,7 +27,7 @@ export function ThemeToggle() {
 
   return (
     <Select value={theme} onValueChange={setTheme}>
-      <SelectTrigger>
+      <SelectTrigger className="w-full bg-background border-input">
         <SelectValue placeholder="Selecione um tema" />
       </SelectTrigger>
       <SelectContent>
@@ -54,5 +53,3 @@ export function ThemeToggle() {
     </Select>
   );
 }
-
-    

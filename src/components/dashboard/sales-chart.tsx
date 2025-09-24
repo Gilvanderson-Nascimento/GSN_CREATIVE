@@ -121,35 +121,35 @@ export function SalesChart() {
 
   if (!isClient) {
     return (
-        <Card className="bg-white rounded-xl shadow-md p-4">
-            <CardHeader className="p-2">
-                <CardTitle className="text-lg font-semibold text-gray-800">{t('dashboard.sales_overview')}</CardTitle>
-                 <CardDescription className="text-sm text-gray-500">{t('dashboard.loading_chart_data')}</CardDescription>
+        <Card>
+            <CardHeader>
+                <CardTitle>{t('dashboard.sales_overview')}</CardTitle>
+                 <CardDescription>{t('dashboard.loading_chart_data')}</CardDescription>
             </CardHeader>
-            <CardContent className="pl-2 pt-4">
-                <div className="w-full h-[350px] bg-gray-100 animate-pulse rounded-md" />
+            <CardContent className="pl-2">
+                <div className="w-full h-[350px] bg-muted animate-pulse rounded-md" />
             </CardContent>
         </Card>
     );
   }
 
   return (
-    <Card className="bg-white rounded-xl shadow-md h-full">
-      <CardHeader className="p-6">
+    <Card className="h-full">
+      <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <CardTitle className="text-lg font-semibold text-gray-800">{t('dashboard.sales_overview')}</CardTitle>
-                {chartTitle && <CardDescription className="text-sm text-gray-500 mt-1">{chartTitle}</CardDescription>}
+                <CardTitle>{t('dashboard.sales_overview')}</CardTitle>
+                {chartTitle && <CardDescription className="mt-1">{chartTitle}</CardDescription>}
             </div>
             <div className="flex items-center gap-2 mt-4 sm:mt-0">
                 <Tabs value={activeTab} onValueChange={(value) => {
                     setActiveTab(value);
                     if(value !== 'custom') setDateRange(undefined);
                 }} className="hidden sm:block">
-                    <TabsList className="bg-gray-100 p-1">
-                        <TabsTrigger value="daily" className="text-xs px-3 py-1">{t('dashboard.daily')}</TabsTrigger>
-                        <TabsTrigger value="weekly" className="text-xs px-3 py-1">{t('dashboard.weekly')}</TabsTrigger>
-                        <TabsTrigger value="monthly" className="text-xs px-3 py-1">{t('dashboard.monthly')}</TabsTrigger>
+                    <TabsList>
+                        <TabsTrigger value="daily">{t('dashboard.daily')}</TabsTrigger>
+                        <TabsTrigger value="weekly">{t('dashboard.weekly')}</TabsTrigger>
+                        <TabsTrigger value="monthly">{t('dashboard.monthly')}</TabsTrigger>
                     </TabsList>
                 </Tabs>
 
@@ -158,7 +158,7 @@ export function SalesChart() {
                     <Button
                         id="date"
                         variant={"outline"}
-                        className="w-full sm:w-[260px] justify-start text-left font-normal text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg"
+                        className="w-full sm:w-[260px] justify-start text-left font-normal"
                         onClick={() => setActiveTab('custom')}
                     >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -198,24 +198,21 @@ export function SalesChart() {
             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
             <Tooltip
-              cursor={{ fill: 'rgba(179, 195, 212, 0.2)' }}
+              cursor={{ fill: 'hsla(var(--muted))' }}
               contentStyle={{ 
-                  background: "white", 
+                  backgroundColor: "hsl(var(--background))", 
                   borderColor: "hsl(var(--border))",
-                  borderRadius: '0.75rem',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                  borderRadius: 'var(--radius)',
                   fontSize: '12px'
               }}
               labelStyle={{ fontWeight: 'bold' }}
               formatter={(value: number) => [`R$${value.toFixed(2)}`, t('dashboard.total')]}
             />
-            <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="#60A5FA" />
-            <ReferenceLine y={average} label={{ value: t('dashboard.average'), position: 'insideTopLeft', fill: '#6B7280', fontSize: 10 }} stroke="#F87171" strokeDasharray="3 3" />
+            <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="hsl(var(--primary))" />
+            <ReferenceLine y={average} label={{ value: t('dashboard.average'), position: 'insideTopLeft', fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} stroke="hsl(var(--destructive))" strokeDasharray="3 3" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
   );
 }
-
-    
