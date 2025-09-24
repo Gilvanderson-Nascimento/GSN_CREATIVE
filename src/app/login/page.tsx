@@ -3,19 +3,33 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/providers/translation-provider';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [forgotPasswordStep, setForgotPasswordStep] = useState(0); // 0: initial, 1: code sent, 2: success
+  const [otp, setOtp] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +46,34 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   };
+
+  const handleForgotPasswordClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setForgotPasswordStep(0);
+    setIsForgotPasswordOpen(true);
+  };
+  
+  const handleSendCode = () => {
+    // Here you would typically call an API to send the code
+    setForgotPasswordStep(1);
+    toast({
+        title: "Código enviado",
+        description: "Um código de verificação foi enviado para o número final ••••672.",
+    });
+  }
+
+  const handleVerifyCode = () => {
+    if (otp.length === 6) {
+        // Here you would verify the code
+        setForgotPasswordStep(2);
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Código inválido",
+            description: "Por favor, insira o código de 6 dígitos.",
+        })
+    }
+  }
 
   return (
     <div 
@@ -79,11 +121,59 @@ export default function LoginPage() {
               {t('login.login_button')}
             </Button>
             <div className="text-center mt-4">
-                 <a href="#" className="text-xs text-gray-500 hover:text-blue-600">{t('login.forgot_password')}</a>
+                 <a href="#" onClick={handleForgotPasswordClick} className="text-xs text-gray-500 hover:text-blue-600">{t('login.forgot_password')}</a>
             </div>
           </form>
         </CardContent>
       </Card>
+      
+      <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Redefinir Senha</DialogTitle>
+            {forgotPasswordStep < 2 && <DialogDescription>
+                {forgotPasswordStep === 0
+                    ? "Para redefinir sua senha, enviaremos um código de verificação para o seu número de telefone cadastrado (final ••••672)."
+                    : "Insira o código de 6 dígitos que você recebeu por SMS."}
+            </DialogDescription>}
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {forgotPasswordStep === 0 && (
+                <p className="text-sm text-muted-foreground">Clique em "Enviar Código" para receber seu código de verificação.</p>
+            )}
+            {forgotPasswordStep === 1 && (
+                <div className="flex justify-center">
+                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                        <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                    </InputOTP>
+                </div>
+            )}
+            {forgotPasswordStep === 2 && (
+                 <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <p className="text-sm font-medium text-green-700">Uma nova senha foi enviada para o seu número.</p>
+                </div>
+            )}
+          </div>
+          <DialogFooter>
+             {forgotPasswordStep === 0 && (
+                <Button onClick={handleSendCode}>Enviar Código</Button>
+            )}
+             {forgotPasswordStep === 1 && (
+                <Button onClick={handleVerifyCode}>Verificar Código</Button>
+            )}
+             {forgotPasswordStep === 2 && (
+                <Button onClick={() => setIsForgotPasswordOpen(false)}>Fechar</Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
