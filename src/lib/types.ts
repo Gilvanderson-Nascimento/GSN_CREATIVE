@@ -9,6 +9,13 @@ export type Product = {
   imageUrl?: string;
 };
 
+export type ExtractedProduct = {
+  name: string;
+  quantity: number;
+  purchasePrice: number;
+  barcode?: string;
+};
+
 export type SaleItem = {
   productId: string;
   productName: string;

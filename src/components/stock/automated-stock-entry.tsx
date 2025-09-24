@@ -11,10 +11,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, Wand2, Loader2, Save } from 'lucide-react';
+import { Upload, Wand2, Loader2, Save, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { DataContext } from '@/context/data-context';
-import type { Product } from '@/lib/types';
+import type { Product, ExtractedProduct } from '@/lib/types';
 import { extractInvoiceData, type ExtractInvoiceDataOutput } from '@/ai/flows/extract-invoice-data';
 import { useTranslation } from '@/providers/translation-provider';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -30,16 +30,18 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
     const { toast } = useToast();
     const { products, setProducts } = useContext(DataContext);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [filePreview, setFilePreview] = useState<string | null>(null);
+    const [fileType, setFileType] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [extractedData, setExtractedData] = useState<ExtractInvoiceDataOutput | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            setFileType(file.type);
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImagePreview(reader.result as string);
+                setFilePreview(reader.result as string);
                 setExtractedData(null);
             };
             reader.readAsDataURL(file);
@@ -47,7 +49,7 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
     };
 
     const handleAnalyzeInvoice = async () => {
-        if (!imagePreview) {
+        if (!filePreview) {
             toast({
                 variant: 'destructive',
                 title: t('stock.automated_entry.no_image_title'),
@@ -58,7 +60,7 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
 
         setIsLoading(true);
         try {
-            const result = await extractInvoiceData({ invoiceImage: imagePreview });
+            const result = await extractInvoiceData({ invoiceImage: filePreview });
             setExtractedData(result);
             toast({
                 title: t('stock.automated_entry.analysis_complete_title'),
@@ -76,6 +78,19 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
         }
     };
     
+    const handleQuantityChange = (productName: string, newQuantity: number) => {
+        if (!extractedData) return;
+
+        const updatedProducts = extractedData.products.map(p =>
+            p.name === productName ? { ...p, quantity: newQuantity } : p
+        );
+
+        setExtractedData({
+            ...extractedData,
+            products: updatedProducts,
+        });
+    };
+
     const handleSaveChanges = () => {
         if (!extractedData) return;
 
@@ -121,7 +136,8 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
     const handleClose = () => {
         onOpenChange(false);
         setTimeout(() => {
-            setImagePreview(null);
+            setFilePreview(null);
+            setFileType(null);
             setExtractedData(null);
             setIsLoading(false);
         }, 300);
@@ -141,8 +157,15 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
                             className="aspect-square w-full rounded-lg border-2 border-dashed flex items-center justify-center text-center p-4 cursor-pointer hover:border-primary hover:bg-muted"
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            {imagePreview ? (
-                                <Image src={imagePreview} alt="Invoice preview" width={400} height={400} className="object-contain h-full w-full" data-ai-hint="invoice receipt" />
+                            {filePreview ? (
+                                fileType?.startsWith('image/') ? (
+                                    <Image src={filePreview} alt="Invoice preview" width={400} height={400} className="object-contain h-full w-full" data-ai-hint="invoice receipt" />
+                                ) : (
+                                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                                        <FileText className="h-12 w-12" />
+                                        <span className="font-semibold text-sm">{t('stock.automated_entry.pdf_selected')}</span>
+                                    </div>
+                                )
                             ) : (
                                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                                     <Upload className="h-8 w-8" />
@@ -156,9 +179,9 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
                             ref={fileInputRef}
                             onChange={handleFileChange}
                             className="hidden"
-                            accept="image/png, image/jpeg, image/webp"
+                            accept="image/png, image/jpeg, image/webp, application/pdf"
                         />
-                        <Button onClick={handleAnalyzeInvoice} disabled={isLoading || !imagePreview}>
+                        <Button onClick={handleAnalyzeInvoice} disabled={isLoading || !filePreview}>
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -183,7 +206,7 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>{t('stock.product_name')}</TableHead>
-                                                <TableHead className="text-center">{t('stock.quantity')}</TableHead>
+                                                <TableHead className="text-center w-28">{t('stock.quantity')}</TableHead>
                                                 <TableHead className="text-right">{t('stock.purchase_price')}</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -191,7 +214,14 @@ export function AutomatedStockEntrySheet({ open, onOpenChange }: AutomatedStockE
                                             {extractedData.products.map((product, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell className="font-medium">{product.name}</TableCell>
-                                                    <TableCell className="text-center">{product.quantity}</TableCell>
+                                                    <TableCell className="text-center">
+                                                        <Input
+                                                            type="number"
+                                                            value={product.quantity}
+                                                            onChange={(e) => handleQuantityChange(product.name, Number(e.target.value))}
+                                                            className="h-8 text-center"
+                                                        />
+                                                    </TableCell>
                                                     <TableCell className="text-right">{formatCurrency(product.purchasePrice)}</TableCell>
                                                 </TableRow>
                                             ))}

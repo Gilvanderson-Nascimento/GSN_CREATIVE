@@ -15,7 +15,7 @@ const ExtractInvoiceDataInputSchema = z.object({
   invoiceImage: z
     .string()
     .describe(
-      "An image of a product invoice, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "An image or PDF of a product invoice, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
 });
 export type ExtractInvoiceDataInput = z.infer<
@@ -50,14 +50,16 @@ const prompt = ai.definePrompt({
   name: 'extractInvoiceDataPrompt',
   input: {schema: ExtractInvoiceDataInputSchema},
   output: {schema: ExtractInvoiceDataOutputSchema},
-  prompt: `You are an expert at extracting structured data from images of invoices. Analyze the provided invoice image and extract the following information:
+  prompt: `You are an expert at extracting structured data from images or PDFs of invoices. Analyze the provided invoice and extract the following information:
 1. A list of all products, including their name, quantity, and unit purchase price.
 2. The name of the supplier or store.
 3. The date of the invoice.
 
+Important: For quantities and prices, correctly interpret comma as a decimal separator. For example, '25,000' for quantity should be interpreted as 25, not twenty-five thousand.
+
 Return the data in the specified JSON format. If a piece of information (like supplier or date) is not found, omit it.
 
-Invoice Image:
+Invoice Document:
 {{media url=invoiceImage}}`,
 });
 
