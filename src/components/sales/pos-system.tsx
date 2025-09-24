@@ -130,14 +130,14 @@ export default function PosSystem() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-10rem)]">
-      <Card className="lg:col-span-2 flex flex-col">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 md:h-[calc(100vh-10rem)]">
+      <Card className="md:col-span-2 lg:col-span-3 flex flex-col h-full">
         <CardHeader>
             <Input placeholder="Buscar produto por nome ou código de barras..." onChange={handleSearch} />
         </CardHeader>
         <CardContent className="flex-grow">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-10 gap-2">
               {searchedProducts.map((product) => (
                 <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow flex flex-col" onClick={() => addToCart(product)}>
                   <CardContent className="p-1 flex flex-col items-center text-center flex-grow">
@@ -168,7 +168,7 @@ export default function PosSystem() {
         </CardContent>
       </Card>
 
-      <Card className="flex flex-col">
+      <Card className="md:col-span-1 lg:col-span-1 flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ShoppingCart className="h-6 w-6" />
@@ -176,7 +176,7 @@ export default function PosSystem() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-grow overflow-hidden">
-             <ScrollArea className="h-[400px]">
+             <ScrollArea className="h-full">
                 {cart.length === 0 ? (
                     <div className="text-center text-muted-foreground h-full flex items-center justify-center">
                         Seu carrinho está vazio.
@@ -186,7 +186,7 @@ export default function PosSystem() {
                     {cart.map((item) => (
                         <div key={item.productId} className="flex items-center text-xs">
                         <div>
-                            <div className="font-medium leading-tight">{item.productName}</div>
+                            <div className="font-medium leading-tight line-clamp-2">{item.productName}</div>
                             <div className="text-[10px] text-muted-foreground">R$ {item.unitPrice.toFixed(2)} x {item.quantity}</div>
                         </div>
                         <div className="ml-auto flex items-center gap-1">
