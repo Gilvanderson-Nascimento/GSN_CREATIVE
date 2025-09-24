@@ -126,54 +126,54 @@ export default function UserTable() {
 
   return (
     <>
-       <Card className="bg-white shadow-md rounded-xl">
-        <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-800">{t('users.title')}</CardTitle>
-          <CardDescription className="text-base text-gray-600">
+       <Card>
+        <CardHeader>
+          <CardTitle>{t('users.title')}</CardTitle>
+          <CardDescription>
             {t('users.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent>
             <div className="flex items-center justify-between mb-4 gap-4">
                 <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder={t('users.filter_placeholder')}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="pl-9 w-full bg-white border border-gray-300 rounded-lg py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
+                        className="pl-9"
                     />
                 </div>
-                <Button onClick={handleAddUser} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition shadow-sm">
+                <Button onClick={handleAddUser}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   {t('users.add_user')}
                 </Button>
             </div>
-            <div className="rounded-xl border border-gray-200 overflow-hidden">
-                <Table className="w-full border-collapse divide-y divide-gray-200">
+            <div className="rounded-xl border overflow-hidden">
+                <Table>
                 <TableHeader>
-                    <TableRow className="bg-gray-100 hover:bg-gray-100">
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.full_name')}</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.username')}</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.role')}</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.email')}</TableHead>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableHead>{t('users.full_name')}</TableHead>
+                        <TableHead>{t('users.username')}</TableHead>
+                        <TableHead>{t('users.role')}</TableHead>
+                        <TableHead>{t('users.email')}</TableHead>
                         <TableHead>
                             <span className="sr-only">{t('global.actions')}</span>
                         </TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody className="bg-white divide-y divide-gray-200">
+                <TableBody>
                     {filteredUsers.map((user) => (
-                    <TableRow key={user.id} className="transition hover:bg-gray-50">
-                        <TableCell className="px-4 py-3 font-medium text-gray-800">{user.name}</TableCell>
-                        <TableCell className="px-4 py-3 text-gray-700">{user.username}</TableCell>
-                        <TableCell className="px-4 py-3"><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
-                        <TableCell className="px-4 py-3 text-gray-700">{user.email || 'N/A'}</TableCell>
-                        <TableCell className="px-4 py-3">
+                    <TableRow key={user.id}>
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{user.username}</TableCell>
+                        <TableCell><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
+                        <TableCell className="text-muted-foreground">{user.email || 'N/A'}</TableCell>
+                        <TableCell>
                          <div className="flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!isCurrentUserAdmin} className="text-gray-500 hover:text-gray-700">
+                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!isCurrentUserAdmin}>
                                     <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
@@ -198,7 +198,7 @@ export default function UserTable() {
                     ))}
                     {filteredUsers.length === 0 && (
                         <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center text-sm text-gray-500">
+                            <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                                 {t('users.no_users_found')}
                             </TableCell>
                         </TableRow>
@@ -207,8 +207,8 @@ export default function UserTable() {
                 </Table>
             </div>
         </CardContent>
-        <CardFooter className="p-6">
-            <div className="text-sm text-gray-500">
+        <CardFooter>
+            <div className="text-sm text-muted-foreground">
                 {t('users.showing_users', { count: filteredUsers.length, total: usersToDisplay.length })}
             </div>
         </CardFooter>

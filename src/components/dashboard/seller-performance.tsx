@@ -63,46 +63,46 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
   const activeSellers = sellerStats.filter(stat => stat.totalValue > 0 || (stat.id === 'unidentified' && stat.salesCount > 0));
 
   return (
-    <Card className="bg-white rounded-xl shadow-md">
+    <Card>
       <CardHeader className="p-6">
-        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <UserIcon className="h-5 w-5"/>
             {t('dashboard.seller_performance')}
         </CardTitle>
-        <CardDescription className="text-sm text-gray-500">
+        <CardDescription>
           {t('dashboard.seller_performance_description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <Table>
           <TableHeader>
-            <TableRow className="border-gray-200">
-              <TableHead className="text-xs text-gray-500 font-semibold">{t('dashboard.seller')}</TableHead>
-              <TableHead className="text-center text-xs text-gray-500 font-semibold">{t('dashboard.sales_count')}</TableHead>
-              <TableHead className="text-right text-xs text-gray-500 font-semibold">{t('dashboard.total_value_sold')}</TableHead>
+            <TableRow>
+              <TableHead className="text-xs text-muted-foreground font-semibold">{t('dashboard.seller')}</TableHead>
+              <TableHead className="text-center text-xs text-muted-foreground font-semibold">{t('dashboard.sales_count')}</TableHead>
+              <TableHead className="text-right text-xs text-muted-foreground font-semibold">{t('dashboard.total_value_sold')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {activeSellers.map(stat => (
-              <TableRow key={stat.id} className="text-sm border-gray-200 hover:bg-gray-50">
-                <TableCell className="font-medium text-gray-800">
+              <TableRow key={stat.id} className="text-sm hover:bg-muted/50">
+                <TableCell className="font-medium">
                   {stat.id !== 'unidentified' ? (
-                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto text-sm text-blue-600 hover:text-blue-700")}>
+                     <Link href={`/users/${stat.id}`} className={cn(buttonVariants({ variant: "link" }), "p-0 h-auto text-sm text-primary hover:underline")}>
                         {stat.name}
                     </Link>
                   ) : (
-                    <span className="text-gray-500">{stat.name}</span>
+                    <span className="text-muted-foreground">{stat.name}</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">{stat.salesCount}</Badge>
+                    <Badge variant="secondary">{stat.salesCount}</Badge>
                 </TableCell>
-                <TableCell className="text-right font-medium text-gray-800">R$ {stat.totalValue.toFixed(2)}</TableCell>
+                <TableCell className="text-right font-medium">R$ {stat.totalValue.toFixed(2)}</TableCell>
               </TableRow>
             ))}
              {activeSellers.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center text-sm text-gray-500">
+                    <TableCell colSpan={3} className="h-24 text-center text-sm text-muted-foreground">
                         {t('dashboard.no_sales_in_period')}
                     </TableCell>
                 </TableRow>
@@ -110,16 +110,14 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
           </TableBody>
         </Table>
       </CardContent>
-       <CardFooter className="font-semibold text-right flex justify-end gap-6 bg-gray-50 py-4 px-6 border-t border-gray-200 rounded-b-xl">
-            <div className="text-xs text-gray-600">
-                {t('dashboard.total_general_sales')}: <Badge className="bg-blue-100 text-blue-600">{totalSalesCount}</Badge>
+       <CardFooter className="font-semibold text-right flex justify-end gap-6 bg-muted/50 py-4 px-6">
+            <div className="text-xs text-muted-foreground">
+                {t('dashboard.total_general_sales')}: <Badge className="bg-primary/10 text-primary">{totalSalesCount}</Badge>
             </div>
-             <div className="text-xs text-gray-600">
-                {t('dashboard.total_general_value')}: <span className="text-blue-600 font-bold">R$ {totalSalesValue.toFixed(2)}</span>
+             <div className="text-xs text-muted-foreground">
+                {t('dashboard.total_general_value')}: <span className="text-primary font-bold">R$ {totalSalesValue.toFixed(2)}</span>
             </div>
        </CardFooter>
     </Card>
   );
 }
-
-    

@@ -198,7 +198,7 @@ export function SalesChart() {
             <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
             <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `R$${value}`} />
             <Tooltip
-              cursor={{ fill: 'hsla(var(--muted))' }}
+              cursor={{ fill: 'hsla(var(--muted), 0.5)' }}
               contentStyle={{ 
                   backgroundColor: "hsl(var(--background))", 
                   borderColor: "hsl(var(--border))",

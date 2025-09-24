@@ -68,25 +68,25 @@ export default function PricingTool() {
   };
 
   return (
-    <Card className="w-full max-w-lg bg-white shadow-md rounded-xl">
+    <Card className="w-full max-w-lg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardHeader className="p-6">
-            <CardTitle className="text-xl font-bold text-gray-800">{t('pricing.title')}</CardTitle>
-            <CardDescription className="text-base text-gray-600 mt-1">
+          <CardHeader>
+            <CardTitle>{t('pricing.title')}</CardTitle>
+            <CardDescription className="mt-1">
               {t('pricing.description')}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6 p-6">
+          <CardContent className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="purchasePrice"
                 render={({ field, fieldState: { error } }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">{t('pricing.purchase_value')}</FormLabel>
+                    <FormLabel>{t('pricing.purchase_value')}</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" {...field} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+                      <Input type="number" step="0.01" {...field} />
                     </FormControl>
                     <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                   </FormItem>
@@ -97,9 +97,9 @@ export default function PricingTool() {
                 name="taxRate"
                 render={({ field, fieldState: { error } }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">{t('pricing.tax_percent')}</FormLabel>
+                    <FormLabel>{t('pricing.tax_percent')}</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+                      <Input type="number" {...field} />
                     </FormControl>
                      <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                   </FormItem>
@@ -110,9 +110,9 @@ export default function PricingTool() {
                 name="profitMargin"
                 render={({ field, fieldState: { error } }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">{t('pricing.profit_margin_percent')}</FormLabel>
+                    <FormLabel>{t('pricing.profit_margin_percent')}</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"/>
+                      <Input type="number" {...field} />
                     </FormControl>
                      <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                   </FormItem>
@@ -123,19 +123,19 @@ export default function PricingTool() {
             {suggestedPrice !== null && (
                  <div className="flex items-center justify-center gap-4 text-center">
                     <div className="space-y-1">
-                        <div className="text-sm text-gray-500">{t('pricing.total_cost')}</div>
-                        <div className="text-2xl font-bold text-gray-800">R$ {(form.getValues('purchasePrice') * (1 + form.getValues('taxRate')/100)).toFixed(2)}</div>
+                        <div className="text-sm text-muted-foreground">{t('pricing.total_cost')}</div>
+                        <div className="text-2xl font-bold">R$ {(form.getValues('purchasePrice') * (1 + form.getValues('taxRate')/100)).toFixed(2)}</div>
                     </div>
-                    <ArrowRight className="h-6 w-6 text-gray-500 shrink-0"/>
-                     <div className="p-4 bg-blue-500/10 rounded-lg space-y-1">
-                        <div className="text-sm text-blue-600 font-semibold">{t('pricing.suggested_sale_price')}</div>
-                        <div className="text-3xl font-bold text-blue-600">R$ {suggestedPrice.toFixed(2)}</div>
+                    <ArrowRight className="h-6 w-6 text-muted-foreground shrink-0"/>
+                     <div className="p-4 bg-primary/10 rounded-lg space-y-1">
+                        <div className="text-sm text-primary font-semibold">{t('pricing.suggested_sale_price')}</div>
+                        <div className="text-3xl font-bold text-primary">R$ {suggestedPrice.toFixed(2)}</div>
                     </div>
                 </div>
             )}
           </CardContent>
-          <CardFooter className="p-6">
-            <Button type="submit" disabled={isLoading} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition w-full disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed">
+          <CardFooter>
+            <Button type="submit" disabled={isLoading} className="w-full mt-4">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -154,5 +154,3 @@ export default function PricingTool() {
     </Card>
   );
 }
-
-    

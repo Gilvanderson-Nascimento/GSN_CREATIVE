@@ -1,30 +1,16 @@
 'use client';
 
-import React, { Suspense, useContext } from 'react';
+import React, { Suspense, useContext, useMemo } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
-
-const StatsCards = React.lazy(() => 
-  import('@/components/dashboard/stats-cards').then(module => ({ default: module.StatsCards }))
-);
-const SalesChart = React.lazy(() => 
-  import('@/components/dashboard/sales-chart').then(module => ({ default: module.SalesChart }))
-);
-const RecentSales = React.lazy(() => 
-  import('@/components/dashboard/recent-sales').then(module => ({ default: module.RecentSales }))
-);
-const SalesInsights = React.lazy(() => 
-  import('@/components/dashboard/sales-insights').then(module => ({ default: module.SalesInsights }))
-);
-const LowStockList = React.lazy(() =>
-  import('@/components/dashboard/low-stock-list').then(module => ({ default: module.LowStockList }))
-);
-const SellerPerformance = React.lazy(() =>
-  import('@/components/dashboard/seller-performance').then(module => ({ default: module.SellerPerformance }))
-);
-
+import { StatsCards } from '@/components/dashboard/stats-cards';
+import { SalesChart } from '@/components/dashboard/sales-chart';
+import { RecentSales } from '@/components/dashboard/recent-sales';
+import { SalesInsights } from '@/components/dashboard/sales-insights';
+import { LowStockList } from '@/components/dashboard/low-stock-list';
+import { SellerPerformance } from '@/components/dashboard/seller-performance';
 
 function StatsCardsSkeleton() {
   return (
@@ -42,19 +28,23 @@ export default function DashboardPage() {
   const { t } = useTranslation();
   const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
-  const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
-  const totalProfit = sales.reduce((acc, sale) => {
-    const saleProfit = sale.items.reduce((itemAcc, item) => {
-      const product = products.find(p => p.id === item.productId);
-      if (product) {
-        return itemAcc + (item.unitPrice - product.purchasePrice) * item.quantity;
-      }
-      return itemAcc;
+  const { totalSales, totalProfit, newCustomers, lowStockItemsCount } = useMemo(() => {
+    const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
+    const totalProfit = sales.reduce((acc, sale) => {
+      const saleProfit = sale.items.reduce((itemAcc, item) => {
+        const product = products.find(p => p.id === item.productId);
+        if (product) {
+          return itemAcc + (item.unitPrice - product.purchasePrice) * item.quantity;
+        }
+        return itemAcc;
+      }, 0);
+      return acc + saleProfit;
     }, 0);
-    return acc + saleProfit;
-  }, 0);
-  const newCustomers = customers.length;
-  const lowStockItemsCount = products.filter(p => p.quantity < lowStockThreshold).length;
+    const newCustomers = customers.length;
+    const lowStockItemsCount = products.filter(p => p.quantity < lowStockThreshold).length;
+
+    return { totalSales, totalProfit, newCustomers, lowStockItemsCount };
+  }, [sales, products, customers, lowStockThreshold]);
 
   return (
     <div className="flex-1 space-y-8">
@@ -105,5 +95,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

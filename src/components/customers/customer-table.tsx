@@ -95,56 +95,56 @@ export default function CustomerTable() {
 
   return (
     <>
-       <Card className="bg-white shadow-md rounded-xl">
-        <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-800">{t('customers.title')}</CardTitle>
-          <CardDescription className="text-base text-gray-600">
+       <Card>
+        <CardHeader>
+          <CardTitle>{t('customers.title')}</CardTitle>
+          <CardDescription>
             {t('customers.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent>
             <div className="flex items-center justify-between mb-4 gap-4">
                 <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder={t('customers.filter_placeholder')}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="pl-9 w-full bg-white border border-gray-300 rounded-lg py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
+                        className="pl-9 w-full"
                     />
                 </div>
-                <Button onClick={handleAddCustomer} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition shadow-sm">
+                <Button onClick={handleAddCustomer}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   {t('customers.add_customer')}
                 </Button>
             </div>
             <div className="rounded-xl border overflow-hidden">
-                <Table className="w-full border-collapse divide-y divide-gray-200">
+                <Table>
                 <TableHeader>
-                    <TableRow className="bg-gray-100 hover:bg-gray-100">
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.name')}</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.nickname')}</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.phone')}</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.sales')}</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.total_spent')}</TableHead>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead>{t('customers.name')}</TableHead>
+                    <TableHead>{t('customers.nickname')}</TableHead>
+                    <TableHead>{t('customers.phone')}</TableHead>
+                    <TableHead>{t('customers.sales')}</TableHead>
+                    <TableHead>{t('customers.total_spent')}</TableHead>
                     <TableHead>
                         <span className="sr-only">{t('global.actions')}</span>
                     </TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody className="bg-white divide-y divide-gray-200">
+                <TableBody>
                     {filteredCustomers.map((customer, index) => (
-                    <TableRow key={customer.id} className="transition hover:bg-gray-50">
-                        <TableCell className="px-4 py-3 font-medium text-gray-800">{customer.name}</TableCell>
-                        <TableCell className="px-4 py-3 text-gray-700">{customer.nickname}</TableCell>
-                        <TableCell className="px-4 py-3 text-gray-700">{customer.phone}</TableCell>
-                        <TableCell className="px-4 py-3 text-gray-700">{customer.salesCount}</TableCell>
-                        <TableCell className="px-4 py-3 text-gray-800 font-medium">R$ {customer.totalSpent.toFixed(2)}</TableCell>
-                        <TableCell className="px-4 py-3">
+                    <TableRow key={customer.id} className="transition hover:bg-muted/10">
+                        <TableCell className="font-medium text-foreground">{customer.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{customer.nickname}</TableCell>
+                        <TableCell className="text-muted-foreground">{customer.phone}</TableCell>
+                        <TableCell className="text-muted-foreground">{customer.salesCount}</TableCell>
+                        <TableCell className="font-medium text-foreground">R$ {customer.totalSpent.toFixed(2)}</TableCell>
+                        <TableCell>
                          <div className="flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost" className="text-gray-500 hover:text-gray-700">
+                                <Button aria-haspopup="true" size="icon" variant="ghost">
                                     <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
@@ -170,7 +170,7 @@ export default function CustomerTable() {
                     ))}
                     {filteredCustomers.length === 0 && (
                         <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center text-sm text-gray-500">
+                            <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                                 {t('customers.no_customers_found')}
                             </TableCell>
                         </TableRow>
@@ -179,8 +179,8 @@ export default function CustomerTable() {
                 </Table>
             </div>
         </CardContent>
-        <CardFooter className="p-6">
-            <div className="text-sm text-gray-500">
+        <CardFooter>
+            <div className="text-sm text-muted-foreground">
                 {t('customers.showing_customers', { count: filteredCustomers.length, total: initialCustomers.length })}
             </div>
         </CardFooter>
