@@ -95,27 +95,27 @@ export default function ProductTable() {
 
   return (
     <>
-      <Card className="bg-white shadow-md rounded-xl">
-        <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-800">Gerenciamento de Estoque</CardTitle>
-          <CardDescription className="text-sm text-gray-500">
+      <Card>
+        <CardHeader>
+          <CardTitle>Gerenciamento de Estoque</CardTitle>
+          <CardDescription>
             Visualize, adicione, edite e exclua os produtos do seu estabelecimento.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent>
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-3">
                 <div className="flex flex-wrap w-full sm:w-auto gap-3">
                   <div className="relative w-full sm:w-auto sm:max-w-xs">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                           placeholder="Filtrar por nome ou código..."
                           value={filter}
                           onChange={(e) => setFilter(e.target.value)}
-                          className="pl-9 bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500"
+                          className="pl-9"
                       />
                   </div>
                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                      <SelectTrigger className="w-full sm:w-[180px] bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500">
+                      <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Categoria" />
                       </SelectTrigger>
                       <SelectContent>
@@ -125,7 +125,7 @@ export default function ProductTable() {
                       </SelectContent>
                   </Select>
                   <Select value={sortOrder} onValueChange={setSortOrder}>
-                      <SelectTrigger className="w-full sm:w-[180px] bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500">
+                      <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Ordenar por" />
                       </SelectTrigger>
                       <SelectContent>
@@ -135,23 +135,23 @@ export default function ProductTable() {
                       </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium">
+                <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Adicionar Produto
                 </Button>
             </div>
-            <div className="rounded-xl border border-gray-200 overflow-hidden">
+            <div className="rounded-md border">
                 <div className="overflow-x-auto">
                     <Table>
                     <TableHeader>
-                        <TableRow className="hover:bg-transparent">
-                        <TableHead className="w-[80px] text-sm text-gray-600 font-medium px-4">Imagem</TableHead>
-                        <TableHead className="text-sm text-gray-600 font-medium px-4">Nome</TableHead>
-                        <TableHead className="text-sm text-gray-600 font-medium px-4">Categoria</TableHead>
-                        <TableHead className="text-center text-sm text-gray-600 font-medium px-4">Qtde.</TableHead>
-                        <TableHead className="text-right text-sm text-gray-600 font-medium px-4">Vl. Compra</TableHead>
-                        <TableHead className="text-right text-sm text-gray-600 font-medium px-4">Vl. Venda</TableHead>
-                        <TableHead className="text-sm text-gray-600 font-medium px-4">Cód. Barras</TableHead>
+                        <TableRow>
+                        <TableHead className="w-[80px]">Imagem</TableHead>
+                        <TableHead>Nome</TableHead>
+                        <TableHead>Categoria</TableHead>
+                        <TableHead className="text-center">Qtde.</TableHead>
+                        <TableHead className="text-right">Vl. Compra</TableHead>
+                        <TableHead className="text-right">Vl. Venda</TableHead>
+                        <TableHead>Cód. Barras</TableHead>
                         <TableHead>
                             <span className="sr-only">Ações</span>
                         </TableHead>
@@ -159,9 +159,9 @@ export default function ProductTable() {
                     </TableHeader>
                     <TableBody>
                         {filteredProducts.map((product, index) => (
-                        <TableRow key={product.id} className="transition hover:bg-gray-50 border-b border-gray-200">
-                            <TableCell className="p-4">
-                            <div className="flex items-center justify-center h-10 w-10 bg-gray-50 rounded-md overflow-hidden">
+                        <TableRow key={product.id} className={index % 2 === 0 ? 'bg-muted/50' : ''}>
+                            <TableCell>
+                            <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden">
                                 {product.imageUrl ? (
                                     <Image 
                                         src={product.imageUrl} 
@@ -172,28 +172,28 @@ export default function ProductTable() {
                                         data-ai-hint="product image" 
                                     />
                                 ) : (
-                                    <ImageIcon className="h-5 w-5 text-gray-400" />
+                                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
                                 )}
                             </div>
                             </TableCell>
-                            <TableCell className="font-medium text-gray-800 text-sm px-4">{product.name}</TableCell>
-                            <TableCell className="text-sm text-gray-700 px-4">{product.category}</TableCell>
-                            <TableCell className="text-center px-4">
-                               <Badge variant={product.quantity <= lowStockThreshold ? (product.quantity === 0 ? "destructive" : "warning") : "info"} className="gap-1">
+                            <TableCell className="font-medium">{product.name}</TableCell>
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell className="text-center">
+                               <Badge variant={product.quantity <= lowStockThreshold ? (product.quantity === 0 ? "destructive" : "secondary") : "outline"} className="gap-1">
                                     {product.quantity <= lowStockThreshold && (
                                         <TriangleAlert className="h-3 w-3" />
                                     )}
                                     {product.quantity}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right text-sm text-gray-700 px-4">R$ {product.purchasePrice.toFixed(2)}</TableCell>
-                            <TableCell className="text-right text-sm text-gray-700 px-4">R$ {product.salePrice.toFixed(2)}</TableCell>
-                            <TableCell className="text-sm text-gray-700 px-4">{product.barcode}</TableCell>
-                            <TableCell className="px-4">
+                            <TableCell className="text-right">R$ {product.purchasePrice.toFixed(2)}</TableCell>
+                            <TableCell className="text-right">R$ {product.salePrice.toFixed(2)}</TableCell>
+                            <TableCell>{product.barcode}</TableCell>
+                            <TableCell>
                             <div className="flex justify-end">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost" className="text-gray-400 hover:text-gray-600">
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
                                         <MoreHorizontal className="h-4 w-4" />
                                         <span className="sr-only">Toggle menu</span>
                                     </Button>
@@ -214,7 +214,7 @@ export default function ProductTable() {
                         ))}
                          {filteredProducts.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={8} className="h-24 text-center text-sm text-gray-500">
+                                <TableCell colSpan={8} className="h-24 text-center">
                                     Nenhum produto encontrado.
                                 </TableCell>
                             </TableRow>
@@ -224,8 +224,8 @@ export default function ProductTable() {
                 </div>
             </div>
         </CardContent>
-        <CardFooter className="p-6">
-            <div className="text-sm text-gray-500">
+        <CardFooter>
+            <div className="text-xs text-muted-foreground">
                 Mostrando <strong>{filteredProducts.length}</strong> de <strong>{initialProducts.length}</strong> produtos.
             </div>
         </CardFooter>
