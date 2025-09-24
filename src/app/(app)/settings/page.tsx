@@ -35,10 +35,12 @@ export default function SettingsPage() {
   };
 
   const handleResetData = () => {
+    setProducts([]);
+    setCustomers([]);
+    setSales([]);
     toast({
-        variant: "destructive",
-        title: t('settings.dangerous_action_title'),
-        description: t('settings.reset_not_implemented'),
+        title: t('settings.data_reset_success_title'),
+        description: t('settings.data_reset_success_description'),
     })
   }
 
@@ -327,10 +329,10 @@ export default function SettingsPage() {
                 <CardDescription>{t('settings.test_environment_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-lg dark:bg-yellow-900/20 dark:border-yellow-700/50 dark:text-yellow-300">
                     <div>
                         <label htmlFor="modo-teste" className="font-medium text-sm">{t('settings.test_mode')}</label>
-                        <p className="text-xs text-yellow-700">{t('settings.test_mode_note')}</p>
+                        <p className="text-xs text-yellow-700 dark:text-yellow-300/80">{t('settings.test_mode_note')}</p>
                     </div>
                     <Switch id="modo-teste" checked={settings.ambiente_teste.modo_teste} onCheckedChange={(c) => handleSettingChange('ambiente_teste', 'modo_teste', c)} />
                 </div>

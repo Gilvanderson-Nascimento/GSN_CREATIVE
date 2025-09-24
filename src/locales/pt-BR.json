@@ -345,7 +345,9 @@
         "reset_test_data": "Resetar Dados de Teste",
         "reset_warning": "Atenção: Esta ação é irreversível e apagará todos os dados do ambiente de teste.",
         "dangerous_action_title": "Ação Perigosa",
-        "reset_not_implemented": "A funcionalidade de resetar dados ainda não foi implementada."
+        "reset_not_implemented": "A funcionalidade de resetar dados ainda não foi implementada.",
+        "data_reset_success_title": "Dados Resetados",
+        "data_reset_success_description": "Todos os dados de teste (produtos, clientes, vendas) foram limpos."
     },
     "login": {
         "title": "Acesso ao Sistema",
