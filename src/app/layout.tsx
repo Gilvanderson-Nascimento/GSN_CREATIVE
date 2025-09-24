@@ -7,7 +7,7 @@ import { AuthProvider } from '@/providers/auth-provider';
 import { DataProvider } from '@/providers/data-provider';
 import { TranslationProvider } from '@/providers/translation-provider';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'GSN_GESTOR',
@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased ${inter.variable}`}>
+      <body className={inter.className}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
