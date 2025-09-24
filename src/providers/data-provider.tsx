@@ -77,32 +77,52 @@ const getInitialState = <T,>(key: string, fallback: T): T => {
 
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProductsState] = useState<Product[]>(() => getInitialState('app_products', initialProducts));
-  const [customers, setCustomersState] = useState<Customer[]>(() => getInitialState('app_customers', initialCustomers));
-  const [sales, setSalesState] = useState<Sale[]>(() => getInitialState('app_sales', initialSales));
-  const [users, setUsersState] = useState<User[]>(() => getInitialState('app_users', initialUsersData));
-  const [settings, setSettingsState] = useState<AppSettings>(() => getInitialState('app_settings', initialSettings));
+  const [products, setProductsState] = useState<Product[]>(initialProducts);
+  const [customers, setCustomersState] = useState<Customer[]>(initialCustomers);
+  const [sales, setSalesState] = useState<Sale[]>(initialSales);
+  const [users, setUsersState] = useState<User[]>(initialUsersData);
+  const [settings, setSettingsState] = useState<AppSettings>(initialSettings);
+  const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setProductsState(getInitialState('app_products', initialProducts));
+    setCustomersState(getInitialState('app_customers', initialCustomers));
+    setSalesState(getInitialState('app_sales', initialSales));
+    setUsersState(getInitialState('app_users', initialUsersData));
+    setSettingsState(getInitialState('app_settings', initialSettings));
+    setIsLoaded(true);
+  }, []);
   
   useEffect(() => {
-    localStorage.setItem('app_products', JSON.stringify(products));
-  }, [products]);
+    if (isLoaded) {
+      localStorage.setItem('app_products', JSON.stringify(products));
+    }
+  }, [products, isLoaded]);
 
   useEffect(() => {
-    localStorage.setItem('app_customers', JSON.stringify(customers));
-  }, [customers]);
+    if (isLoaded) {
+      localStorage.setItem('app_customers', JSON.stringify(customers));
+    }
+  }, [customers, isLoaded]);
 
   useEffect(() => {
-    localStorage.setItem('app_sales', JSON.stringify(sales));
-  }, [sales]);
+    if (isLoaded) {
+      localStorage.setItem('app_sales', JSON.stringify(sales));
+    }
+  }, [sales, isLoaded]);
 
   useEffect(() => {
-    localStorage.setItem('app_users', JSON.stringify(users));
-  }, [users]);
+    if (isLoaded) {
+      localStorage.setItem('app_users', JSON.stringify(users));
+    }
+  }, [users, isLoaded]);
   
   useEffect(() => {
-    localStorage.setItem('app_settings', JSON.stringify(settings));
-  }, [settings]);
+    if (isLoaded) {
+      localStorage.setItem('app_settings', JSON.stringify(settings));
+    }
+  }, [settings, isLoaded]);
 
   const setProducts = (newProducts: Product[]) => setProductsState(newProducts);
   const setCustomers = (newCustomers: Customer[]) => setCustomersState(newCustomers);
