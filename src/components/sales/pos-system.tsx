@@ -137,7 +137,7 @@ export default function PosSystem() {
         </CardHeader>
         <CardContent className="flex-grow">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
+            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
               {searchedProducts.map((product) => (
                 <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow flex flex-col" onClick={() => addToCart(product)}>
                   <CardContent className="p-1 flex flex-col items-center text-center flex-grow">
@@ -152,13 +152,13 @@ export default function PosSystem() {
                                 data-ai-hint="product image"
                             />
                         ) : (
-                            <ImageIcon className="h-8 w-8 text-muted-foreground"/>
+                            <ImageIcon className="h-6 w-6 text-muted-foreground"/>
                         )}
                     </div>
-                    <div className="font-semibold text-xs leading-tight">{product.name}</div>
-                    <div className="text-xs text-muted-foreground">Estoque: {product.quantity}</div>
+                    <div className="font-semibold text-[11px] leading-tight line-clamp-2">{product.name}</div>
+                    <div className="text-[10px] text-muted-foreground">Estoque: {product.quantity}</div>
                   </CardContent>
-                  <div className="p-1 border-t font-bold text-xs text-center">
+                  <div className="p-1 border-t font-bold text-[11px] text-center">
                     R$ {product.salePrice.toFixed(2)}
                   </div>
                 </Card>
