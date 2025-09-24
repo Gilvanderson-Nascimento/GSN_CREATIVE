@@ -82,6 +82,7 @@
         "sort_quantity_asc": "Quantidade (Baixa)",
         "sort_quantity_desc": "Quantidade (Alta)",
         "add_product": "Adicionar Produto",
+        "ai_entry": "Entrada com IA",
         "category": "Categoria",
         "quantity": "Qtde.",
         "purchase_price": "Vl. Compra",
@@ -91,6 +92,7 @@
         "showing_products": "Mostrando {{count}} de {{total}} produtos.",
         "edit_product": "Editar Produto",
         "add_new_product": "Adicionar Produto",
+        "product_name": "Nome do Produto",
         "product_form": {
             "upload_image": "Carregar Imagem",
             "no_image": "Sem Imagem",
@@ -112,6 +114,26 @@
             "purchase_price_positive": "Preço de compra deve ser positivo.",
             "sale_price_positive": "Preço de venda deve ser positivo.",
             "barcode_invalid": "Código de barras inválido."
+        },
+         "automated_entry": {
+            "title": "Entrada de Estoque Automatizada com IA",
+            "description": "Envie a imagem de uma nota fiscal e a IA irá extrair os dados dos produtos para adicionar ao seu estoque.",
+            "upload_cta": "Clique para enviar uma imagem",
+            "upload_supported_formats": "PNG, JPG, ou WEBP",
+            "analyze_button": "Analisar Nota Fiscal",
+            "analyzing": "Analisando...",
+            "extracted_data": "Dados Extraídos",
+            "no_data_placeholder": "Envie e analise uma nota para ver os produtos extraídos aqui.",
+            "loading_analysis": "A IA está analisando a nota fiscal...",
+            "no_image_title": "Nenhuma Imagem Selecionada",
+            "no_image_description": "Por favor, selecione a imagem de uma nota fiscal para analisar.",
+            "analysis_complete_title": "Análise Concluída",
+            "analysis_complete_description": "Revise os produtos extraídos e salve as alterações para atualizar seu estoque.",
+            "analysis_error_title": "Erro na Análise",
+            "analysis_error_description": "A IA não conseguiu processar a imagem. Tente outra imagem ou verifique o formato.",
+            "save_to_stock": "Salvar no Estoque",
+            "stock_updated_title": "Estoque Atualizado",
+            "stock_updated_description": "{{count}} registros de produtos foram adicionados/atualizados no seu estoque."
         }
     },
     "sales": {

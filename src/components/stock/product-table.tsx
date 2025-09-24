@@ -24,7 +24,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, TriangleAlert } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, TriangleAlert, FileUp } from 'lucide-react';
 import { ProductForm } from './product-form';
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -32,6 +32,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
+import { AutomatedStockEntrySheet } from './automated-stock-entry';
 
 export default function ProductTable() {
   const { products: initialProducts, setProducts, settings } = useContext(DataContext);
@@ -41,6 +42,7 @@ export default function ProductTable() {
   const [sortOrder, setSortOrder] = useState('name-asc');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isAutomatedSheetOpen, setIsAutomatedSheetOpen] = useState(false);
   const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const handleAddProduct = () => {
@@ -137,33 +139,39 @@ export default function ProductTable() {
                       </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  {t('stock.add_product')}
-                </Button>
+                <div className="flex w-full sm:w-auto gap-2">
+                    <Button onClick={() => setIsAutomatedSheetOpen(true)} variant="outline" className="w-full sm:w-auto mt-4 sm:mt-0">
+                      <FileUp className="mr-2 h-4 w-4" />
+                      {t('stock.ai_entry')}
+                    </Button>
+                    <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      {t('stock.add_product')}
+                    </Button>
+                </div>
             </div>
             <div className="rounded-xl border overflow-hidden">
                 <div className="overflow-x-auto">
                     <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead className="w-[80px]">Image</TableHead>
-                        <TableHead>Nome</TableHead>
+                        <TableHead className="w-20 pl-4">{t('stock.image')}</TableHead>
+                        <TableHead>{t('stock.product_name')}</TableHead>
                         <TableHead>{t('stock.category')}</TableHead>
                         <TableHead className="text-center">{t('stock.quantity')}</TableHead>
                         <TableHead className="text-right">{t('stock.purchase_price')}</TableHead>
                         <TableHead className="text-right">{t('stock.sale_price')}</TableHead>
                         <TableHead>{t('stock.barcode')}</TableHead>
-                        <TableHead>
+                        <TableHead className="w-16 pr-4">
                             <span className="sr-only">{t('global.actions')}</span>
                         </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredProducts.map((product, index) => (
+                        {filteredProducts.map((product) => (
                         <TableRow key={product.id}>
-                            <TableCell className="p-2">
-                            <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden">
+                            <TableCell className="p-2 pl-4">
+                            <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden border">
                                 {product.imageUrl ? (
                                     <Image 
                                         src={product.imageUrl} 
@@ -179,7 +187,7 @@ export default function ProductTable() {
                             </div>
                             </TableCell>
                             <TableCell className="font-medium">{product.name}</TableCell>
-                            <TableCell>{product.category}</TableCell>
+                            <TableCell className="text-muted-foreground">{product.category}</TableCell>
                             <TableCell className="text-center">
                                <Badge variant={product.quantity <= lowStockThreshold ? (product.quantity === 0 ? "destructive" : "warning") : "info"} className="gap-1">
                                     {product.quantity <= lowStockThreshold && (
@@ -188,10 +196,10 @@ export default function ProductTable() {
                                     {product.quantity}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right">{formatCurrency(product.purchasePrice)}</TableCell>
+                            <TableCell className="text-right text-muted-foreground">{formatCurrency(product.purchasePrice)}</TableCell>
                             <TableCell className="text-right font-medium">{formatCurrency(product.salePrice)}</TableCell>
-                            <TableCell>{product.barcode}</TableCell>
-                            <TableCell>
+                            <TableCell className="text-muted-foreground">{product.barcode}</TableCell>
+                            <TableCell className="pr-4">
                             <div className="flex justify-end">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -244,6 +252,10 @@ export default function ProductTable() {
           />
         </SheetContent>
       </Sheet>
+      <AutomatedStockEntrySheet 
+        open={isAutomatedSheetOpen}
+        onOpenChange={setIsAutomatedSheetOpen}
+      />
     </>
   );
 }

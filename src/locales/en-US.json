@@ -82,6 +82,7 @@
         "sort_quantity_asc": "Quantity (Low)",
         "sort_quantity_desc": "Quantity (High)",
         "add_product": "Add Product",
+        "ai_entry": "AI Invoice Entry",
         "category": "Category",
         "quantity": "Qty.",
         "purchase_price": "Purchase Price",
@@ -91,6 +92,7 @@
         "showing_products": "Showing {{count}} of {{total}} products.",
         "edit_product": "Edit Product",
         "add_new_product": "Add New Product",
+        "product_name": "Product Name",
         "product_form": {
             "upload_image": "Upload Image",
             "no_image": "No Image",
@@ -112,6 +114,26 @@
             "purchase_price_positive": "Purchase price must be positive.",
             "sale_price_positive": "Sale price must be positive.",
             "barcode_invalid": "Invalid barcode."
+        },
+        "automated_entry": {
+            "title": "Automated Stock Entry with AI",
+            "description": "Upload an invoice image and the AI will automatically extract the product data to add to your stock.",
+            "upload_cta": "Click to upload an image",
+            "upload_supported_formats": "PNG, JPG, or WEBP",
+            "analyze_button": "Analyze Invoice",
+            "analyzing": "Analyzing...",
+            "extracted_data": "Extracted Data",
+            "no_data_placeholder": "Upload and analyze an invoice to see the extracted products here.",
+            "loading_analysis": "AI is analyzing the invoice...",
+            "no_image_title": "No Image Selected",
+            "no_image_description": "Please select an invoice image to analyze.",
+            "analysis_complete_title": "Analysis Complete",
+            "analysis_complete_description": "Review the extracted products and save the changes to update your stock.",
+            "analysis_error_title": "Analysis Error",
+            "analysis_error_description": "The AI could not process the image. Please try another image or check the format.",
+            "save_to_stock": "Save to Stock",
+            "stock_updated_title": "Stock Updated",
+            "stock_updated_description": "{{count}} product entries were added/updated in your stock."
         }
     },
     "sales": {
