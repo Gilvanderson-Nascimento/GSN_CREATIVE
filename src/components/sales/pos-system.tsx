@@ -175,8 +175,7 @@ export default function PosSystem() {
             Carrinho de Compras
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-grow overflow-hidden">
-          <ScrollArea className="h-full max-h-[300px]">
+        <CardContent className="flex-grow overflow-y-auto">
             {cart.length === 0 ? (
                 <div className="text-center text-muted-foreground h-full flex items-center justify-center">
                     Seu carrinho está vazio.
@@ -198,9 +197,8 @@ export default function PosSystem() {
                 ))}
                 </div>
             )}
-          </ScrollArea>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4 !p-4 border-t">
+        <CardFooter className="flex flex-col gap-4 !p-4 border-t mt-auto">
           <div className="w-full">
             <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
                 <SelectTrigger>
