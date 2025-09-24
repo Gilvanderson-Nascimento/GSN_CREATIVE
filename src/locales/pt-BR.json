@@ -130,7 +130,35 @@
         "discount": "Desconto",
         "total": "Total",
         "complete_sale": "Finalizar Venda",
-        "empty_cart_message": "Seu carrinho está vazio."
+        "empty_cart_message": "Seu carrinho está vazio.",
+        "sales_history": "Histórico de Vendas",
+        "sales_history_description": "Visualize e gerencie todas as vendas realizadas.",
+        "filter_sales_placeholder": "Filtre por ID, cliente ou vendedor...",
+        "sale_id": "ID da Venda",
+        "date": "Data",
+        "customer": "Cliente",
+        "seller": "Vendedor",
+        "status": "Status",
+        "status_completed": "Concluída",
+        "status_cancelled": "Cancelada",
+        "no_sales_found": "Nenhuma venda encontrada.",
+        "showing_sales": "Mostrando {{count}} de {{total}} vendas.",
+        "counter_sale": "Venda no balcão",
+        "customer_not_found": "Cliente não encontrado",
+        "seller_not_found": "Vendedor não encontrado",
+        "sale_detail_title": "Detalhes da Venda",
+        "items_sold": "Itens Vendidos",
+        "sale_summary": "Resumo da Venda",
+        "generate_receipt": "Gerar Recibo",
+        "cancel_sale": "Cancelar Venda",
+        "cancel_sale_confirm_title": "Tem certeza que deseja cancelar esta venda?",
+        "cancel_sale_confirm_description": "Esta ação não pode ser desfeita. Os itens retornarão ao estoque e os registros financeiros serão ajustados.",
+        "confirm_cancellation": "Sim, Cancelar Venda",
+        "receipt_title": "Recibo de Venda",
+        "receipt_product": "Produto",
+        "receipt_qty": "Qtd.",
+        "receipt_unit_price": "Vl. Unit.",
+        "receipt_total": "Vl. Total"
     },
     "customers": {
         "title": "Gerenciamento de Clientes",
@@ -331,5 +359,3 @@
         "loading_user_data": "Carregando dados do usuário..."
     }
 }
-
-    

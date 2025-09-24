@@ -34,6 +34,7 @@ type DataContextType = {
   users: User[];
   setUsers: (users: User[]) => void;
   completeSale: (saleData: SaleData) => void;
+  cancelSale: (saleId: string) => void;
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
 };
@@ -48,6 +49,7 @@ export const DataContext = createContext<DataContextType>({
   users: [],
   setUsers: () => {},
   completeSale: () => {},
+  cancelSale: () => {},
   settings: {
     estoque: {
       notificar_estoque_minimo: true,

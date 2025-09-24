@@ -130,7 +130,35 @@
         "discount": "Discount",
         "total": "Total",
         "complete_sale": "Complete Sale",
-        "empty_cart_message": "Your cart is empty."
+        "empty_cart_message": "Your cart is empty.",
+        "sales_history": "Sales History",
+        "sales_history_description": "View and manage all completed sales.",
+        "filter_sales_placeholder": "Filter by ID, customer or seller...",
+        "sale_id": "Sale ID",
+        "date": "Date",
+        "customer": "Customer",
+        "seller": "Seller",
+        "status": "Status",
+        "status_completed": "Completed",
+        "status_cancelled": "Cancelled",
+        "no_sales_found": "No sales found.",
+        "showing_sales": "Showing {{count}} of {{total}} sales.",
+        "counter_sale": "Counter Sale",
+        "customer_not_found": "Customer not found",
+        "seller_not_found": "Seller not found",
+        "sale_detail_title": "Sale Details",
+        "items_sold": "Items Sold",
+        "sale_summary": "Sale Summary",
+        "generate_receipt": "Generate Receipt",
+        "cancel_sale": "Cancel Sale",
+        "cancel_sale_confirm_title": "Are you sure you want to cancel this sale?",
+        "cancel_sale_confirm_description": "This action cannot be undone. Items will be returned to stock and financial records will be adjusted.",
+        "confirm_cancellation": "Yes, Cancel Sale",
+        "receipt_title": "Sales Receipt",
+        "receipt_product": "Product",
+        "receipt_qty": "Qty",
+        "receipt_unit_price": "Unit Price",
+        "receipt_total": "Total Price"
     },
     "customers": {
         "title": "Customer Management",
@@ -331,5 +359,3 @@
         "loading_user_data": "Loading user data..."
     }
 }
-
-    

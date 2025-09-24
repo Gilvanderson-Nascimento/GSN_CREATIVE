@@ -17,6 +17,8 @@ export type SaleItem = {
   totalPrice: number;
 };
 
+export type SaleStatus = 'completed' | 'cancelled';
+
 export type Sale = {
   id: string;
   items: SaleItem[];
@@ -28,6 +30,7 @@ export type Sale = {
   discount: number;
   total: number;
   date: string;
+  status?: SaleStatus;
 };
 
 export type Customer = {

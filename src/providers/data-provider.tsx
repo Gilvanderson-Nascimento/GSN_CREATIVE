@@ -8,6 +8,7 @@ import {
     sales as initialSales,
     users as initialUsersData
 } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 type SaleData = {
   items: SaleItem[];
@@ -21,7 +22,7 @@ type SaleData = {
 
 const initialSettings: AppSettings = {
     sistema: {
-      nome_empresa: "Minha Empresa",
+      nome_empresa: "GSN Gestor",
       idioma: "pt-BR",
       moeda: "BRL",
     },
@@ -81,6 +82,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [sales, setSalesState] = useState<Sale[]>(() => getInitialState('app_sales', initialSales));
   const [users, setUsersState] = useState<User[]>(() => getInitialState('app_users', initialUsersData));
   const [settings, setSettingsState] = useState<AppSettings>(() => getInitialState('app_settings', initialSettings));
+  const { toast } = useToast();
   
   useEffect(() => {
     localStorage.setItem('app_products', JSON.stringify(products));
@@ -109,25 +111,21 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const setSettings = (newSettings: AppSettings) => setSettingsState(newSettings);
 
   const completeSale = (saleData: SaleData) => {
-    // 1. Create the new sale object
     const newSale: Sale = {
       id: `SALE${Date.now()}`,
       date: new Date().toISOString(),
+      status: 'completed',
       ...saleData,
     };
 
-    // 2. Update product quantities
     const updatedProducts = [...products];
-    let inventoryWasUpdated = false;
     newSale.items.forEach(cartItem => {
       const productIndex = updatedProducts.findIndex(p => p.id === cartItem.productId);
       if (productIndex !== -1) {
         updatedProducts[productIndex].quantity -= cartItem.quantity;
-        inventoryWasUpdated = true;
       }
     });
 
-    // 3. Update customer sales data
     const updatedCustomers = [...customers];
     if (newSale.customerId) {
         const customerIndex = updatedCustomers.findIndex(c => c.id === newSale.customerId);
@@ -137,15 +135,62 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
-    // 4. Update state
-    if (inventoryWasUpdated) {
-        setProducts(updatedProducts);
-    }
+    setProducts(updatedProducts);
     setCustomers(updatedCustomers);
     setSales(prevSales => [newSale, ...prevSales]);
   };
+  
+  const cancelSale = (saleId: string) => {
+    let saleToCancel: Sale | undefined;
+    const updatedSales = sales.map(s => {
+      if (s.id === saleId) {
+        saleToCancel = s;
+        return { ...s, status: 'cancelled' as const };
+      }
+      return s;
+    });
 
-  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, settings, setSettings };
+    if (saleToCancel && saleToCancel.status !== 'cancelled') {
+      // Return items to stock
+      const updatedProducts = [...products];
+      saleToCancel.items.forEach(item => {
+        const productIndex = updatedProducts.findIndex(p => p.id === item.productId);
+        if (productIndex !== -1) {
+          updatedProducts[productIndex].quantity += item.quantity;
+        }
+      });
+      setProducts(updatedProducts);
+
+      // Revert customer stats
+      if (saleToCancel.customerId) {
+        const updatedCustomers = customers.map(c => {
+          if (c.id === saleToCancel?.customerId) {
+            return {
+              ...c,
+              salesCount: c.salesCount - 1,
+              totalSpent: c.totalSpent - saleToCancel.total
+            }
+          }
+          return c;
+        });
+        setCustomers(updatedCustomers);
+      }
+      setSales(updatedSales);
+      toast({
+        title: "Venda Cancelada",
+        description: `A venda ${saleId} foi cancelada e os itens retornaram ao estoque.`
+      });
+    } else {
+        toast({
+            variant: "destructive",
+            title: "Erro",
+            description: "Esta venda não pôde ser cancelada ou já foi cancelada."
+        });
+    }
+  }
+
+
+  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, cancelSale, settings, setSettings };
 
   return (
     <DataContext.Provider value={value}>
@@ -153,5 +198,3 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     </DataContext.Provider>
   );
 }
-
-    
