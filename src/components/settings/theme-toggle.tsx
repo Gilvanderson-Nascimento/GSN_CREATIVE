@@ -11,9 +11,11 @@ import {
     SelectTrigger,
     SelectValue 
 } from '@/components/ui/select';
+import { useTranslation } from '@/providers/translation-provider';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -33,22 +35,24 @@ export function ThemeToggle() {
         <SelectItem value="light">
           <div className="flex items-center gap-2">
             <Sun className="h-4 w-4" />
-            <span>Claro</span>
+            <span>{t('settings.light_theme')}</span>
           </div>
         </SelectItem>
         <SelectItem value="dark">
            <div className="flex items-center gap-2">
             <Moon className="h-4 w-4" />
-            <span>Escuro</span>
+            <span>{t('settings.dark_theme')}</span>
           </div>
         </SelectItem>
         <SelectItem value="system">
            <div className="flex items-center gap-2">
             <Monitor className="h-4 w-4" />
-            <span>Sistema</span>
+            <span>{t('settings.system_theme')}</span>
           </div>
         </SelectItem>
       </SelectContent>
     </Select>
   );
 }
+
+    

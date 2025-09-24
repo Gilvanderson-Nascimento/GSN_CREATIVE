@@ -14,11 +14,12 @@ import {
 import { Input } from '@/components/ui/input';
 import type { Customer } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from '@/providers/translation-provider';
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
+  name: z.string().min(2, { message: 'customers.customer_form.name_min_char' }),
   nickname: z.string().optional(),
-  phone: z.string().min(8, { message: 'Telefone inválido.' }),
+  phone: z.string().min(8, { message: 'customers.customer_form.phone_invalid' }),
   address: z.string().optional(),
 });
 
@@ -31,6 +32,7 @@ type CustomerFormProps = {
 };
 
 export function CustomerForm({ customer, onSave, onCancel }: CustomerFormProps) {
+  const { t } = useTranslation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,19 +51,24 @@ export function CustomerForm({ customer, onSave, onCancel }: CustomerFormProps) 
     });
   }
 
+  // Custom message handler to translate error messages
+  const translatedMessage = (messageKey?: string) => {
+    return messageKey ? t(messageKey) : undefined;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
         <FormField
           control={form.control}
           name="name"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>Nome Completo</FormLabel>
+              <FormLabel>{t('customers.customer_form.full_name')}</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: João da Silva" {...field} />
+                <Input placeholder={t('customers.customer_form.ex_full_name')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
@@ -70,9 +77,9 @@ export function CustomerForm({ customer, onSave, onCancel }: CustomerFormProps) 
           name="nickname"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Apelido (Opcional)</FormLabel>
+              <FormLabel>{t('customers.customer_form.nickname_optional')}</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: João" {...field} />
+                <Input placeholder={t('customers.customer_form.ex_nickname')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -81,13 +88,13 @@ export function CustomerForm({ customer, onSave, onCancel }: CustomerFormProps) 
          <FormField
           control={form.control}
           name="phone"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>Telefone</FormLabel>
+              <FormLabel>{t('customers.customer_form.phone')}</FormLabel>
               <FormControl>
-                <Input placeholder="(11) 98765-4321" {...field} />
+                <Input placeholder={t('customers.customer_form.ex_phone')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
@@ -96,9 +103,9 @@ export function CustomerForm({ customer, onSave, onCancel }: CustomerFormProps) 
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Endereço (Opcional)</FormLabel>
+              <FormLabel>{t('customers.customer_form.address_optional')}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Rua das Flores, 123 - Bairro Jardim, Cidade - Estado, CEP 12345-678" {...field} />
+                <Textarea placeholder={t('customers.customer_form.ex_address')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,11 +114,13 @@ export function CustomerForm({ customer, onSave, onCancel }: CustomerFormProps) 
        
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
+            {t('global.cancel')}
           </Button>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit">{t('global.save')}</Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    

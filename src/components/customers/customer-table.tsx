@@ -40,9 +40,11 @@ import type { Customer } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { CustomerForm } from './customer-form';
 import { DataContext } from '@/context/data-context';
+import { useTranslation } from '@/providers/translation-provider';
 
 export default function CustomerTable() {
   const { customers: initialCustomers, setCustomers } = useContext(DataContext);
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('');
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [deletingCustomer, setDeletingCustomer] = useState<Customer | null>(null);
@@ -95,9 +97,9 @@ export default function CustomerTable() {
     <>
        <Card className="bg-white shadow-md rounded-xl">
         <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-800">Gerenciamento de Clientes</CardTitle>
+          <CardTitle className="text-xl font-bold text-gray-800">{t('customers.title')}</CardTitle>
           <CardDescription className="text-base text-gray-600">
-            Visualize, adicione, edite e exclua os clientes do seu estabelecimento.
+            {t('customers.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -105,7 +107,7 @@ export default function CustomerTable() {
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                        placeholder="Filtrar clientes por nome ou telefone..."
+                        placeholder={t('customers.filter_placeholder')}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                         className="pl-9 w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
@@ -113,20 +115,20 @@ export default function CustomerTable() {
                 </div>
                 <Button onClick={handleAddCustomer} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition shadow-sm">
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  Adicionar Cliente
+                  {t('customers.add_customer')}
                 </Button>
             </div>
             <div className="rounded-xl border overflow-hidden">
                 <Table className="w-full border-collapse divide-y divide-gray-200">
                 <TableHeader>
                     <TableRow className="bg-gray-100 hover:bg-gray-100">
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Nome</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Apelido</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Telefone</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Vendas</TableHead>
-                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Total Gasto</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.name')}</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.nickname')}</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.phone')}</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.sales')}</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('customers.total_spent')}</TableHead>
                     <TableHead>
-                        <span className="sr-only">Ações</span>
+                        <span className="sr-only">{t('global.actions')}</span>
                     </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -148,17 +150,17 @@ export default function CustomerTable() {
                                 </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                <DropdownMenuLabel>{t('global.actions')}</DropdownMenuLabel>
                                 <Link href={`/customers/${customer.id}`} passHref>
                                     <DropdownMenuItem>
-                                        <Eye className="mr-2 h-4 w-4" /> Ver Detalhes
+                                        <Eye className="mr-2 h-4 w-4" /> {t('global.view_details')}
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuItem onSelect={() => handleEditCustomer(customer)}>
-                                    <Pencil className="mr-2 h-4 w-4" /> Editar
+                                    <Pencil className="mr-2 h-4 w-4" /> {t('global.edit')}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onSelect={() => confirmDeleteCustomer(customer)} className="text-destructive">
-                                    <Trash2 className="mr-2 h-4 w-4" /> Excluir
+                                    <Trash2 className="mr-2 h-4 w-4" /> {t('global.delete')}
                                 </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -169,7 +171,7 @@ export default function CustomerTable() {
                     {filteredCustomers.length === 0 && (
                         <TableRow>
                             <TableCell colSpan={6} className="h-24 text-center text-sm text-gray-500">
-                                Nenhum cliente encontrado.
+                                {t('customers.no_customers_found')}
                             </TableCell>
                         </TableRow>
                     )}
@@ -179,14 +181,14 @@ export default function CustomerTable() {
         </CardContent>
         <CardFooter className="p-6">
             <div className="text-sm text-gray-500">
-                Mostrando <strong>{filteredCustomers.length}</strong> de <strong>{initialCustomers.length}</strong> clientes.
+                {t('customers.showing_customers', { count: filteredCustomers.length, total: initialCustomers.length })}
             </div>
         </CardFooter>
       </Card>
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>{editingCustomer ? 'Editar Cliente' : 'Adicionar Cliente'}</SheetTitle>
+            <SheetTitle>{editingCustomer ? t('customers.edit_customer') : t('customers.add_new_customer')}</SheetTitle>
           </SheetHeader>
           <CustomerForm
             customer={editingCustomer}
@@ -198,18 +200,19 @@ export default function CustomerTable() {
       <AlertDialog open={!!deletingCustomer} onOpenChange={(open) => !open && setDeletingCustomer(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogTitle>{t('customers.delete_dialog_title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação não pode ser desfeita. Isso excluirá permanentemente o cliente
-              e seus dados de nossos servidores.
+              {t('customers.delete_dialog_description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeletingCustomer(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteCustomer} className="bg-destructive hover:bg-destructive/90">Excluir</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setDeletingCustomer(null)}>{t('global.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteCustomer} className="bg-destructive hover:bg-destructive/90">{t('global.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
 }
+
+    

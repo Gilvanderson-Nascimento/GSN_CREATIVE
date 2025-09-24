@@ -9,14 +9,15 @@ import { CalendarIcon } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import { DateRange } from 'react-day-picker';
 import { addDays, format, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR, enUS } from 'date-fns/locale';
+import { useTranslation } from '@/providers/translation-provider';
 
 type ChartData = {
   name: string;
   total: number;
 };
 
-const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
+const generateDataForRange = (startDate: Date, endDate: Date, locale: Locale): ChartData[] => {
   const data: ChartData[] = [];
   const days = differenceInDays(endDate, startDate);
   let currentDate = startDate;
@@ -32,7 +33,7 @@ const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
   } else if (days <= 365) { // Monthly
     const monthMap = new Map<string, number>();
     for (let i = 0; i <= days; i++) {
-        const monthName = format(currentDate, 'MMM', { locale: ptBR });
+        const monthName = format(currentDate, 'MMM', { locale });
         const currentTotal = monthMap.get(monthName) || 0;
         monthMap.set(monthName, currentTotal + (Math.floor(Math.random() * 200) + 20));
         currentDate = addDays(currentDate, 1);
@@ -56,7 +57,7 @@ const generateDataForRange = (startDate: Date, endDate: Date): ChartData[] => {
   return data;
 };
 
-const generateStaticData = (period: 'daily' | 'weekly' | 'monthly'): ChartData[] => {
+const generateStaticData = (period: 'daily' | 'weekly' | 'monthly', locale: Locale): ChartData[] => {
     if (period === 'daily') {
         return Array.from({ length: 24 }, (_, i) => ({
             name: `${i}:00`,
@@ -64,14 +65,14 @@ const generateStaticData = (period: 'daily' | 'weekly' | 'monthly'): ChartData[]
         }));
     }
     if (period === 'weekly') {
-        const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        const days = Array.from({ length: 7 }, (_, i) => format(addDays(new Date(), i - new Date().getDay()), 'E', { locale }));
         return days.map((day) => ({
             name: day,
             total: Math.floor(Math.random() * 1000) + 200,
         }));
     }
     // monthly
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const months = Array.from({ length: 12 }, (_, i) => format(new Date(0, i), 'MMM', { locale }));
     return months.map((month) => ({
         name: month,
         total: Math.floor(Math.random() * 5000) + 1000,
@@ -80,10 +81,12 @@ const generateStaticData = (period: 'daily' | 'weekly' | 'monthly'): ChartData[]
 
 
 export function SalesChart() {
+  const { t, language } = useTranslation();
   const [data, setData] = useState<ChartData[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<string>('custom');
   const [isClient, setIsClient] = useState(false);
+  const locale = language === 'pt-BR' ? ptBR : enUS;
 
   useEffect(() => {
     setIsClient(true);
@@ -97,21 +100,21 @@ export function SalesChart() {
     if (!isClient) return;
 
     if (activeTab === 'custom' && dateRange?.from && dateRange?.to) {
-        setData(generateDataForRange(dateRange.from, dateRange.to));
+        setData(generateDataForRange(dateRange.from, dateRange.to, locale));
     } else if (activeTab === 'daily' || activeTab === 'weekly' || activeTab === 'monthly') {
-        setData(generateStaticData(activeTab as 'daily' | 'weekly' | 'monthly'));
+        setData(generateStaticData(activeTab as 'daily' | 'weekly' | 'monthly', locale));
     }
-  }, [activeTab, dateRange, isClient]);
+  }, [activeTab, dateRange, isClient, locale]);
 
   const chartTitle = useMemo(() => {
     if (activeTab === 'custom' && dateRange?.from && dateRange?.to) {
-      return `Exibindo de ${format(dateRange.from, "dd/MM/yy")} a ${format(dateRange.to, "dd/MM/yy")}`;
+      return t('dashboard.displaying_from_to', { from: format(dateRange.from, "dd/MM/yy"), to: format(dateRange.to, "dd/MM/yy") });
     }
-    if (activeTab === 'daily') return 'Vendas nas últimas 24 horas';
-    if (activeTab === 'weekly') return 'Vendas na última semana';
-    if (activeTab === 'monthly') return 'Vendas no último ano';
-    return 'Vendas por Período'
-  }, [activeTab, dateRange])
+    if (activeTab === 'daily') return t('dashboard.sales_last_24_hours');
+    if (activeTab === 'weekly') return t('dashboard.sales_last_week');
+    if (activeTab === 'monthly') return t('dashboard.sales_last_year');
+    return t('dashboard.sales_overview');
+  }, [activeTab, dateRange, t])
 
   const average = useMemo(() => data.reduce((acc, item) => acc + item.total, 0) / (data.length || 1), [data]);
 
@@ -120,8 +123,8 @@ export function SalesChart() {
     return (
         <Card className="bg-white rounded-xl shadow-md p-4">
             <CardHeader className="p-2">
-                <CardTitle className="text-lg font-semibold text-gray-800">Visão Geral das Vendas</CardTitle>
-                 <CardDescription className="text-sm text-gray-500">Carregando dados do gráfico...</CardDescription>
+                <CardTitle className="text-lg font-semibold text-gray-800">{t('dashboard.sales_overview')}</CardTitle>
+                 <CardDescription className="text-sm text-gray-500">{t('dashboard.loading_chart_data')}</CardDescription>
             </CardHeader>
             <CardContent className="pl-2 pt-4">
                 <div className="w-full h-[350px] bg-gray-100 animate-pulse rounded-md" />
@@ -135,7 +138,7 @@ export function SalesChart() {
       <CardHeader className="p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <CardTitle className="text-lg font-semibold text-gray-800">Visão Geral das Vendas</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-800">{t('dashboard.sales_overview')}</CardTitle>
                 {chartTitle && <CardDescription className="text-sm text-gray-500 mt-1">{chartTitle}</CardDescription>}
             </div>
             <div className="flex items-center gap-2 mt-4 sm:mt-0">
@@ -144,9 +147,9 @@ export function SalesChart() {
                     if(value !== 'custom') setDateRange(undefined);
                 }} className="hidden sm:block">
                     <TabsList className="bg-gray-100 p-1">
-                        <TabsTrigger value="daily" className="text-xs px-3 py-1">Diário</TabsTrigger>
-                        <TabsTrigger value="weekly" className="text-xs px-3 py-1">Semanal</TabsTrigger>
-                        <TabsTrigger value="monthly" className="text-xs px-3 py-1">Mensal</TabsTrigger>
+                        <TabsTrigger value="daily" className="text-xs px-3 py-1">{t('dashboard.daily')}</TabsTrigger>
+                        <TabsTrigger value="weekly" className="text-xs px-3 py-1">{t('dashboard.weekly')}</TabsTrigger>
+                        <TabsTrigger value="monthly" className="text-xs px-3 py-1">{t('dashboard.monthly')}</TabsTrigger>
                     </TabsList>
                 </Tabs>
 
@@ -169,7 +172,7 @@ export function SalesChart() {
                             format(dateRange.from, "dd/MM/y")
                         )
                         ) : (
-                        <span>Escolha um período</span>
+                        <span>{t('dashboard.pick_a_period')}</span>
                         )}
                     </Button>
                     </PopoverTrigger>
@@ -181,6 +184,7 @@ export function SalesChart() {
                         selected={dateRange}
                         onSelect={setDateRange}
                         numberOfMonths={2}
+                        locale={locale}
                     />
                     </PopoverContent>
                 </Popover>
@@ -203,13 +207,15 @@ export function SalesChart() {
                   fontSize: '12px'
               }}
               labelStyle={{ fontWeight: 'bold' }}
-              formatter={(value: number) => [`R$${value.toFixed(2)}`, 'Total']}
+              formatter={(value: number) => [`R$${value.toFixed(2)}`, t('dashboard.total')]}
             />
             <Bar dataKey="total" radius={[4, 4, 0, 0]} fill="#60A5FA" />
-            <ReferenceLine y={average} label={{ value: 'Média', position: 'insideTopLeft', fill: '#6B7280', fontSize: 10 }} stroke="#F87171" strokeDasharray="3 3" />
+            <ReferenceLine y={average} label={{ value: t('dashboard.average'), position: 'insideTopLeft', fill: '#6B7280', fontSize: 10 }} stroke="#F87171" strokeDasharray="3 3" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
   );
 }
+
+    

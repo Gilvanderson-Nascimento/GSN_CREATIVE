@@ -12,10 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { DataContext } from '@/context/data-context';
 import { useAuth } from '@/hooks/use-auth';
+import { useTranslation } from '@/providers/translation-provider';
 
 export default function PosSystem() {
   const { products, customers, completeSale, settings } = useContext(DataContext);
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
@@ -41,8 +43,8 @@ export default function PosSystem() {
     if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
         toast({
             variant: "destructive",
-            title: "Produto Fora de Estoque",
-            description: "Não há mais unidades disponíveis para este produto.",
+            title: t('sales.product_out_of_stock_title'),
+            description: t('sales.product_out_of_stock_description'),
         });
         return;
     }
@@ -77,8 +79,8 @@ export default function PosSystem() {
           if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
               toast({
                   variant: "destructive",
-                  title: "Produto Fora de Estoque",
-                  description: "Não há mais unidades disponíveis para este produto.",
+                  title: t('sales.product_out_of_stock_title'),
+                  description: t('sales.product_out_of_stock_description'),
               });
               return;
           }
@@ -100,8 +102,8 @@ export default function PosSystem() {
     if (cart.length === 0) {
         toast({
             variant: "destructive",
-            title: "Carrinho Vazio",
-            description: "Adicione produtos ao carrinho para completar a venda.",
+            title: t('sales.empty_cart_title'),
+            description: t('sales.empty_cart_description'),
         });
         return;
     }
@@ -119,8 +121,8 @@ export default function PosSystem() {
     completeSale(salePayload);
     
     toast({
-      title: "Venda Realizada com Sucesso!",
-      description: `Total: R$ ${total.toFixed(2)}`,
+      title: t('sales.sale_success_title'),
+      description: t('sales.sale_success_description', { total: total.toFixed(2) }),
       action: <div className="p-2 bg-green-500 rounded-full"><CheckCircle className="text-white"/></div>
     });
 
@@ -134,7 +136,7 @@ export default function PosSystem() {
       <Card className="lg:col-span-3 flex flex-col h-full bg-white shadow-md rounded-xl">
         <CardHeader className="p-4">
             <Input 
-              placeholder="Buscar produto por nome ou código de barras..." 
+              placeholder={t('sales.search_placeholder')} 
               onChange={handleSearch} 
               className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500"
             />
@@ -164,7 +166,7 @@ export default function PosSystem() {
                   </div>
                   <div className="p-2 text-center w-full">
                     <p className="font-semibold text-gray-800 text-sm leading-tight line-clamp-2">{product.name}</p>
-                    <p className="text-xs text-gray-500">Estoque: {product.quantity}</p>
+                    <p className="text-xs text-gray-500">{t('stock.quantity')}: {product.quantity}</p>
                     <p className="text-blue-600 font-bold text-base mt-2">R$ {product.salePrice.toFixed(2)}</p>
                   </div>
                 </Card>
@@ -178,14 +180,14 @@ export default function PosSystem() {
         <CardHeader className="p-6">
           <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
             <ShoppingCart className="h-6 w-6" />
-            Carrinho de Compras
+            {t('sales.shopping_cart')}
           </CardTitle>
         </CardHeader>
         <div className="flex flex-col gap-4 p-6 pt-0 border-b border-gray-200">
             <div className="w-full">
                 <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
                     <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500">
-                        <SelectValue placeholder={<div className="flex items-center gap-2"><UserPlus className="h-4 w-4"/>Associar Cliente</div>} />
+                        <SelectValue placeholder={<div className="flex items-center gap-2"><UserPlus className="h-4 w-4"/>{t('sales.associate_customer')}</div>} />
                     </SelectTrigger>
                     <SelectContent>
                         {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -195,7 +197,7 @@ export default function PosSystem() {
             <div className="w-full flex items-center">
                 <Input 
                     type="number" 
-                    placeholder="Desconto %" 
+                    placeholder={t('sales.discount_percent')}
                     className="rounded-r-none w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500" 
                     value={discount || ''}
                     onChange={(e) => setDiscount(Number(e.target.value))}
@@ -208,27 +210,27 @@ export default function PosSystem() {
             <Separator className="my-2 bg-gray-200" />
             <div className="w-full space-y-2 text-sm">
                 <div className="flex justify-between text-gray-700">
-                <span>Subtotal</span>
+                <span>{t('sales.subtotal')}</span>
                 <span>R$ {subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
-                <span>Desconto</span>
+                <span>{t('sales.discount')}</span>
                 <span>- R$ {(subtotal - total).toFixed(2)} ({discount}%)</span>
                 </div>
                 <div className="flex justify-between font-bold text-xl text-gray-900">
-                <span>Total</span>
+                <span>{t('sales.total')}</span>
                 <span>R$ {total.toFixed(2)}</span>
                 </div>
             </div>
             <Button size="lg" className="w-full bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition" onClick={handleCompleteSale}>
-                Finalizar Venda
+                {t('sales.complete_sale')}
             </Button>
         </div>
         <CardContent className="flex-grow overflow-hidden p-6 pt-4">
              <ScrollArea className="h-full pr-4">
                 {cart.length === 0 ? (
                     <div className="text-center text-gray-500 italic h-full flex items-center justify-center">
-                        Seu carrinho está vazio.
+                        {t('sales.empty_cart_message')}
                     </div>
                 ) : (
                     <div className="space-y-2">
@@ -254,3 +256,5 @@ export default function PosSystem() {
     </div>
   );
 }
+
+    

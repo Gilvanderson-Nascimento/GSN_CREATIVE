@@ -15,14 +15,15 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { User, UserRole, PagePermission } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
+import { useTranslation } from '@/providers/translation-provider';
 
 const roles: UserRole[] = ['admin', 'gerente', 'vendedor', 'estoquista'];
 
 const baseFormSchema = z.object({
-  name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
-  username: z.string().min(3, { message: 'Usuário deve ter pelo menos 3 caracteres.' }),
-  email: z.string().email({ message: "E-mail inválido." }).optional().or(z.literal('')),
-  role: z.string().min(1, { message: 'Função é obrigatória.'}),
+  name: z.string().min(2, { message: 'users.user_form.name_min_char' }),
+  username: z.string().min(3, { message: 'users.user_form.username_min_char' }),
+  email: z.string().email({ message: 'users.user_form.email_invalid' }).optional().or(z.literal('')),
+  role: z.string().min(1, { message: 'users.user_form.role_required'}),
 });
 
 type UserFormValues = Omit<User, 'id' | 'createdAt' | 'permissions'>;
@@ -35,11 +36,12 @@ type UserFormProps = {
 
 export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   const { user: currentUser } = useAuth();
+  const { t } = useTranslation();
   
   const formSchema = baseFormSchema.extend({
       password: user
       ? z.string().optional().or(z.literal(''))
-      : z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres.' }),
+      : z.string().min(6, { message: 'users.user_form.password_min_char' }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -56,6 +58,10 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     onSave(values);
   }
+  
+  const translatedMessage = (messageKey?: string) => {
+    return messageKey ? t(messageKey) : undefined;
+  };
 
   const canEditRole = currentUser?.role === 'admin';
 
@@ -65,65 +71,65 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
         <FormField
           control={form.control}
           name="name"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>Nome Completo</FormLabel>
+              <FormLabel>{t('users.user_form.full_name')}</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: João da Silva" {...field} />
+                <Input placeholder={t('users.user_form.ex_full_name')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
          <FormField
           control={form.control}
           name="username"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>Nome de Usuário</FormLabel>
+              <FormLabel>{t('users.user_form.username')}</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: joao.silva" {...field} />
+                <Input placeholder={t('users.user_form.ex_username')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
          <FormField
           control={form.control}
           name="email"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>E-mail (Opcional)</FormLabel>
+              <FormLabel>{t('users.user_form.email_optional')}</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="joao.silva@email.com" {...field} />
+                <Input type="email" placeholder={t('users.user_form.ex_email')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
         <FormField
             control={form.control}
             name="password"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
                 <FormItem>
-                <FormLabel>{user ? 'Nova Senha (deixe em branco para não alterar)' : 'Senha'}</FormLabel>
+                <FormLabel>{user ? t('users.user_form.new_password') : t('users.user_form.password')}</FormLabel>
                 <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={t('users.user_form.password_placeholder')} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                 </FormItem>
             )}
         />
         <FormField
             control={form.control}
             name="role"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
                 <FormItem>
-                    <FormLabel>Função</FormLabel>
+                    <FormLabel>{t('users.user_form.role')}</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canEditRole}>
                         <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder="Selecione uma função" />
+                            <SelectValue placeholder={t('users.user_form.select_role')} />
                         </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -132,18 +138,20 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
                         ))}
                         </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                 </FormItem>
             )}
         />
        
         <div className="flex justify-end gap-2 pt-8">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
+            {t('global.cancel')}
           </Button>
-          <Button type="submit">Salvar Usuário</Button>
+          <Button type="submit">{t('global.save')}</Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    

@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/providers/translation-provider';
 
 const PosSystem = React.lazy(() => import('@/components/sales/pos-system'));
 
@@ -11,12 +12,15 @@ function PosSystemSkeleton() {
 }
 
 export default function SalesPage() {
+  const { t } = useTranslation();
   return (
     <div>
-      <PageHeader title="Ponto de Venda (PDV)" />
+      <PageHeader title={t('sales.title')} />
       <Suspense fallback={<PosSystemSkeleton />}>
         <PosSystem />
       </Suspense>
     </div>
   );
 }
+
+    

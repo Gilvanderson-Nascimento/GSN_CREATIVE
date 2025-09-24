@@ -4,6 +4,7 @@ import React, { Suspense, useContext } from 'react';
 import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataContext } from '@/context/data-context';
+import { useTranslation } from '@/providers/translation-provider';
 
 const StatsCards = React.lazy(() => 
   import('@/components/dashboard/stats-cards').then(module => ({ default: module.StatsCards }))
@@ -38,6 +39,7 @@ function StatsCardsSkeleton() {
 
 export default function DashboardPage() {
   const { sales, products, customers, settings, users } = useContext(DataContext);
+  const { t } = useTranslation();
   const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const totalSales = sales.reduce((acc, sale) => acc + sale.total, 0);
@@ -56,7 +58,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 space-y-8">
-      <PageHeader title="Dashboard" />
+      <PageHeader title={t('dashboard.title')} />
       <div className="space-y-6">
         <Suspense fallback={<StatsCardsSkeleton />}>
           <StatsCards 
@@ -103,3 +105,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

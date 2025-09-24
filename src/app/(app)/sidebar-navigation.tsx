@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { Boxes, LayoutDashboard, LogOut, Settings, ShoppingCart, Tags, Users, UserCog } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
+import { useTranslation } from '@/providers/translation-provider';
 
 export function SidebarNavigation() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const isActive = (path: string) => pathname === path;
   
   const canAccess = (page: 'dashboard' | 'stock' | 'sales' | 'customers' | 'pricing' | 'users' | 'settings') => {
@@ -21,10 +23,10 @@ export function SidebarNavigation() {
         {canAccess('dashboard') && (
           <SidebarMenuItem>
             <Link href="/dashboard" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/dashboard')} tooltip="Dashboard">
+              <SidebarMenuButton asChild isActive={isActive('/dashboard')} tooltip={t('sidebar.dashboard')}>
                 <span>
                   <LayoutDashboard />
-                  Dashboard
+                  {t('sidebar.dashboard')}
                 </span>
               </SidebarMenuButton>
             </Link>
@@ -33,10 +35,10 @@ export function SidebarNavigation() {
         {canAccess('stock') && (
           <SidebarMenuItem>
             <Link href="/stock" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/stock')} tooltip="Estoque">
+              <SidebarMenuButton asChild isActive={isActive('/stock')} tooltip={t('sidebar.stock')}>
                 <span>
                   <Boxes />
-                  Estoque
+                  {t('sidebar.stock')}
                 </span>
               </SidebarMenuButton>
             </Link>
@@ -45,10 +47,10 @@ export function SidebarNavigation() {
         {canAccess('sales') && (
           <SidebarMenuItem>
             <Link href="/sales" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/sales')} tooltip="Vendas">
+              <SidebarMenuButton asChild isActive={isActive('/sales')} tooltip={t('sidebar.sales')}>
                 <span>
                   <ShoppingCart />
-                  Vendas
+                  {t('sidebar.sales')}
                 </span>
               </SidebarMenuButton>
             </Link>
@@ -57,10 +59,10 @@ export function SidebarNavigation() {
         {canAccess('customers') && (
           <SidebarMenuItem>
             <Link href="/customers" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/customers')} tooltip="Clientes">
+              <SidebarMenuButton asChild isActive={isActive('/customers')} tooltip={t('sidebar.customers')}>
                 <span>
                   <Users />
-                  Clientes
+                  {t('sidebar.customers')}
                 </span>
               </SidebarMenuButton>
             </Link>
@@ -69,10 +71,10 @@ export function SidebarNavigation() {
         {canAccess('pricing') && (
           <SidebarMenuItem>
             <Link href="/pricing" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/pricing')} tooltip="Precificação">
+              <SidebarMenuButton asChild isActive={isActive('/pricing')} tooltip={t('sidebar.pricing')}>
                 <span>
                   <Tags />
-                  Precificação
+                  {t('sidebar.pricing')}
                 </span>
               </SidebarMenuButton>
             </Link>
@@ -81,10 +83,10 @@ export function SidebarNavigation() {
         {canAccess('users') && (
           <SidebarMenuItem>
             <Link href="/users" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/users')} tooltip="Usuários">
+              <SidebarMenuButton asChild isActive={isActive('/users')} tooltip={t('sidebar.users')}>
                 <span>
                   <UserCog />
-                  Usuários
+                  {t('sidebar.users')}
                 </span>
               </SidebarMenuButton>
             </Link>
@@ -96,20 +98,20 @@ export function SidebarNavigation() {
         {canAccess('settings') && (
           <SidebarMenuItem>
             <Link href="/settings" passHref>
-              <SidebarMenuButton asChild isActive={isActive('/settings')} tooltip="Configurações">
+              <SidebarMenuButton asChild isActive={isActive('/settings')} tooltip={t('sidebar.settings')}>
                 <span>
                   <Settings />
-                  Configurações
+                  {t('sidebar.settings')}
                 </span>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
         )}
         <SidebarMenuItem>
-           <SidebarMenuButton onClick={logout} tooltip="Sair">
+           <SidebarMenuButton onClick={logout} tooltip={t('sidebar.logout')}>
               <span>
                 <LogOut />
-                Sair
+                {t('sidebar.logout')}
               </span>
             </SidebarMenuButton>
         </SidebarMenuItem>
@@ -117,3 +119,5 @@ export function SidebarNavigation() {
     </>
   );
 }
+
+    

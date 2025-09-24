@@ -11,10 +11,12 @@ function PricingToolSkeleton() {
 
 export default function PricingPage() {
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] p-4">
+    <div className="flex items-center justify-center p-4 sm:px-6 md:px-8">
       <Suspense fallback={<PricingToolSkeleton/>}>
         <PricingTool />
       </Suspense>
     </div>
   );
 }
+
+    

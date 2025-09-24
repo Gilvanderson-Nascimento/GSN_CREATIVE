@@ -145,9 +145,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setSales(prevSales => [newSale, ...prevSales]);
   };
 
+  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, settings, setSettings };
+
   return (
-    <DataContext.Provider value={{ products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, settings, setSettings }}>
+    <DataContext.Provider value={value}>
       {children}
     </DataContext.Provider>
   );
 }
+
+    

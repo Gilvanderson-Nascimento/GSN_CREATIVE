@@ -3,6 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
+import { DataProvider } from '@/providers/data-provider';
+import { TranslationProvider } from '@/providers/translation-provider';
 
 export const metadata: Metadata = {
   title: 'GSN_GESTOR',
@@ -29,7 +31,11 @@ export default function RootLayout({
             disableTransitionOnChange
         >
             <AuthProvider>
-                {children}
+                <DataProvider>
+                    <TranslationProvider>
+                        {children}
+                    </TranslationProvider>
+                </DataProvider>
             </AuthProvider>
             <Toaster />
         </ThemeProvider>
@@ -37,3 +43,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

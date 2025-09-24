@@ -8,9 +8,11 @@ import { Loader2, Wand2, TrendingUp, Clock, Users } from 'lucide-react';
 import { generateSalesReportInsights, type GenerateSalesReportInsightsOutput } from '@/ai/flows/generate-sales-report-insights';
 import { DataContext } from '@/context/data-context';
 import { ScrollArea } from '../ui/scroll-area';
+import { useTranslation } from '@/providers/translation-provider';
 
 export function SalesInsights() {
   const { sales } = useContext(DataContext);
+  const { t } = useTranslation();
   const [insights, setInsights] = useState<GenerateSalesReportInsightsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,9 +34,9 @@ export function SalesInsights() {
   return (
     <Card className="h-full flex flex-col bg-white rounded-xl shadow-md">
       <CardHeader className="p-6">
-        <CardTitle className="text-lg font-semibold text-gray-800">Análise de Vendas com IA</CardTitle>
+        <CardTitle className="text-lg font-semibold text-gray-800">{t('dashboard.ai_sales_analysis')}</CardTitle>
         <CardDescription className="text-sm text-gray-500">
-          Clique no botão para gerar insights sobre seus dados de vendas, como produtos mais vendidos e tendências de compra.
+          {t('dashboard.ai_sales_description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow overflow-hidden p-6 pt-0">
@@ -44,15 +46,15 @@ export function SalesInsights() {
               <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2 p-4">
                   <TrendingUp className="h-5 w-5 text-blue-500" />
-                  <CardTitle className="text-base font-semibold text-gray-800">Produtos Mais Vendidos</CardTitle>
+                  <CardTitle className="text-base font-semibold text-gray-800">{t('dashboard.best_selling_products')}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                   <Table>
                     <TableHeader>
                       <TableRow className="border-gray-200">
-                        <TableHead className="text-xs font-semibold text-gray-600">Produto</TableHead>
-                        <TableHead className="text-center text-xs font-semibold text-gray-600">Qtde.</TableHead>
-                        <TableHead className="text-right text-xs font-semibold text-gray-600">Receita</TableHead>
+                        <TableHead className="text-xs font-semibold text-gray-600">{t('dashboard.product')}</TableHead>
+                        <TableHead className="text-center text-xs font-semibold text-gray-600">{t('dashboard.quantity')}</TableHead>
+                        <TableHead className="text-right text-xs font-semibold text-gray-600">{t('dashboard.revenue')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -72,7 +74,7 @@ export function SalesInsights() {
                 <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2 p-4">
                     <Clock className="h-5 w-5 text-blue-500" />
-                    <CardTitle className="text-base font-semibold text-gray-800">Horários de Pico</CardTitle>
+                    <CardTitle className="text-base font-semibold text-gray-800">{t('dashboard.peak_hours')}</CardTitle>
                   </CardHeader>
                   <CardContent className="text-sm p-4 pt-2 text-gray-700">
                     <p><Badge variant="secondary" className="bg-blue-100 text-blue-600">{insights.peakSalesTimes.trend}</Badge> {insights.peakSalesTimes.details}</p>
@@ -81,7 +83,7 @@ export function SalesInsights() {
                 <Card className="bg-white rounded-xl shadow-sm border border-gray-200">
                   <CardHeader className="flex-row items-center gap-2 space-y-0 pb-2 p-4">
                     <Users className="h-5 w-5 text-blue-500" />
-                    <CardTitle className="text-base font-semibold text-gray-800">Tendências dos Clientes</CardTitle>
+                    <CardTitle className="text-base font-semibold text-gray-800">{t('dashboard.customer_trends')}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2 text-xs p-4 pt-2 text-gray-700">
                     {insights.customerTrends.map(c => (
@@ -93,7 +95,7 @@ export function SalesInsights() {
               
               <Card className="bg-gray-50 border-dashed border-gray-300 rounded-xl">
                 <CardHeader className="p-4 pb-2">
-                  <CardTitle className="text-base font-semibold text-gray-800">Resumo Geral da IA</CardTitle>
+                  <CardTitle className="text-base font-semibold text-gray-800">{t('dashboard.ai_summary')}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                   <p className="text-sm text-gray-600">{insights.overallSummary}</p>
@@ -102,7 +104,7 @@ export function SalesInsights() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                <p className="text-sm text-gray-500">Clique no botão abaixo para usar a IA.</p>
+                <p className="text-sm text-gray-500">{t('dashboard.click_ai_button')}</p>
             </div>
           )}
         </ScrollArea>
@@ -112,12 +114,12 @@ export function SalesInsights() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Analisando...
+              {t('dashboard.analyzing')}
             </>
           ) : (
             <>
               <Wand2 className="mr-2 h-4 w-4" />
-              Gerar Insights
+              {t('dashboard.generate_insights')}
             </>
           )}
         </Button>
@@ -125,3 +127,5 @@ export function SalesInsights() {
     </Card>
   );
 }
+
+    

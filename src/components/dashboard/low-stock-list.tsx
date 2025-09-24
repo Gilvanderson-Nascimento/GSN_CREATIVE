@@ -8,6 +8,7 @@ import type { Product } from '@/lib/types';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
+import { useTranslation } from '@/providers/translation-provider';
 
 type LowStockListProps = {
   products: Product[];
@@ -15,6 +16,7 @@ type LowStockListProps = {
 };
 
 export function LowStockList({ products, lowStockThreshold }: LowStockListProps) {
+  const { t } = useTranslation();
   const lowStockProducts = products
     .filter((p) => p.quantity <= lowStockThreshold)
     .sort((a,b) => a.quantity - b.quantity);
@@ -24,10 +26,10 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
       <CardHeader className="p-6">
         <div className="flex items-center gap-2">
             <TriangleAlert className="h-6 w-6 text-red-500" />
-            <CardTitle className="text-lg font-semibold text-gray-800">Alerta de Estoque Baixo</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('dashboard.low_stock_alert')}</CardTitle>
         </div>
         <CardDescription className="text-sm text-red-500">
-          Produtos que atingiram o nível mínimo de estoque de {lowStockThreshold} unidades.
+          {t('dashboard.low_stock_description', { count: lowStockThreshold })}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow overflow-hidden p-6 pt-0">
@@ -36,9 +38,9 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
             <Table>
                 <TableHeader>
                 <TableRow className="border-red-200">
-                    <TableHead className="w-[64px] text-xs font-semibold text-gray-600">Imagem</TableHead>
-                    <TableHead className="text-xs font-semibold text-gray-600">Produto</TableHead>
-                    <TableHead className="text-right text-xs font-semibold text-gray-600">Qtde. Restante</TableHead>
+                    <TableHead className="w-[64px] text-xs font-semibold text-gray-600">{t('dashboard.image')}</TableHead>
+                    <TableHead className="text-xs font-semibold text-gray-600">{t('dashboard.product')}</TableHead>
+                    <TableHead className="text-right text-xs font-semibold text-gray-600">{t('dashboard.remaining_qty')}</TableHead>
                 </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -72,8 +74,8 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
             </Table>
             ) : (
             <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                <p className="text-lg font-semibold text-gray-800">Estoque em dia!</p>
-                <p className="text-sm text-gray-500">Nenhum produto com estoque baixo no momento.</p>
+                <p className="text-lg font-semibold text-gray-800">{t('dashboard.stock_ok')}</p>
+                <p className="text-sm text-gray-500">{t('dashboard.no_low_stock_products')}</p>
             </div>
             )}
         </ScrollArea>
@@ -81,10 +83,12 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
       {lowStockProducts.length > 0 && (
           <CardFooter className="p-6 pt-0">
               <Button asChild variant="outline" size="sm" className="w-full bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg px-4 py-2 text-sm font-medium">
-                  <Link href="/stock">Ver Estoque Completo</Link>
+                  <Link href="/stock">{t('dashboard.view_full_stock')}</Link>
               </Button>
           </CardFooter>
       )}
     </Card>
   );
 }
+
+    

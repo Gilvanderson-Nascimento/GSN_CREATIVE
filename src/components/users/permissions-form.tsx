@@ -12,6 +12,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import type { User, PagePermission } from '@/lib/types';
 import { allPermissions } from '@/lib/types';
+import { useTranslation } from '@/providers/translation-provider';
 
 const permissionKeys = Object.keys(allPermissions) as PagePermission[];
 
@@ -28,6 +29,7 @@ type PermissionsFormProps = {
 };
 
 export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps) {
+  const { t } = useTranslation();
   // Ensure all possible permissions are accounted for, defaulting to false.
   const defaultPermissions = permissionKeys.reduce((acc, key) => {
     acc[key] = user.permissions?.[key] || false;
@@ -65,7 +67,7 @@ export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps
                         </FormControl>
                         <div className="space-y-1 leading-none">
                             <FormLabel>
-                                {allPermissions[key as PagePermission]}
+                                {t(`sidebar.${key}` as any)}
                             </FormLabel>
                         </div>
                         </FormItem>
@@ -77,11 +79,13 @@ export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps
        
         <div className="flex justify-end gap-2 pt-8">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
+            {t('global.cancel')}
           </Button>
-          <Button type="submit">Salvar Permissões</Button>
+          <Button type="submit">{t('users.save_permissions')}</Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    

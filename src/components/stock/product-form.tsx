@@ -16,14 +16,15 @@ import type { Product } from '@/lib/types';
 import Image from 'next/image';
 import React from 'react';
 import { Upload } from 'lucide-react';
+import { useTranslation } from '@/providers/translation-provider';
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Nome deve ter pelo menos 2 caracteres.' }),
-  category: z.string().min(2, { message: 'Categoria deve ter pelo menos 2 caracteres.' }),
-  quantity: z.coerce.number().min(0, { message: 'Quantidade não pode ser negativa.' }),
-  purchasePrice: z.coerce.number().positive({ message: 'Preço de compra deve ser positivo.' }),
-  salePrice: z.coerce.number().positive({ message: 'Preço de venda deve ser positivo.' }),
-  barcode: z.string().min(8, { message: 'Código de barras inválido.' }),
+  name: z.string().min(2, { message: 'stock.product_form.name_min_char' }),
+  category: z.string().min(2, { message: 'stock.product_form.category_min_char' }),
+  quantity: z.coerce.number().min(0, { message: 'stock.product_form.quantity_not_negative' }),
+  purchasePrice: z.coerce.number().positive({ message: 'stock.product_form.purchase_price_positive' }),
+  salePrice: z.coerce.number().positive({ message: 'stock.product_form.sale_price_positive' }),
+  barcode: z.string().min(8, { message: 'stock.product_form.barcode_invalid' }),
   imageUrl: z.string().optional(),
 });
 
@@ -34,6 +35,7 @@ type ProductFormProps = {
 };
 
 export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
+  const { t } = useTranslation();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: product || {
@@ -66,6 +68,10 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
     onSave({ ...values, imageUrl: values.imageUrl || '', id: product?.id || '' });
   }
 
+  const translatedMessage = (messageKey?: string) => {
+    return messageKey ? t(messageKey) : undefined;
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
@@ -81,7 +87,7 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
                         data-ai-hint="product image"
                     />
                 ) : (
-                    <span className="text-xs text-muted-foreground text-center">Sem Imagem</span>
+                    <span className="text-xs text-muted-foreground text-center">{t('stock.product_form.no_image')}</span>
                 )}
             </div>
             <input 
@@ -93,19 +99,19 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
             />
             <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
                 <Upload className="mr-2 h-4 w-4" />
-                Carregar Imagem
+                {t('stock.product_form.upload_image')}
             </Button>
         </div>
         <FormField
           control={form.control}
           name="name"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>Nome do Produto</FormLabel>
+              <FormLabel>{t('stock.product_form.product_name')}</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: Arroz Parboilizado" {...field} />
+                <Input placeholder={t('stock.product_form.ex_product_name')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
@@ -113,26 +119,26 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
             <FormField
             control={form.control}
             name="category"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
                 <FormItem>
-                <FormLabel>Categoria</FormLabel>
+                <FormLabel>{t('stock.product_form.category')}</FormLabel>
                 <FormControl>
-                    <Input placeholder="Ex: Grãos" {...field} />
+                    <Input placeholder={t('stock.product_form.ex_category')} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                 </FormItem>
             )}
             />
             <FormField
             control={form.control}
             name="quantity"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
                 <FormItem>
-                <FormLabel>Quantidade</FormLabel>
+                <FormLabel>{t('stock.product_form.quantity')}</FormLabel>
                 <FormControl>
-                    <Input type="number" placeholder="Ex: 100" {...field} />
+                    <Input type="number" placeholder={t('stock.product_form.ex_quantity')} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>{translatedMessage(error?.message)}</FormMessage>
                 </FormItem>
             )}
             />
@@ -141,26 +147,26 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
           <FormField
             control={form.control}
             name="purchasePrice"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel>Preço de Compra</FormLabel>
+                <FormLabel>{t('stock.product_form.purchase_price')}</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.01" placeholder="Ex: 3.50" {...field} />
+                  <Input type="number" step="0.01" placeholder={t('stock.product_form.ex_purchase_price')} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>{translatedMessage(error?.message)}</FormMessage>
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
             name="salePrice"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
               <FormItem>
-                <FormLabel>Preço de Venda</FormLabel>
+                <FormLabel>{t('stock.product_form.sale_price')}</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.01" placeholder="Ex: 5.00" {...field} />
+                  <Input type="number" step="0.01" placeholder={t('stock.product_form.ex_sale_price')} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage>{translatedMessage(error?.message)}</FormMessage>
               </FormItem>
             )}
           />
@@ -168,23 +174,25 @@ export function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
         <FormField
           control={form.control}
           name="barcode"
-          render={({ field }) => (
+          render={({ field, fieldState: { error } }) => (
             <FormItem>
-              <FormLabel>Código de Barras</FormLabel>
+              <FormLabel>{t('stock.product_form.barcode')}</FormLabel>
               <FormControl>
-                <Input placeholder="7890123456789" {...field} />
+                <Input placeholder={t('stock.product_form.ex_barcode')} {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
           )}
         />
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
+            {t('global.cancel')}
           </Button>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit">{t('global.save')}</Button>
         </div>
       </form>
     </Form>
   );
 }
+
+    

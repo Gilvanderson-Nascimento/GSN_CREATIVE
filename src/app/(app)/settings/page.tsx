@@ -11,9 +11,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext, type AppSettings } from '@/context/data-context';
+import { useTranslation } from '@/providers/translation-provider';
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const { products, customers, sales, setProducts, setCustomers, setSales, settings, setSettings } = useContext(DataContext);
   const restoreInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,8 +37,8 @@ export default function SettingsPage() {
   const handleResetData = () => {
     toast({
         variant: "destructive",
-        title: "Ação Perigosa",
-        description: "A funcionalidade de resetar dados ainda não foi implementada.",
+        title: t('settings.dangerous_action_title'),
+        description: t('settings.reset_not_implemented'),
     })
   }
 
@@ -56,7 +58,7 @@ export default function SettingsPage() {
         const jsonString = JSON.stringify(dataToExport, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         saveAs(blob, `${fileName}.json`);
-        toast({ title: "Exportação Concluída", description: `Os dados foram exportados para ${fileName}.json` });
+        toast({ title: t('settings.export_complete_title'), description: t('settings.export_complete_description', { fileName: `${fileName}.json` }) });
 
     } else {
         const productSheet = XLSX.utils.json_to_sheet(products);
@@ -69,11 +71,11 @@ export default function SettingsPage() {
         XLSX.utils.book_append_sheet(wb, salesSheet, "Vendas");
 
         if (format === 'csv') {
-            toast({ title: "Exportação CSV", description: "O formato CSV é exportado como um arquivo Excel (.xlsx) com abas separadas para melhor compatibilidade."})
+            toast({ title: "Exportação CSV", description: t('settings.csv_export_note')})
         }
         
         XLSX.writeFile(wb, `${fileName}.xlsx`);
-        toast({ title: "Exportação Concluída", description: `Os dados foram exportados para ${fileName}.xlsx` });
+        toast({ title: t('settings.export_complete_title'), description: t('settings.export_complete_description', { fileName: `${fileName}.xlsx` }) });
     }
   }
 
@@ -86,7 +88,7 @@ export default function SettingsPage() {
         try {
             const text = e.target?.result;
             if (typeof text !== 'string') {
-                throw new Error("Falha ao ler o arquivo.");
+                throw new Error(t('settings.restore_error_file_read'));
             }
             const data = JSON.parse(text);
             if (data.products && data.customers && data.sales) {
@@ -94,17 +96,17 @@ export default function SettingsPage() {
                 setCustomers(data.customers);
                 setSales(data.sales);
                 toast({
-                    title: "Backup Restaurado",
-                    description: "Os dados foram importados com sucesso.",
+                    title: t('settings.backup_restored_title'),
+                    description: t('settings.backup_restored_description'),
                 });
             } else {
-                throw new Error("Formato de arquivo de backup inválido.");
+                throw new Error(t('settings.restore_error_invalid_format'));
             }
         } catch (error) {
             toast({
                 variant: "destructive",
-                title: "Erro na Restauração",
-                description: error instanceof Error ? error.message : "Ocorreu um erro desconhecido.",
+                title: t('settings.restore_error_title'),
+                description: error instanceof Error ? error.message : t('settings.restore_error_unknown'),
             });
         }
     };
@@ -118,40 +120,40 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Configurações" />
+      <PageHeader title={t('settings.title')} />
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Sistema</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Configurações gerais da aplicação.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.system_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.system_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Nome da Empresa</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.company_name')}</label>
                 <Input value={settings.sistema.nome_empresa} onChange={e => handleSettingChange('sistema', 'nome_empresa', e.target.value)} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Logo da Empresa</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.company_logo')}</label>
                 <Input type="file" className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm file:font-medium file:text-sm file:text-gray-700" />
             </div>
             <div className="space-y-2">
-                 <label className="text-sm font-medium text-gray-700">Idioma</label>
+                 <label className="text-sm font-medium text-gray-700">{t('settings.language')}</label>
                 <Select value={settings.sistema.idioma} onValueChange={(v) => handleSettingChange('sistema', 'idioma', v)}>
                     <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                        <SelectItem value="en-US">English (United States)</SelectItem>
+                        <SelectItem value="pt-BR">{t('settings.pt_br')}</SelectItem>
+                        <SelectItem value="en-US">{t('settings.en_us')}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
             <div className="space-y-2">
-                 <label className="text-sm font-medium text-gray-700">Moeda</label>
+                 <label className="text-sm font-medium text-gray-700">{t('settings.currency')}</label>
                 <Select value={settings.sistema.moeda} onValueChange={(v) => handleSettingChange('sistema', 'moeda', v)}>
                     <SelectTrigger className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="BRL">Real (BRL)</SelectItem>
-                        <SelectItem value="USD">Dólar (USD)</SelectItem>
+                        <SelectItem value="BRL">{t('settings.brl')}</SelectItem>
+                        <SelectItem value="USD">{t('settings.usd')}</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
@@ -160,12 +162,12 @@ export default function SettingsPage() {
         
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Aparência</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Personalize a aparência do sistema.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.appearance_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.appearance_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Tema</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.theme')}</label>
                 <ThemeToggle />
             </div>
           </CardContent>
@@ -173,26 +175,26 @@ export default function SettingsPage() {
 
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Precificação</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Defina as regras de preço dos produtos.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.pricing_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.pricing_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Margem Lucro (%)</label>
+                    <label className="text-sm font-medium text-gray-700">{t('settings.profit_margin_percent')}</label>
                     <Input type="number" value={settings.precificacao.margem_lucro} onChange={e => handleSettingChange('precificacao', 'margem_lucro', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Imposto Padrão (%)</label>
+                    <label className="text-sm font-medium text-gray-700">{t('settings.default_tax_percent')}</label>
                     <Input type="number" value={settings.precificacao.imposto_padrao} onChange={e => handleSettingChange('precificacao', 'imposto_padrao', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
                 </div>
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="arredondar-valores" className="text-sm font-medium text-gray-700">Arredondar preços (final .99)</label>
+              <label htmlFor="arredondar-valores" className="text-sm font-medium text-gray-700">{t('settings.round_prices')}</label>
               <Switch id="arredondar-valores" checked={settings.precificacao.arredondar_valores} onCheckedChange={(c) => handleSettingChange('precificacao', 'arredondar_valores', c)} />
             </div>
              <div className="flex items-center justify-between">
-              <label htmlFor="permitir-venda-abaixo-custo" className="text-sm font-medium text-gray-700">Permitir venda abaixo do custo</label>
+              <label htmlFor="permitir-venda-abaixo-custo" className="text-sm font-medium text-gray-700">{t('settings.allow_sale_below_cost')}</label>
               <Switch id="permitir-venda-abaixo-custo" checked={settings.precificacao.permitir_venda_abaixo_custo} onCheckedChange={(c) => handleSettingChange('precificacao', 'permitir_venda_abaixo_custo', c)} />
             </div>
           </CardContent>
@@ -200,20 +202,20 @@ export default function SettingsPage() {
 
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Estoque</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Gerencie as configurações de inventário.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.stock_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.stock_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="flex items-center justify-between">
-              <label htmlFor="notificar-estoque-minimo" className="text-sm font-medium text-gray-700">Notificar estoque baixo</label>
+              <label htmlFor="notificar-estoque-minimo" className="text-sm font-medium text-gray-700">{t('settings.notify_low_stock')}</label>
               <Switch id="notificar-estoque-minimo" checked={settings.estoque.notificar_estoque_minimo} onCheckedChange={(c) => handleSettingChange('estoque', 'notificar_estoque_minimo', c)} />
             </div>
              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Nível mínimo de estoque</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.min_stock_level')}</label>
                 <Input type="number" value={settings.estoque.estoque_minimo_padrao} onChange={e => handleSettingChange('estoque', 'estoque_minimo_padrao', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
             </div>
             <div className="flex items-center justify-between">
-              <label htmlFor="permitir-estoque-negativo" className="text-sm font-medium text-gray-700">Permitir estoque negativo</label>
+              <label htmlFor="permitir-estoque-negativo" className="text-sm font-medium text-gray-700">{t('settings.allow_negative_stock')}</label>
               <Switch id="permitir-estoque-negativo" checked={settings.estoque.permitir_estoque_negativo} onCheckedChange={(c) => handleSettingChange('estoque', 'permitir_estoque_negativo', c)} />
             </div>
           </CardContent>
@@ -221,20 +223,20 @@ export default function SettingsPage() {
 
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Vendas</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Configurações do ponto de venda.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.sales_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.sales_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <label htmlFor="venda-sem-cliente" className="text-sm font-medium text-gray-700">Permitir venda sem cliente</label>
+              <label htmlFor="venda-sem-cliente" className="text-sm font-medium text-gray-700">{t('settings.allow_sale_without_customer')}</label>
               <Switch id="venda-sem-cliente" checked={settings.vendas.venda_sem_cliente} onCheckedChange={(c) => handleSettingChange('vendas', 'venda_sem_cliente', c)} />
             </div>
             <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Desconto máximo permitido (%)</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.max_discount_percent')}</label>
                 <Input type="number" value={settings.vendas.desconto_maximo_percentual} onChange={e => handleSettingChange('vendas', 'desconto_maximo_percentual', Number(e.target.value))} className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm" />
             </div>
              <div className="flex items-center justify-between">
-              <label htmlFor="associar-vendedor" className="text-sm font-medium text-gray-700">Associar vendedor à venda</label>
+              <label htmlFor="associar-vendedor" className="text-sm font-medium text-gray-700">{t('settings.associate_seller')}</label>
               <Switch id="associar-vendedor" checked={settings.vendas.associar_vendedor} onCheckedChange={(c) => handleSettingChange('vendas', 'associar_vendedor', c)} />
             </div>
           </CardContent>
@@ -242,25 +244,25 @@ export default function SettingsPage() {
 
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Usuários e Permissões</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Gerencie o acesso e as funções dos usuários.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.users_permissions_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.users_permissions_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-                <label htmlFor="multiusuario" className="text-sm font-medium text-gray-700">Sistema multiusuário</label>
+                <label htmlFor="multiusuario" className="text-sm font-medium text-gray-700">{t('settings.multi_user_system')}</label>
                 <Switch id="multiusuario" checked={settings.usuarios.multiusuario} onCheckedChange={(c) => handleSettingChange('usuarios', 'multiusuario', c)} />
             </div>
             <div className="flex items-center justify-between">
-                <label htmlFor="autenticacao-2-etapas" className="text-sm font-medium text-gray-700">Autenticação em 2 etapas (2FA)</label>
+                <label htmlFor="autenticacao-2-etapas" className="text-sm font-medium text-gray-700">{t('settings.two_factor_auth')}</label>
                 <Switch id="autenticacao-2-etapas" checked={settings.usuarios.autenticacao_2_etapas} onCheckedChange={(c) => handleSettingChange('usuarios', 'autenticacao_2_etapas', c)} />
             </div>
             <Separator/>
             <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Papéis e Permissões</h4>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">{t('settings.roles_permissions')}</h4>
                 <div className="space-y-2 text-sm text-gray-500">
-                    <p><b>Admin:</b> Acesso total.</p>
-                    <p><b>Vendedor:</b> Acesso a Vendas e Clientes.</p>
-                    <p><b>Estoquista:</b> Acesso a Produtos e Estoque.</p>
+                    <p>{t('settings.role_admin')}</p>
+                    <p>{t('settings.role_seller')}</p>
+                    <p>{t('settings.role_stockist')}</p>
                 </div>
             </div>
           </CardContent>
@@ -268,12 +270,12 @@ export default function SettingsPage() {
 
         <Card className="bg-white shadow-md rounded-xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">Backup e Exportação</CardTitle>
-            <CardDescription className="text-sm text-gray-500">Gerencie cópias de segurança e exporte seus dados.</CardDescription>
+            <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.backup_export_title')}</CardTitle>
+            <CardDescription className="text-sm text-gray-500">{t('settings.backup_export_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Exportar Todos os Dados</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.export_all_data')}</label>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => exportData('csv')} className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md px-3 py-2">CSV</Button>
                     <Button variant="outline" size="sm" onClick={() => exportData('excel')} className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md px-3 py-2">Excel</Button>
@@ -282,9 +284,9 @@ export default function SettingsPage() {
             </div>
             <Separator />
              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Restaurar Backup</label>
+                <label className="text-sm font-medium text-gray-700">{t('settings.restore_backup')}</label>
                 <Button variant="outline" className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md px-3 py-2 text-sm" onClick={() => restoreInputRef.current?.click()}>
-                    Carregar Arquivo de Backup (.json)
+                    {t('settings.load_backup_file')}
                 </Button>
                 <input
                     type="file"
@@ -293,27 +295,27 @@ export default function SettingsPage() {
                     className="hidden"
                     accept=".json"
                 />
-                <p className="text-xs text-muted-foreground">Carregue um arquivo JSON para restaurar todos os dados.</p>
+                <p className="text-xs text-muted-foreground">{t('settings.restore_note')}</p>
             </div>
           </CardContent>
         </Card>
         
         <Card className="bg-white shadow-md rounded-xl">
             <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800">Integrações</CardTitle>
-                <CardDescription className="text-sm text-gray-500">Conecte o sistema a outros serviços.</CardDescription>
+                <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.integrations_title')}</CardTitle>
+                <CardDescription className="text-sm text-gray-500">{t('settings.integrations_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                    <label htmlFor="api-nfe" className="text-sm font-medium text-gray-700">API de Nota Fiscal Eletrônica</label>
+                    <label htmlFor="api-nfe" className="text-sm font-medium text-gray-700">{t('settings.einvoice_api')}</label>
                     <Switch id="api-nfe" checked={settings.integracoes.api_nfe} onCheckedChange={(c) => handleSettingChange('integracoes', 'api_nfe', c)} />
                 </div>
                 <div className="flex items-center justify-between">
-                    <label htmlFor="webhooks" className="text-sm font-medium text-gray-700">Webhooks para desenvolvedores</label>
+                    <label htmlFor="webhooks" className="text-sm font-medium text-gray-700">{t('settings.developer_webhooks')}</label>
                     <Switch id="webhooks" checked={settings.integracoes.webhooks} onCheckedChange={(c) => handleSettingChange('integracoes', 'webhooks', c)} />
                 </div>
                 <div className="flex items-center justify-between">
-                    <label htmlFor="impressora-cupom" className="text-sm font-medium text-gray-700">Impressora de Cupom Fiscal</label>
+                    <label htmlFor="impressora-cupom" className="text-sm font-medium text-gray-700">{t('settings.fiscal_printer')}</label>
                     <Switch id="impressora-cupom" checked={settings.integracoes.impressora_cupom} onCheckedChange={(c) => handleSettingChange('integracoes', 'impressora_cupom', c)} />
                 </div>
             </CardContent>
@@ -321,21 +323,21 @@ export default function SettingsPage() {
 
         <Card className="bg-white shadow-md rounded-xl">
             <CardHeader>
-                <CardTitle className="text-lg font-semibold text-gray-800">Ambiente de Teste</CardTitle>
-                <CardDescription className="text-sm text-gray-500">Opções para desenvolvedores e testes.</CardDescription>
+                <CardTitle className="text-lg font-semibold text-gray-800">{t('settings.test_environment_title')}</CardTitle>
+                <CardDescription className="text-sm text-gray-500">{t('settings.test_environment_description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-yellow-50 border border-yellow-300 text-yellow-800 rounded-md">
                     <div>
-                        <label htmlFor="modo-teste" className="font-medium text-sm">Modo Teste</label>
-                        <p className="text-xs text-yellow-700">Não afeta os dados reais.</p>
+                        <label htmlFor="modo-teste" className="font-medium text-sm">{t('settings.test_mode')}</label>
+                        <p className="text-xs text-yellow-700">{t('settings.test_mode_note')}</p>
                     </div>
                     <Switch id="modo-teste" checked={settings.ambiente_teste.modo_teste} onCheckedChange={(c) => handleSettingChange('ambiente_teste', 'modo_teste', c)} />
                 </div>
                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Resetar Base de Dados</label>
-                    <Button variant="destructive" className="w-full" onClick={handleResetData}>Resetar Dados de Teste</Button>
-                    <p className="text-xs text-muted-foreground">Atenção: Esta ação é irreversível e apagará todos os dados do ambiente de teste.</p>
+                    <label className="text-sm font-medium text-gray-700">{t('settings.reset_database')}</label>
+                    <Button variant="destructive" className="w-full" onClick={handleResetData}>{t('settings.reset_test_data')}</Button>
+                    <p className="text-xs text-muted-foreground">{t('settings.reset_warning')}</p>
                 </div>
             </CardContent>
         </Card>
@@ -343,3 +345,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    

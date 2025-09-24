@@ -4,11 +4,13 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/providers/translation-provider';
 
 export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -22,6 +24,7 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
             <div className="flex flex-col items-center gap-4">
                  <Skeleton className="h-16 w-[250px]" />
                  <Skeleton className="h-8 w-[200px]" />
+                 <p>{t('private_route.loading_user_data')}</p>
             </div>
         </div>
     );
@@ -29,3 +32,5 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+
+    

@@ -23,6 +23,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from '@/components/ui/sheet';
 import {
   AlertDialog,
@@ -43,9 +44,11 @@ import { PermissionsForm } from './permissions-form';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { DataContext } from '@/context/data-context';
+import { useTranslation } from '@/providers/translation-provider';
 
 export default function UserTable() {
   const { users: initialUsers, setUsers } = useContext(DataContext);
+  const { t } = useTranslation();
   const [filter, setFilter] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [managingPermissionsFor, setManagingPermissionsFor] = useState<User | null>(null);
@@ -125,9 +128,9 @@ export default function UserTable() {
     <>
        <Card className="bg-white shadow-md rounded-xl">
         <CardHeader className="p-6">
-          <CardTitle className="text-xl font-bold text-gray-800">Usuários do Sistema</CardTitle>
+          <CardTitle className="text-xl font-bold text-gray-800">{t('users.title')}</CardTitle>
           <CardDescription className="text-base text-gray-600">
-            Adicione, edite e gerencie os usuários que podem acessar o sistema.
+            {t('users.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -135,7 +138,7 @@ export default function UserTable() {
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
-                        placeholder="Filtrar por nome, usuário ou e-mail..."
+                        placeholder={t('users.filter_placeholder')}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                         className="pl-9 w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
@@ -143,19 +146,19 @@ export default function UserTable() {
                 </div>
                 <Button onClick={handleAddUser} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition shadow-sm">
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  Adicionar Usuário
+                  {t('users.add_user')}
                 </Button>
             </div>
             <div className="rounded-xl border border-gray-200 overflow-hidden">
                 <Table className="w-full border-collapse divide-y divide-gray-200">
                 <TableHeader>
                     <TableRow className="bg-gray-100 hover:bg-gray-100">
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Nome Completo</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Nome de Usuário</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Função</TableHead>
-                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">E-mail</TableHead>
+                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.full_name')}</TableHead>
+                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.username')}</TableHead>
+                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.role')}</TableHead>
+                        <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">{t('users.email')}</TableHead>
                         <TableHead>
-                            <span className="sr-only">Ações</span>
+                            <span className="sr-only">{t('global.actions')}</span>
                         </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -176,16 +179,16 @@ export default function UserTable() {
                                 </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                                    <DropdownMenuLabel>{t('global.actions')}</DropdownMenuLabel>
                                     <DropdownMenuItem onSelect={() => handleEditUser(user)}>
-                                        <Pencil className="mr-2 h-4 w-4" /> Editar Usuário
+                                        <Pencil className="mr-2 h-4 w-4" /> {t('users.edit_user')}
                                     </DropdownMenuItem>
                                      <DropdownMenuItem onSelect={() => handleManagePermissions(user)}>
-                                        <ShieldCheck className="mr-2 h-4 w-4" /> Gerenciar Permissões
+                                        <ShieldCheck className="mr-2 h-4 w-4" /> {t('users.manage_permissions')}
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onSelect={() => confirmDeleteUser(user)} className="text-destructive">
-                                        <Trash2 className="mr-2 h-4 w-4" /> Excluir Usuário
+                                        <Trash2 className="mr-2 h-4 w-4" /> {t('users.delete_user')}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
@@ -196,7 +199,7 @@ export default function UserTable() {
                     {filteredUsers.length === 0 && (
                         <TableRow>
                             <TableCell colSpan={5} className="h-24 text-center text-sm text-gray-500">
-                                Nenhum usuário encontrado.
+                                {t('users.no_users_found')}
                             </TableCell>
                         </TableRow>
                     )}
@@ -206,7 +209,7 @@ export default function UserTable() {
         </CardContent>
         <CardFooter className="p-6">
             <div className="text-sm text-gray-500">
-                Mostrando <strong>{filteredUsers.length}</strong> de <strong>{usersToDisplay.length}</strong> usuários.
+                {t('users.showing_users', { count: filteredUsers.length, total: usersToDisplay.length })}
             </div>
         </CardFooter>
       </Card>
@@ -215,7 +218,7 @@ export default function UserTable() {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent className="overflow-y-auto w-full max-w-md sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>{editingUser ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</SheetTitle>
+            <SheetTitle>{editingUser ? t('users.edit_user') : t('users.add_new_user')}</SheetTitle>
           </SheetHeader>
           <UserForm
             user={editingUser}
@@ -229,8 +232,8 @@ export default function UserTable() {
        <Sheet open={isPermissionsSheetOpen} onOpenChange={setIsPermissionsSheetOpen}>
         <SheetContent className="overflow-y-auto w-full max-w-md sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Gerenciar Permissões</SheetTitle>
-            <CardDescription>Defina quais abas {managingPermissionsFor?.name} pode acessar.</CardDescription>
+            <SheetTitle>{t('users.permissions_sheet_title')}</SheetTitle>
+            {managingPermissionsFor && <SheetDescription>{t('users.permissions_sheet_description', { name: managingPermissionsFor.name })}</SheetDescription>}
           </SheetHeader>
           {managingPermissionsFor && (
             <PermissionsForm
@@ -245,18 +248,19 @@ export default function UserTable() {
       <AlertDialog open={!!deletingUser} onOpenChange={(open) => !open && setDeletingUser(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+            <AlertDialogTitle>{t('users.delete_dialog_title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação não pode ser desfeita. Isso excluirá permanentemente o usuário
-              e removerá seu acesso ao sistema.
+              {t('users.delete_dialog_description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeletingUser(null)}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteUser} className="bg-destructive hover:bg-destructive/90">Excluir</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setDeletingUser(null)}>{t('global.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteUser} className="bg-destructive hover:bg-destructive/90">{t('global.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
 }
+
+    

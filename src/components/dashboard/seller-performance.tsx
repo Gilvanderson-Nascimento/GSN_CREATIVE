@@ -8,6 +8,7 @@ import { User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/providers/translation-provider';
 
 type SellerPerformanceProps = {
   sales: Sale[];
@@ -22,6 +23,7 @@ type SellerStats = {
 };
 
 export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
+  const { t } = useTranslation();
   const sellerStats = useMemo(() => {
     const stats: Record<string, SellerStats> = {};
 
@@ -36,7 +38,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
         };
       });
       
-    stats['unidentified'] = { id: 'unidentified', name: 'Vendedor não identificado', salesCount: 0, totalValue: 0 };
+    stats['unidentified'] = { id: 'unidentified', name: t('dashboard.unidentified_seller'), salesCount: 0, totalValue: 0 };
 
 
     sales.forEach(sale => {
@@ -53,7 +55,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
     });
 
     return Object.values(stats).sort((a, b) => b.totalValue - a.totalValue);
-  }, [sales, users]);
+  }, [sales, users, t]);
 
   const totalSalesCount = useMemo(() => sales.length, [sales]);
   const totalSalesValue = useMemo(() => sales.reduce((acc, sale) => acc + sale.total, 0), [sales]);
@@ -65,19 +67,19 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
       <CardHeader className="p-6">
         <CardTitle className="flex items-center gap-2 text-lg font-semibold text-gray-800">
             <UserIcon className="h-5 w-5"/>
-            Desempenho por Vendedor
+            {t('dashboard.seller_performance')}
         </CardTitle>
         <CardDescription className="text-sm text-gray-500">
-          Análise das vendas realizadas por cada membro da equipe. Clique no nome para ver detalhes.
+          {t('dashboard.seller_performance_description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         <Table>
           <TableHeader>
             <TableRow className="border-gray-200">
-              <TableHead className="text-xs text-gray-500 font-semibold">Vendedor</TableHead>
-              <TableHead className="text-center text-xs text-gray-500 font-semibold">Nº de Vendas</TableHead>
-              <TableHead className="text-right text-xs text-gray-500 font-semibold">Valor Total Vendido</TableHead>
+              <TableHead className="text-xs text-gray-500 font-semibold">{t('dashboard.seller')}</TableHead>
+              <TableHead className="text-center text-xs text-gray-500 font-semibold">{t('dashboard.sales_count')}</TableHead>
+              <TableHead className="text-right text-xs text-gray-500 font-semibold">{t('dashboard.total_value_sold')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -101,7 +103,7 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
              {activeSellers.length === 0 && (
                 <TableRow>
                     <TableCell colSpan={3} className="h-24 text-center text-sm text-gray-500">
-                        Nenhuma venda registrada no período.
+                        {t('dashboard.no_sales_in_period')}
                     </TableCell>
                 </TableRow>
             )}
@@ -110,12 +112,14 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
       </CardContent>
        <CardFooter className="font-semibold text-right flex justify-end gap-6 bg-gray-50 py-4 px-6 border-t border-gray-200 rounded-b-xl">
             <div className="text-xs text-gray-600">
-                Total Geral de Vendas: <Badge className="bg-blue-100 text-blue-600">{totalSalesCount}</Badge>
+                {t('dashboard.total_general_sales')}: <Badge className="bg-blue-100 text-blue-600">{totalSalesCount}</Badge>
             </div>
              <div className="text-xs text-gray-600">
-                Valor Total Geral: <span className="text-blue-600 font-bold">R$ {totalSalesValue.toFixed(2)}</span>
+                {t('dashboard.total_general_value')}: <span className="text-blue-600 font-bold">R$ {totalSalesValue.toFixed(2)}</span>
             </div>
        </CardFooter>
     </Card>
   );
 }
+
+    
