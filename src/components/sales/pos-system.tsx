@@ -137,7 +137,7 @@ export default function PosSystem() {
         </CardHeader>
         <CardContent className="flex-grow">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-2">
               {searchedProducts.map((product) => (
                 <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow flex flex-col" onClick={() => addToCart(product)}>
                   <CardContent className="p-1 flex flex-col items-center text-center flex-grow">
@@ -155,10 +155,10 @@ export default function PosSystem() {
                             <ImageIcon className="h-6 w-6 text-muted-foreground"/>
                         )}
                     </div>
-                    <div className="font-semibold text-[11px] leading-tight line-clamp-2">{product.name}</div>
-                    <div className="text-[10px] text-muted-foreground">Estoque: {product.quantity}</div>
+                    <div className="font-semibold text-[10px] leading-tight line-clamp-2">{product.name}</div>
+                    <div className="text-[9px] text-muted-foreground">Estoque: {product.quantity}</div>
                   </CardContent>
-                  <div className="p-1 border-t font-bold text-[11px] text-center">
+                  <div className="p-1 border-t font-bold text-[10px] text-center">
                     R$ {product.salePrice.toFixed(2)}
                   </div>
                 </Card>
@@ -175,28 +175,30 @@ export default function PosSystem() {
             Carrinho de Compras
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-grow overflow-y-auto">
-            {cart.length === 0 ? (
-                <div className="text-center text-muted-foreground h-full flex items-center justify-center">
-                    Seu carrinho está vazio.
-                </div>
-            ) : (
-                <div className="space-y-2">
-                {cart.map((item) => (
-                    <div key={item.productId} className="flex items-center text-sm">
-                    <div>
-                        <div className="font-medium leading-tight">{item.productName}</div>
-                        <div className="text-xs text-muted-foreground">R$ {item.unitPrice.toFixed(2)} x {item.quantity}</div>
+        <CardContent className="flex-grow overflow-hidden">
+             <ScrollArea className="h-[400px]">
+                {cart.length === 0 ? (
+                    <div className="text-center text-muted-foreground h-full flex items-center justify-center">
+                        Seu carrinho está vazio.
                     </div>
-                    <div className="ml-auto flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-3 w-3"/></Button>
-                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-3 w-3"/></Button>
-                        <div className="font-bold w-14 text-right text-xs">R$ {item.totalPrice.toFixed(2)}</div>
+                ) : (
+                    <div className="space-y-1">
+                    {cart.map((item) => (
+                        <div key={item.productId} className="flex items-center text-xs">
+                        <div>
+                            <div className="font-medium leading-tight">{item.productName}</div>
+                            <div className="text-[10px] text-muted-foreground">R$ {item.unitPrice.toFixed(2)} x {item.quantity}</div>
+                        </div>
+                        <div className="ml-auto flex items-center gap-1">
+                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-3 w-3"/></Button>
+                            <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-3 w-3"/></Button>
+                            <div className="font-bold w-12 text-right text-[11px]">R$ {item.totalPrice.toFixed(2)}</div>
+                        </div>
+                        </div>
+                    ))}
                     </div>
-                    </div>
-                ))}
-                </div>
-            )}
+                )}
+            </ScrollArea>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 !p-4 border-t mt-auto">
           <div className="w-full">
