@@ -58,7 +58,7 @@ export default function LoginPage() {
     setForgotPasswordStep(1);
     toast({
         title: "Código enviado",
-        description: "Um código de verificação foi enviado para o número final ••••672.",
+        description: "Um código de verificação foi enviado para o e-mail imaginesinta@gmail.com.",
     });
   }
 
@@ -133,8 +133,8 @@ export default function LoginPage() {
             <DialogTitle>Redefinir Senha</DialogTitle>
             {forgotPasswordStep < 2 && <DialogDescription>
                 {forgotPasswordStep === 0
-                    ? "Para redefinir sua senha, enviaremos um código de verificação para o seu número de telefone cadastrado (final ••••672)."
-                    : "Insira o código de 6 dígitos que você recebeu por SMS."}
+                    ? "Para redefinir sua senha, enviaremos um código de verificação para o seu e-mail cadastrado (imaginesinta@gmail.com)."
+                    : "Insira o código de 6 dígitos que você recebeu por e-mail."}
             </DialogDescription>}
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -157,7 +157,7 @@ export default function LoginPage() {
             )}
             {forgotPasswordStep === 2 && (
                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <p className="text-sm font-medium text-green-700">Uma nova senha foi enviada para o seu número.</p>
+                    <p className="text-sm font-medium text-green-700">Uma nova senha foi enviada para o seu e-mail.</p>
                 </div>
             )}
           </div>
