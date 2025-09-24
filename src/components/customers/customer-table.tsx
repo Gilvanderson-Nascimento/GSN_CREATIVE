@@ -93,56 +93,56 @@ export default function CustomerTable() {
 
   return (
     <>
-       <Card>
-        <CardHeader>
-          <CardTitle>Gerenciamento de Clientes</CardTitle>
-          <CardDescription>
+       <Card className="bg-white shadow-md rounded-xl">
+        <CardHeader className="p-6">
+          <CardTitle className="text-xl font-bold text-gray-800">Gerenciamento de Clientes</CardTitle>
+          <CardDescription className="text-base text-gray-600">
             Visualize, adicione, edite e exclua os clientes do seu estabelecimento.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4 gap-4">
                 <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         placeholder="Filtrar clientes por nome ou telefone..."
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="pl-8"
+                        className="pl-9 w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
                     />
                 </div>
-                <Button onClick={handleAddCustomer}>
+                <Button onClick={handleAddCustomer} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition shadow-sm">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Adicionar Cliente
                 </Button>
             </div>
-            <div className="rounded-md border">
-                <Table>
+            <div className="rounded-xl border overflow-hidden">
+                <Table className="w-full border-collapse divide-y divide-gray-200">
                 <TableHeader>
-                    <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Apelido</TableHead>
-                    <TableHead>Telefone</TableHead>
-                    <TableHead>Vendas</TableHead>
-                    <TableHead>Total Gasto</TableHead>
+                    <TableRow className="bg-gray-100 hover:bg-gray-100">
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Nome</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Apelido</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Telefone</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Vendas</TableHead>
+                    <TableHead className="px-4 py-3 text-sm font-semibold text-gray-700">Total Gasto</TableHead>
                     <TableHead>
                         <span className="sr-only">Ações</span>
                     </TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody>
-                    {filteredCustomers.map((customer) => (
-                    <TableRow key={customer.id}>
-                        <TableCell className="font-medium">{customer.name}</TableCell>
-                        <TableCell>{customer.nickname}</TableCell>
-                        <TableCell>{customer.phone}</TableCell>
-                        <TableCell>{customer.salesCount}</TableCell>
-                        <TableCell>R$ {customer.totalSpent.toFixed(2)}</TableCell>
-                        <TableCell>
+                <TableBody className="bg-white divide-y divide-gray-200">
+                    {filteredCustomers.map((customer, index) => (
+                    <TableRow key={customer.id} className="transition hover:bg-gray-50">
+                        <TableCell className="px-4 py-3 font-medium text-gray-800">{customer.name}</TableCell>
+                        <TableCell className="px-4 py-3 text-gray-700">{customer.nickname}</TableCell>
+                        <TableCell className="px-4 py-3 text-gray-700">{customer.phone}</TableCell>
+                        <TableCell className="px-4 py-3 text-gray-700">{customer.salesCount}</TableCell>
+                        <TableCell className="px-4 py-3 text-gray-800 font-medium">R$ {customer.totalSpent.toFixed(2)}</TableCell>
+                        <TableCell className="px-4 py-3">
                          <div className="flex justify-end">
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                <Button aria-haspopup="true" size="icon" variant="ghost" className="text-gray-500 hover:text-gray-700">
                                     <MoreHorizontal className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
@@ -168,7 +168,7 @@ export default function CustomerTable() {
                     ))}
                     {filteredCustomers.length === 0 && (
                         <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center">
+                            <TableCell colSpan={6} className="h-24 text-center text-sm text-gray-500">
                                 Nenhum cliente encontrado.
                             </TableCell>
                         </TableRow>
@@ -177,8 +177,8 @@ export default function CustomerTable() {
                 </Table>
             </div>
         </CardContent>
-        <CardFooter>
-            <div className="text-xs text-muted-foreground">
+        <CardFooter className="p-6">
+            <div className="text-sm text-gray-500">
                 Mostrando <strong>{filteredCustomers.length}</strong> de <strong>{initialCustomers.length}</strong> clientes.
             </div>
         </CardFooter>
