@@ -110,7 +110,7 @@ export default function CustomerTable() {
                         placeholder={t('customers.filter_placeholder')}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="pl-9 w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
+                        className="pl-9 w-full bg-white border border-gray-300 rounded-lg py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-500 shadow-sm"
                     />
                 </div>
                 <Button onClick={handleAddCustomer} className="bg-blue-600 text-white font-medium rounded-md px-4 py-2 hover:bg-blue-700 transition shadow-sm">
@@ -214,5 +214,3 @@ export default function CustomerTable() {
     </>
   );
 }
-
-    
