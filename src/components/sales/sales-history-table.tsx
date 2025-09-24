@@ -100,7 +100,7 @@ export default function SalesHistoryTable() {
                         <TableCell className="text-muted-foreground">{getCustomerName(sale.customerId)}</TableCell>
                         <TableCell className="text-muted-foreground">{getSellerName(sale.sellerId)}</TableCell>
                         <TableCell className="text-center">
-                            <Badge variant={sale.status === 'cancelled' ? 'destructive' : 'default'} className="capitalize bg-green-100 text-green-800 data-[variant=destructive]:bg-red-100 data-[variant=destructive]:text-red-800">
+                            <Badge variant={sale.status === 'cancelled' ? 'destructive' : 'success'} className="capitalize">
                                 {t(`sales.status_${sale.status || 'completed'}`)}
                             </Badge>
                         </TableCell>

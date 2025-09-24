@@ -189,8 +189,43 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const updateSale = (saleId: string, updatedData: Partial<SaleData>) => {
+    const originalSale = sales.find(s => s.id === saleId);
+    if (!originalSale) return;
 
-  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, cancelSale, settings, setSettings };
+    let stockChanges: Record<string, number> = {};
+
+    // Calculate stock changes
+    originalSale.items.forEach(item => {
+        stockChanges[item.productId] = (stockChanges[item.productId] || 0) + item.quantity;
+    });
+
+    updatedData.items?.forEach(item => {
+        stockChanges[item.productId] = (stockChanges[item.productId] || 0) - item.quantity;
+    });
+
+    // Update products stock
+    const updatedProducts = products.map(p => {
+        if (stockChanges[p.id]) {
+            return { ...p, quantity: p.quantity + stockChanges[p.id] };
+        }
+        return p;
+    });
+    
+    // Update sale
+    const updatedSales = sales.map(s => s.id === saleId ? { ...s, ...updatedData, date: new Date().toISOString() } : s);
+
+    setProducts(updatedProducts);
+    setSales(updatedSales);
+    
+     toast({
+        title: "Venda Atualizada",
+        description: `A venda ${saleId} foi atualizada com sucesso.`
+      });
+  }
+
+
+  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, cancelSale, settings, setSettings, updateSale };
 
   return (
     <DataContext.Provider value={value}>

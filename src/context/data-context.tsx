@@ -37,6 +37,7 @@ type DataContextType = {
   cancelSale: (saleId: string) => void;
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
+  updateSale: (saleId: string, updatedData: Partial<SaleData>) => void;
 };
 
 export const DataContext = createContext<DataContextType>({
@@ -50,6 +51,7 @@ export const DataContext = createContext<DataContextType>({
   setUsers: () => {},
   completeSale: () => {},
   cancelSale: () => {},
+  updateSale: () => {},
   settings: {
     estoque: {
       notificar_estoque_minimo: true,

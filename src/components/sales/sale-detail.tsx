@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Printer, Ban, ShoppingBasket } from 'lucide-react';
+import { Printer, Ban, ShoppingBasket, Pencil } from 'lucide-react';
+import Link from 'next/link';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -109,7 +110,7 @@ export default function SaleDetailClient({ sale, customer, seller, onCancelSale,
                 <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
                         <span className="text-muted-foreground">{t('sales.status')}</span>
-                        <Badge variant={isCancelled ? 'destructive' : 'default'} className="capitalize bg-green-100 text-green-800 data-[variant=destructive]:bg-red-100 data-[variant=destructive]:text-red-800">
+                        <Badge variant={isCancelled ? 'destructive' : 'success'} className="capitalize">
                              {t(`sales.status_${sale.status || 'completed'}`)}
                         </Badge>
                     </div>
@@ -144,6 +145,14 @@ export default function SaleDetailClient({ sale, customer, seller, onCancelSale,
                         <Printer className="mr-2 h-4 w-4" />
                         {t('sales.generate_receipt')}
                     </Button>
+                    {!isCancelled && (
+                         <Button variant="outline" className="w-full" asChild>
+                            <Link href={`/sales/${sale.id}/edit`}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                {t('global.edit')}
+                            </Link>
+                        </Button>
+                    )}
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
                             <Button className="w-full" variant="destructive" disabled={isCancelled}>

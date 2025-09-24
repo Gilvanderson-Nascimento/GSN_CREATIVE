@@ -1,20 +1,33 @@
 'use client';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import Image from 'next/image';
-import type { Product, SaleItem, Customer } from '@/lib/types';
+import type { Product, SaleItem, Customer, Sale } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext } from '@/context/data-context';
 import { useAuth } from '@/hooks/use-auth';
 import { useTranslation } from '@/providers/translation-provider';
 
-export default function PosSystem() {
+type PosSystemProps = {
+  isEditing?: boolean;
+  existingSale?: Sale;
+  onSave?: (data: {
+    items: SaleItem[];
+    subtotal: number;
+    discount: number;
+    total: number;
+    customerId?: string;
+  }) => void;
+};
+
+
+export default function PosSystem({ isEditing = false, existingSale, onSave }: PosSystemProps) {
   const { products, customers, completeSale, settings } = useContext(DataContext);
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -23,6 +36,15 @@ export default function PosSystem() {
   const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
   const [discount, setDiscount] = useState(0);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    if (isEditing && existingSale) {
+      setCart(existingSale.items);
+      setDiscount(existingSale.discount);
+      setSelectedCustomer(existingSale.customerId);
+    }
+  }, [isEditing, existingSale]);
+
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -38,16 +60,20 @@ export default function PosSystem() {
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find((item) => item.productId === product.id);
-    const productInStock = products.find(p => p.id === product.id);
     
-    if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
-        toast({
-            variant: "destructive",
-            title: t('sales.product_out_of_stock_title'),
-            description: t('sales.product_out_of_stock_description'),
-        });
-        return;
+    // For new sales, check against current stock. For edits, allow adding even if stock is 0 now.
+    if (!isEditing) {
+        const productInStock = products.find(p => p.id === product.id);
+        if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
+            toast({
+                variant: "destructive",
+                title: t('sales.product_out_of_stock_title'),
+                description: t('sales.product_out_of_stock_description'),
+            });
+            return;
+        }
     }
+
 
     if (existingItem) {
       setCart(
@@ -72,17 +98,18 @@ export default function PosSystem() {
   };
   
   const updateQuantity = (productId: string, amount: number) => {
-      const existingItem = cart.find((item) => item.productId === productId);
-      const productInStock = products.find(p => p.id === productId);
-
-      if (amount > 0) {
-          if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
-              toast({
-                  variant: "destructive",
-                  title: t('sales.product_out_of_stock_title'),
-                  description: t('sales.product_out_of_stock_description'),
-              });
-              return;
+      if (!isEditing) {
+          const existingItem = cart.find((item) => item.productId === productId);
+          const productInStock = products.find(p => p.id === productId);
+          if (amount > 0) {
+              if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
+                  toast({
+                      variant: "destructive",
+                      title: t('sales.product_out_of_stock_title'),
+                      description: t('sales.product_out_of_stock_description'),
+                  });
+                  return;
+              }
           }
       }
 
@@ -117,18 +144,24 @@ export default function PosSystem() {
       sellerId: settings.vendas.associar_vendedor && user ? user.id : undefined,
       sellerName: settings.vendas.associar_vendedor && user ? user.name : undefined,
     };
-
-    completeSale(salePayload);
     
-    toast({
-      title: t('sales.sale_success_title'),
-      description: t('sales.sale_success_description', { total: total.toFixed(2) }),
-      action: <div className="p-2 bg-green-500 rounded-full"><CheckCircle className="text-white"/></div>
-    });
-
-    setCart([]);
-    setDiscount(0);
-    setSelectedCustomer(undefined);
+    if (isEditing && onSave) {
+        onSave(salePayload);
+         toast({
+          title: t('sales.sale_update_success_title'),
+          description: t('sales.sale_update_success_description', { total: total.toFixed(2) }),
+        });
+    } else {
+        completeSale(salePayload);
+        toast({
+          title: t('sales.sale_success_title'),
+          description: t('sales.sale_success_description', { total: total.toFixed(2) }),
+          action: <div className="p-2 bg-green-500 rounded-full"><CheckCircle className="text-white"/></div>
+        });
+        setCart([]);
+        setDiscount(0);
+        setSelectedCustomer(undefined);
+    }
   }
 
   return (
@@ -222,7 +255,14 @@ export default function PosSystem() {
                 </div>
             </div>
             <Button size="lg" className="w-full" onClick={handleCompleteSale}>
-                {t('sales.complete_sale')}
+                {isEditing ? (
+                    <>
+                        <Save className="mr-2 h-4 w-4" />
+                        {t('sales.update_sale')}
+                    </>
+                ) : (
+                    t('sales.complete_sale')
+                )}
             </Button>
         </div>
         <CardContent className="flex-grow overflow-hidden p-6 pt-4">
