@@ -19,7 +19,7 @@ export default function SalesPage() {
   return (
     <div>
       <PageHeader title={t('sales.title')}>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700">
             <Link href="/sales/history">
                 <History className="mr-2 h-4 w-4" />
                 {t('sales.sales_history')}
