@@ -1,6 +1,5 @@
 'use client';
 import React, { Suspense } from 'react';
-import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const UserTable = React.lazy(() => import('@/components/users/user-table'));
@@ -12,8 +11,7 @@ function UserTableSkeleton() {
 export default function UsersPage() {
 
   return (
-    <div>
-        <PageHeader title="Gerenciamento de Usuários" />
+    <div className="space-y-6">
         <Suspense fallback={<UserTableSkeleton />}>
             <UserTable />
         </Suspense>
