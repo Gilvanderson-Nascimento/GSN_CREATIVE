@@ -77,10 +77,10 @@ const getInitialState = <T,>(key: string, fallback: T): T => {
 
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProductsState] = useState<Product[]>(initialProducts);
-  const [customers, setCustomersState] = useState<Customer[]>(initialCustomers);
-  const [sales, setSalesState] = useState<Sale[]>(initialSales);
-  const [users, setUsersState] = useState<User[]>(initialUsersData);
+  const [products, setProductsState] = useState<Product[]>([]);
+  const [customers, setCustomersState] = useState<Customer[]>([]);
+  const [sales, setSalesState] = useState<Sale[]>([]);
+  const [users, setUsersState] = useState<User[]>([]);
   const [settings, setSettingsState] = useState<AppSettings>(initialSettings);
   const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
@@ -130,7 +130,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const setUsers = (newUsers: User[]) => setUsersState(newUsers);
   const setSettings = (newSettings: AppSettings) => setSettingsState(newSettings);
 
-  const completeSale = (saleData: SaleData) => {
+  const completeSale = (saleData: SaleData): Sale => {
     const newSale: Sale = {
       id: `SALE${Date.now()}`,
       date: new Date().toISOString(),
@@ -158,6 +158,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setProducts(updatedProducts);
     setCustomers(updatedCustomers);
     setSales(prevSales => [newSale, ...prevSales]);
+    return newSale;
   };
   
   const cancelSale = (saleId: string) => {

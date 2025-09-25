@@ -7,12 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save } from 'lucide-react';
+import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { DataContext } from '@/context/data-context';
 import { useAuth } from '@/hooks/use-auth';
 import { useTranslation } from '@/providers/translation-provider';
+import { format } from 'date-fns';
+import { ptBR, enUS } from 'date-fns/locale';
 
 type PosSystemProps = {
   isEditing?: boolean;
@@ -30,12 +40,14 @@ type PosSystemProps = {
 export default function PosSystem({ isEditing = false, existingSale, onSave }: PosSystemProps) {
   const { products, customers, completeSale, settings } = useContext(DataContext);
   const { user } = useAuth();
-  const { t, formatCurrency } = useTranslation();
+  const { t, language, formatCurrency } = useTranslation();
   const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
   const [discount, setDiscount] = useState(0);
   const { toast } = useToast();
+  const [lastCompletedSale, setLastCompletedSale] = useState<Sale | null>(null);
+  const locale = language === 'pt-BR' ? ptBR : enUS;
   
   useEffect(() => {
     if (isEditing && existingSale) {
@@ -168,19 +180,63 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
           description: t('sales.sale_update_success_description', { total: formatCurrency(total) }),
         });
     } else {
-        completeSale(salePayload);
-        toast({
-          title: t('sales.sale_success_title'),
-          description: t('sales.sale_success_description', { total: formatCurrency(total) }),
-          action: <div className="p-2 bg-green-500 rounded-full"><CheckCircle className="text-white"/></div>
-        });
+        const newSale = completeSale(salePayload);
+        setLastCompletedSale(newSale); // Open the dialog
+        
+        // Reset state for next sale
         setCart([]);
         setDiscount(0);
         setSelectedCustomer(undefined);
     }
   }
 
+  const closeSaleDialog = () => {
+    setLastCompletedSale(null);
+  }
+
+  const handlePrintReceipt = () => {
+    if (!lastCompletedSale) return;
+    const saleCustomer = customers.find(c => c.id === lastCompletedSale.customerId);
+
+    const printWindow = window.open('', '', 'height=600,width=800');
+    if (printWindow) {
+      printWindow.document.write('<html><head><title>Recibo</title>');
+      printWindow.document.write('<style>body{font-family: sans-serif; margin: 2rem;} table{width: 100%; border-collapse: collapse;} th,td{border: 1px solid #ddd; padding: 8px;} h1,h2,h3{text-align: center;} .total{font-weight: bold;}</style>');
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(`<h1>${settings.sistema.nome_empresa}</h1>`);
+      printWindow.document.write(`<h2>${t('sales.receipt_title')}</h2>`);
+      printWindow.document.write(`<p><strong>${t('sales.sale_id')}:</strong> ${lastCompletedSale.id}</p>`);
+      printWindow.document.write(`<p><strong>${t('sales.date')}:</strong> ${format(new Date(lastCompletedSale.date), 'Pp', { locale })}</p>`);
+      if(saleCustomer) printWindow.document.write(`<p><strong>${t('sales.customer')}:</strong> ${saleCustomer.name}</p>`);
+      if(lastCompletedSale.sellerName) printWindow.document.write(`<p><strong>${t('sales.seller')}:</strong> ${lastCompletedSale.sellerName}</p>`);
+      
+      printWindow.document.write('<table><thead><tr>');
+      printWindow.document.write(`<th>${t('sales.receipt_product')}</th><th>${t('sales.receipt_qty')}</th><th>${t('sales.receipt_unit_price')}</th><th>${t('sales.receipt_total')}</th>`);
+      printWindow.document.write('</tr></thead><tbody>');
+      lastCompletedSale.items.forEach(item => {
+        printWindow.document.write(`<tr><td>${item.productName}</td><td>${item.quantity}</td><td>${formatCurrency(item.unitPrice)}</td><td>${formatCurrency(item.totalPrice)}</td></tr>`);
+      });
+      printWindow.document.write('</tbody></table>');
+
+      printWindow.document.write(`<p><strong>${t('sales.subtotal')}:</strong> ${formatCurrency(lastCompletedSale.subtotal)}</p>`);
+      printWindow.document.write(`<p><strong>${t('sales.discount')}:</strong> ${lastCompletedSale.discount}%</p>`);
+      printWindow.document.write(`<h3 class="total">${t('sales.total')}: ${formatCurrency(lastCompletedSale.total)}</h3>`);
+
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  const handleGenerateInvoice = () => {
+    toast({
+        title: "Funcionalidade em desenvolvimento",
+        description: "A geração de Nota Fiscal Eletrônica (NF-e) será implementada em breve."
+    })
+  }
+
   return (
+    <>
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-10rem)]">
       <Card className="lg:col-span-3 flex flex-col h-full overflow-hidden">
         <CardHeader className="p-4">
@@ -312,5 +368,30 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
         </div>
       </Card>
     </div>
+
+    <Dialog open={!!lastCompletedSale} onOpenChange={(isOpen) => !isOpen && closeSaleDialog()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+                <CheckCircle className="h-6 w-6 text-green-500"/>
+                {t('sales.sale_success_title')}
+            </DialogTitle>
+            <DialogDescription>
+                Venda <strong>{lastCompletedSale?.id}</strong> finalizada com o total de <strong>{formatCurrency(lastCompletedSale?.total || 0)}</strong>. O que você gostaria de fazer agora?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center gap-2 pt-4">
+            <Button variant="outline" onClick={handlePrintReceipt}>
+                <Printer className="mr-2 h-4 w-4"/>
+                Gerar Recibo
+            </Button>
+            <Button onClick={handleGenerateInvoice}>
+                <FileText className="mr-2 h-4 w-4"/>
+                Gerar Nota Fiscal
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

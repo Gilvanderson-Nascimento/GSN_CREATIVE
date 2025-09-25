@@ -33,7 +33,7 @@ type DataContextType = {
   setSales: (sales: Sale[]) => void;
   users: User[];
   setUsers: (users: User[]) => void;
-  completeSale: (saleData: SaleData) => void;
+  completeSale: (saleData: SaleData) => Sale;
   cancelSale: (saleId: string) => void;
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
@@ -49,7 +49,7 @@ export const DataContext = createContext<DataContextType>({
   setSales: () => {},
   users: [],
   setUsers: () => {},
-  completeSale: () => {},
+  completeSale: () => ({} as Sale),
   cancelSale: () => {},
   updateSale: () => {},
   settings: {
