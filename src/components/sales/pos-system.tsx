@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText } from 'lucide-react';
+import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText, LayoutGrid, List } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
@@ -23,6 +23,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useTranslation } from '@/providers/translation-provider';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type PosSystemProps = {
   isEditing?: boolean;
@@ -47,6 +48,7 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
   const [discount, setDiscount] = useState(0);
   const { toast } = useToast();
   const [lastCompletedSale, setLastCompletedSale] = useState<Sale | null>(null);
+  const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const locale = language === 'pt-BR' ? ptBR : enUS;
   
   useEffect(() => {
@@ -239,46 +241,92 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
     <>
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-10rem)]">
       <Card className="lg:col-span-3 flex flex-col h-full overflow-hidden">
-        <CardHeader className="p-4">
-            <form onSubmit={handleBarcodeSubmit}>
+        <CardHeader className="p-4 flex-row items-center gap-4">
+            <form onSubmit={handleBarcodeSubmit} className="flex-grow">
                 <Input 
                 placeholder={t('sales.search_placeholder')} 
                 value={searchQuery}
                 onChange={handleSearchChange} 
                 />
             </form>
+            <div className="flex items-center gap-1">
+                <Button variant={layout === 'grid' ? 'default' : 'outline'} size="icon" onClick={() => setLayout('grid')}>
+                    <LayoutGrid className="h-4 w-4" />
+                </Button>
+                <Button variant={layout === 'list' ? 'default' : 'outline'} size="icon" onClick={() => setLayout('list')}>
+                    <List className="h-4 w-4" />
+                </Button>
+            </div>
         </CardHeader>
         <CardContent className="flex-grow p-4 pt-0 overflow-hidden">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pr-6">
-              {searchedProducts.map((product) => (
-                <Card 
-                  key={product.id} 
-                  className="cursor-pointer p-0 overflow-hidden flex flex-col items-center justify-between transition hover:shadow-lg hover:ring-2 hover:ring-primary" 
-                  onClick={() => addToCart(product)}
-                >
-                  <div className="w-full h-24 bg-muted flex items-center justify-center">
-                      {product.imageUrl ? (
-                           <Image 
-                              src={product.imageUrl} 
-                              alt={product.name} 
-                              width={150} 
-                              height={150} 
-                              className="w-full h-full object-cover"
-                              data-ai-hint="product image"
-                          />
-                      ) : (
-                          <ImageIcon className="h-8 w-8 text-muted-foreground"/>
-                      )}
-                  </div>
-                  <div className="p-2 text-center w-full">
-                    <p className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</p>
-                    <p className="text-xs text-muted-foreground">{t('stock.quantity')}: {product.quantity}</p>
-                    <p className="text-primary font-bold text-base mt-2">{formatCurrency(product.salePrice)}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            {layout === 'grid' ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pr-6">
+                {searchedProducts.map((product) => (
+                    <Card 
+                    key={product.id} 
+                    className="cursor-pointer p-0 overflow-hidden flex flex-col items-center justify-between transition hover:shadow-lg hover:ring-2 hover:ring-primary" 
+                    onClick={() => addToCart(product)}
+                    >
+                    <div className="w-full h-24 bg-muted flex items-center justify-center">
+                        {product.imageUrl ? (
+                            <Image 
+                                src={product.imageUrl} 
+                                alt={product.name} 
+                                width={150} 
+                                height={150} 
+                                className="w-full h-full object-cover"
+                                data-ai-hint="product image"
+                            />
+                        ) : (
+                            <ImageIcon className="h-8 w-8 text-muted-foreground"/>
+                        )}
+                    </div>
+                    <div className="p-2 text-center w-full">
+                        <p className="font-semibold text-sm leading-tight line-clamp-2">{product.name}</p>
+                        <p className="text-xs text-muted-foreground">{t('stock.quantity')}: {product.quantity}</p>
+                        <p className="text-primary font-bold text-base mt-2">{formatCurrency(product.salePrice)}</p>
+                    </div>
+                    </Card>
+                ))}
+                </div>
+            ) : (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[64px]"></TableHead>
+                            <TableHead>{t('stock.product_name')}</TableHead>
+                            <TableHead>{t('stock.quantity')}</TableHead>
+                            <TableHead className="text-right">{t('stock.sale_price')}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {searchedProducts.map((product) => (
+                        <TableRow key={product.id} className="cursor-pointer" onClick={() => addToCart(product)}>
+                            <TableCell>
+                                 <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-lg overflow-hidden border">
+                                    {product.imageUrl ? (
+                                        <Image
+                                        src={product.imageUrl}
+                                        alt={product.name}
+                                        width={40}
+                                        height={40}
+                                        className="object-cover h-full w-full"
+                                        data-ai-hint="product"
+                                        />
+                                    ) : (
+                                        <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                                    )}
+                                </div>
+                            </TableCell>
+                            <TableCell className="font-medium">{product.name}</TableCell>
+                            <TableCell>{product.quantity}</TableCell>
+                            <TableCell className="text-right font-semibold">{formatCurrency(product.salePrice)}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
           </ScrollArea>
         </CardContent>
       </Card>
