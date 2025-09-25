@@ -49,32 +49,11 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
-  
-  const handleBarcodeScan = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const barcode = searchQuery.trim();
-        if (barcode) {
-            const product = products.find(p => p.barcode === barcode);
-            if (product) {
-                addToCart(product);
-                setSearchQuery(''); // Clear input after successful scan
-            } else {
-                toast({
-                    variant: "destructive",
-                    title: t('stock.barcode_not_found_title', {defaultValue: "Barcode Not Found"}),
-                    description: t('stock.barcode_not_found_description', {defaultValue: "No product matches the scanned barcode.", barcode}),
-                });
-            }
-        }
-    }
-  }
 
   const searchedProducts = searchQuery
     ? products.filter(
         (p) =>
-          (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.barcode.includes(searchQuery)) && p.quantity > 0
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) && p.quantity > 0
       )
     : products.filter(p => p.quantity > 0);
 
@@ -191,11 +170,10 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
             <Input 
               placeholder={t('sales.search_placeholder')} 
               value={searchQuery}
-              onChange={handleSearchChange}
-              onKeyDown={handleBarcodeScan}
+              onChange={handleSearchChange} 
             />
         </CardHeader>
-        <CardContent className="flex-grow p-4">
+        <CardContent className="flex-grow p-4 overflow-hidden">
           <ScrollArea className="h-full">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {searchedProducts.map((product) => (
