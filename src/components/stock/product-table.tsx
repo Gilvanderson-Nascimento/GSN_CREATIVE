@@ -33,6 +33,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
 import { AutomatedStockEntrySheet } from './automated-stock-entry';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 
 export default function ProductTable() {
@@ -101,14 +102,14 @@ export default function ProductTable() {
 
   return (
     <>
-      <Card>
+      <Card className="h-[calc(100vh-10rem)] flex flex-col">
         <CardHeader>
           <CardTitle>{t('stock.title')}</CardTitle>
           <CardDescription>
             {t('stock.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col flex-grow overflow-hidden">
             <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-3">
                 <div className="flex flex-wrap w-full sm:w-auto gap-3">
                   <div className="relative w-full sm:w-auto sm:max-w-xs">
@@ -142,21 +143,21 @@ export default function ProductTable() {
                   </Select>
                 </div>
                 <div className="flex w-full sm:w-auto gap-2">
-                    <Button onClick={() => setIsAutomatedSheetOpen(true)} variant="outline" className="w-full sm:w-auto mt-4 sm:mt-0">
+                    <Button onClick={() => setIsAutomatedSheetOpen(true)} variant="outline" className="w-full sm:w-auto">
                       <FileUp className="mr-2 h-4 w-4" />
                       {t('stock.ai_entry')}
                     </Button>
-                    <Button onClick={handleAddProduct} className="w-full sm:w-auto mt-4 sm:mt-0">
+                    <Button onClick={handleAddProduct} className="w-full sm:w-auto">
                       <PlusCircle className="mr-2 h-4 w-4" />
                       {t('stock.add_product')}
                     </Button>
                 </div>
             </div>
 
-            <div className="rounded-xl border overflow-hidden">
-                <div className="overflow-x-auto">
+            <div className="rounded-xl border flex-grow overflow-hidden">
+                <ScrollArea className="h-full">
                     <Table>
-                    <TableHeader>
+                    <TableHeader className="sticky top-0 bg-background z-10">
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
                         <TableHead className="w-20">{t('stock.image')}</TableHead>
                         <TableHead>{t('stock.product_name')}</TableHead>
@@ -234,7 +235,7 @@ export default function ProductTable() {
                         )}
                     </TableBody>
                     </Table>
-                </div>
+                </ScrollArea>
             </div>
         </CardContent>
         <CardFooter>
