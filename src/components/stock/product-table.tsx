@@ -139,26 +139,24 @@ export default function ProductTable() {
     }
     setIsFindingImages(true);
     
-    const imagePromises = selectedProducts.map(async (productId) => {
+    let updatedProductsList = [...initialProducts];
+
+    for (const productId of selectedProducts) {
         const product = initialProducts.find(p => p.id === productId);
         if (product) {
             try {
                 const result = await findProductImage({ productName: product.name });
-                return { productId, imageUrl: result.imageUrl };
+                updatedProductsList = updatedProductsList.map(p => 
+                    p.id === productId ? { ...p, imageUrl: result.imageUrl } : p
+                );
             } catch (error) {
                 console.error(`Error finding image for ${product.name}:`, error);
-                return { productId, imageUrl: '' };
+                // Optionally, notify user about specific failures
             }
         }
-        return null;
-    });
-
-    const results = await Promise.all(imagePromises);
+    }
     
-    setProducts(initialProducts.map(p => {
-        const found = results.find(r => r?.productId === p.id);
-        return found ? { ...p, imageUrl: found.imageUrl } : p;
-    }));
+    setProducts(updatedProductsList);
 
     setIsFindingImages(false);
     setSelectedProducts([]);
