@@ -27,19 +27,26 @@ const formSchema = z.object({
   profitMargin: z.coerce.number().min(0, { message: 'pricing.profit_margin_not_negative' }),
 });
 
+const pricingScenarios = [
+    { name: "Conservador", margin: 40 },
+    { name: "Moderado", margin: 25 },
+    { name: "Agressivo", margin: 15 },
+]
+
 export default function PricingTool() {
   const [suggestedPrice, setSuggestedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t, formatCurrency } = useTranslation();
-  const { addPriceSimulation } = useContext(DataContext);
+  const { addPriceSimulation, settings } = useContext(DataContext);
+  const [activeScenario, setActiveScenario] = useState<string>("Moderado");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       purchasePrice: 10.00,
-      taxRate: 18,
-      profitMargin: 25,
+      taxRate: settings.precificacao.imposto_padrao,
+      profitMargin: settings.precificacao.margem_lucro,
     },
   });
 
@@ -73,6 +80,11 @@ export default function PricingTool() {
     return messageKey ? t(messageKey) : undefined;
   };
 
+  const handleScenarioClick = (scenario: {name: string, margin: number}) => {
+    form.setValue('profitMargin', scenario.margin);
+    setActiveScenario(scenario.name);
+  }
+
   return (
     <Card className="w-full max-w-lg">
       <Form {...form}>
@@ -84,6 +96,21 @@ export default function PricingTool() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="space-y-2">
+                <FormLabel>Cenários Rápidos</FormLabel>
+                <div className="flex gap-2">
+                    {pricingScenarios.map(scenario => (
+                        <Button 
+                            key={scenario.name}
+                            type="button"
+                            variant={activeScenario === scenario.name ? "default" : "outline"}
+                            onClick={() => handleScenarioClick(scenario)}
+                        >
+                            {scenario.name}
+                        </Button>
+                    ))}
+                </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
