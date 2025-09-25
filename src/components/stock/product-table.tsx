@@ -24,7 +24,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, TriangleAlert, FileUp, Sparkles } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, TriangleAlert, FileUp } from 'lucide-react';
 import { ProductForm } from './product-form';
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -33,10 +33,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
 import { AutomatedStockEntrySheet } from './automated-stock-entry';
-import { Checkbox } from '@/components/ui/checkbox';
-import { findProductImage } from '@/ai/flows/find-product-image';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
 
 
 export default function ProductTable() {
@@ -44,14 +40,10 @@ export default function ProductTable() {
   const { t, formatCurrency } = useTranslation();
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [imageFilter, setImageFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState('name-asc');
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isAutomatedSheetOpen, setIsAutomatedSheetOpen] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [isFindingImages, setIsFindingImages] = useState(false);
-  const { toast } = useToast();
   const lowStockThreshold = settings.estoque.estoque_minimo_padrao;
 
   const handleAddProduct = () => {
@@ -90,12 +82,6 @@ export default function ProductTable() {
           (categoryFilter === 'all' || product.category === categoryFilter)
       );
 
-      if (imageFilter === 'with-image') {
-          products = products.filter(p => p.imageUrl);
-      } else if (imageFilter === 'without-image') {
-          products = products.filter(p => !p.imageUrl);
-      }
-
       switch (sortOrder) {
         case 'quantity-asc':
           products.sort((a,b) => a.quantity - b.quantity);
@@ -110,63 +96,8 @@ export default function ProductTable() {
       }
     
     return products;
-  }, [initialProducts, filter, categoryFilter, sortOrder, imageFilter]);
+  }, [initialProducts, filter, categoryFilter, sortOrder]);
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedProducts(filteredProducts.map(p => p.id));
-    } else {
-      setSelectedProducts([]);
-    }
-  };
-
-  const handleSelectProduct = (productId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedProducts([...selectedProducts, productId]);
-    } else {
-      setSelectedProducts(selectedProducts.filter(id => id !== productId));
-    }
-  };
-  
-  const handleFindImages = async () => {
-    if (selectedProducts.length === 0) {
-        toast({
-            variant: 'destructive',
-            title: "Nenhum produto selecionado",
-            description: "Por favor, selecione os produtos para os quais deseja encontrar imagens.",
-        });
-        return;
-    }
-    setIsFindingImages(true);
-    
-    let updatedProductsList = [...initialProducts];
-
-    for (const productId of selectedProducts) {
-        const product = initialProducts.find(p => p.id === productId);
-        if (product) {
-            try {
-                const result = await findProductImage({ productName: product.name });
-                updatedProductsList = updatedProductsList.map(p => 
-                    p.id === productId ? { ...p, imageUrl: result.imageUrl } : p
-                );
-            } catch (error) {
-                console.error(`Error finding image for ${product.name}:`, error);
-                // Optionally, notify user about specific failures
-            }
-        }
-    }
-    
-    setProducts(updatedProductsList);
-
-    setIsFindingImages(false);
-    setSelectedProducts([]);
-    toast({
-        title: "Busca de Imagens Concluída",
-        description: `As imagens para ${selectedProducts.length} produtos foram atualizadas.`,
-    });
-  }
-
-  const allSelected = selectedProducts.length > 0 && selectedProducts.length === filteredProducts.length;
 
   return (
     <>
@@ -199,16 +130,6 @@ export default function ProductTable() {
                         ))}
                       </SelectContent>
                   </Select>
-                  <Select value={imageFilter} onValueChange={setImageFilter}>
-                      <SelectTrigger className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Filtrar por imagem" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="with-image">Com Imagem</SelectItem>
-                        <SelectItem value="without-image">Sem Imagem</SelectItem>
-                      </SelectContent>
-                  </Select>
                   <Select value={sortOrder} onValueChange={setSortOrder}>
                       <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder={t('stock.sort_by')} />
@@ -232,28 +153,11 @@ export default function ProductTable() {
                 </div>
             </div>
 
-            {selectedProducts.length > 0 && (
-                <div className="flex items-center gap-4 mb-4 p-3 bg-muted rounded-lg">
-                    <p className="text-sm text-muted-foreground">{selectedProducts.length} produto(s) selecionado(s)</p>
-                    <Button size="sm" onClick={handleFindImages} disabled={isFindingImages}>
-                        {isFindingImages ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                        Buscar Imagens com IA
-                    </Button>
-                </div>
-            )}
-
             <div className="rounded-xl border overflow-hidden">
                 <div className="overflow-x-auto">
                     <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead className="w-12 pl-4">
-                           <Checkbox
-                            checked={allSelected}
-                            onCheckedChange={handleSelectAll}
-                            aria-label="Selecionar todos"
-                           />
-                        </TableHead>
                         <TableHead className="w-20">{t('stock.image')}</TableHead>
                         <TableHead>{t('stock.product_name')}</TableHead>
                         <TableHead>{t('stock.category')}</TableHead>
@@ -268,14 +172,7 @@ export default function ProductTable() {
                     </TableHeader>
                     <TableBody>
                         {filteredProducts.map((product) => (
-                        <TableRow key={product.id} data-state={selectedProducts.includes(product.id) ? "selected" : ""}>
-                            <TableCell className="pl-4">
-                                <Checkbox
-                                    checked={selectedProducts.includes(product.id)}
-                                    onCheckedChange={(checked) => handleSelectProduct(product.id, !!checked)}
-                                    aria-label={`Selecionar ${product.name}`}
-                                />
-                            </TableCell>
+                        <TableRow key={product.id}>
                             <TableCell className="p-2">
                             <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden border">
                                 {product.imageUrl ? (
@@ -330,7 +227,7 @@ export default function ProductTable() {
                         ))}
                          {filteredProducts.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={9} className="h-24 text-center">
+                                <TableCell colSpan={8} className="h-24 text-center">
                                     {t('stock.no_products_found')}
                                 </TableCell>
                             </TableRow>
