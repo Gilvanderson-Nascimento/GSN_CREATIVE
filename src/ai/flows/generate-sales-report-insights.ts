@@ -9,10 +9,11 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'zod';
 
 const GenerateSalesReportInsightsInputSchema = z.object({
   salesData: z.string().describe('Sales data in JSON format.'),
+  language: z.string().describe('The language for the response (e.g., "Portuguese" or "English").'),
 });
 
 export type GenerateSalesReportInsightsInput = z.infer<
@@ -51,7 +52,7 @@ const prompt = ai.definePrompt({
   name: 'generateSalesReportInsightsPrompt',
   input: {schema: GenerateSalesReportInsightsInputSchema},
   output: {schema: GenerateSalesReportInsightsOutputSchema},
-  prompt: `You are a sales data analyst. Analyze the following sales data and generate insights to be returned in a structured JSON format.
+  prompt: `You are a sales data analyst. Analyze the following sales data and generate insights to be returned in a structured JSON format. The entire response, including all text fields in the output schema, must be in {{language}}.
 
 Analyze the following key areas:
 1.  **Best-Selling Products**: Identify the top 3 best-selling products by quantity and total revenue.

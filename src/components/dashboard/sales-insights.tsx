@@ -12,7 +12,7 @@ import { useTranslation } from '@/providers/translation-provider';
 
 export function SalesInsights() {
   const { sales } = useContext(DataContext);
-  const { t, formatCurrency } = useTranslation();
+  const { t, formatCurrency, language } = useTranslation();
   const [insights, setInsights] = useState<GenerateSalesReportInsightsOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +21,10 @@ export function SalesInsights() {
     setInsights(null);
     try {
       const salesDataString = JSON.stringify(sales.slice(0, 50), null, 2); // Limit to 50 recent sales for performance
-      const result = await generateSalesReportInsights({ salesData: salesDataString });
+      const result = await generateSalesReportInsights({ 
+          salesData: salesDataString,
+          language: language === 'pt-BR' ? 'Portuguese' : 'English',
+      });
       setInsights(result);
     } catch (error) {
       console.error('Error generating insights:', error);
