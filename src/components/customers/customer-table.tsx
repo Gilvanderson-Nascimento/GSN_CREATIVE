@@ -41,6 +41,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { CustomerForm } from './customer-form';
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function CustomerTable() {
   const { customers: initialCustomers, setCustomers } = useContext(DataContext);
@@ -95,14 +96,14 @@ export default function CustomerTable() {
 
   return (
     <>
-       <Card>
+       <Card className="h-[calc(100vh-10rem)] flex flex-col">
         <CardHeader>
           <CardTitle>{t('customers.title')}</CardTitle>
           <CardDescription>
             {t('customers.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col flex-grow overflow-hidden">
             <div className="flex items-center justify-between mb-4 gap-4">
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -118,65 +119,67 @@ export default function CustomerTable() {
                   {t('customers.add_customer')}
                 </Button>
             </div>
-            <div className="rounded-xl border overflow-hidden">
+            <div className="rounded-xl border flex-grow overflow-hidden">
+              <ScrollArea className="h-full">
                 <Table>
-                <TableHeader>
-                    <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead>{t('customers.name')}</TableHead>
-                    <TableHead>{t('customers.nickname')}</TableHead>
-                    <TableHead>{t('customers.phone')}</TableHead>
-                    <TableHead>{t('customers.sales')}</TableHead>
-                    <TableHead>{t('customers.total_spent')}</TableHead>
-                    <TableHead>
-                        <span className="sr-only">{t('global.actions')}</span>
-                    </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredCustomers.map((customer) => (
-                    <TableRow key={customer.id} className="transition hover:bg-muted/10">
-                        <TableCell className="font-medium text-foreground">{customer.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{customer.nickname}</TableCell>
-                        <TableCell className="text-muted-foreground">{customer.phone}</TableCell>
-                        <TableCell className="text-muted-foreground">{customer.salesCount}</TableCell>
-                        <TableCell className="font-medium text-foreground">{formatCurrency(customer.totalSpent)}</TableCell>
-                        <TableCell>
-                         <div className="flex justify-end">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Toggle menu</span>
-                                </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>{t('global.actions')}</DropdownMenuLabel>
-                                <Link href={`/customers/${customer.id}`} passHref>
-                                    <DropdownMenuItem>
-                                        <Eye className="mr-2 h-4 w-4" /> {t('global.view_details')}
-                                    </DropdownMenuItem>
-                                </Link>
-                                <DropdownMenuItem onSelect={() => handleEditCustomer(customer)}>
-                                    <Pencil className="mr-2 h-4 w-4" /> {t('global.edit')}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onSelect={() => confirmDeleteCustomer(customer)} className="text-destructive">
-                                    <Trash2 className="mr-2 h-4 w-4" /> {t('global.delete')}
-                                </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                    {filteredCustomers.length === 0 && (
-                        <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                                {t('customers.no_customers_found')}
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
+                  <TableHeader className="sticky top-0 bg-background z-10">
+                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead>{t('customers.name')}</TableHead>
+                      <TableHead>{t('customers.nickname')}</TableHead>
+                      <TableHead>{t('customers.phone')}</TableHead>
+                      <TableHead>{t('customers.sales')}</TableHead>
+                      <TableHead>{t('customers.total_spent')}</TableHead>
+                      <TableHead>
+                          <span className="sr-only">{t('global.actions')}</span>
+                      </TableHead>
+                      </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                      {filteredCustomers.map((customer) => (
+                      <TableRow key={customer.id} className="transition hover:bg-muted/10">
+                          <TableCell className="font-medium text-foreground">{customer.name}</TableCell>
+                          <TableCell className="text-muted-foreground">{customer.nickname}</TableCell>
+                          <TableCell className="text-muted-foreground">{customer.phone}</TableCell>
+                          <TableCell className="text-muted-foreground">{customer.salesCount}</TableCell>
+                          <TableCell className="font-medium text-foreground">{formatCurrency(customer.totalSpent)}</TableCell>
+                          <TableCell>
+                          <div className="flex justify-end">
+                              <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                  <Button aria-haspopup="true" size="icon" variant="ghost">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                      <span className="sr-only">Toggle menu</span>
+                                  </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>{t('global.actions')}</DropdownMenuLabel>
+                                  <Link href={`/customers/${customer.id}`} passHref>
+                                      <DropdownMenuItem>
+                                          <Eye className="mr-2 h-4 w-4" /> {t('global.view_details')}
+                                      </DropdownMenuItem>
+                                  </Link>
+                                  <DropdownMenuItem onSelect={() => handleEditCustomer(customer)}>
+                                      <Pencil className="mr-2 h-4 w-4" /> {t('global.edit')}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onSelect={() => confirmDeleteCustomer(customer)} className="text-destructive">
+                                      <Trash2 className="mr-2 h-4 w-4" /> {t('global.delete')}
+                                  </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                      </TableRow>
+                      ))}
+                      {filteredCustomers.length === 0 && (
+                          <TableRow>
+                              <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                                  {t('customers.no_customers_found')}
+                              </TableCell>
+                          </TableRow>
+                      )}
+                  </TableBody>
                 </Table>
+              </ScrollArea>
             </div>
         </CardContent>
         <CardFooter>

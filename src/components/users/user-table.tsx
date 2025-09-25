@@ -45,6 +45,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function UserTable() {
   const { users: initialUsers, setUsers } = useContext(DataContext);
@@ -126,14 +127,14 @@ export default function UserTable() {
 
   return (
     <>
-       <Card>
+       <Card className="h-[calc(100vh-10rem)] flex flex-col">
         <CardHeader>
           <CardTitle>{t('users.title')}</CardTitle>
           <CardDescription>
             {t('users.description')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col flex-grow overflow-hidden">
             <div className="flex items-center justify-between mb-4 gap-4">
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -149,62 +150,64 @@ export default function UserTable() {
                   {t('users.add_user')}
                 </Button>
             </div>
-            <div className="rounded-xl border overflow-hidden">
-                <Table>
-                <TableHeader>
-                    <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead>{t('users.full_name')}</TableHead>
-                        <TableHead>{t('users.username')}</TableHead>
-                        <TableHead>{t('users.role')}</TableHead>
-                        <TableHead>{t('users.email')}</TableHead>
-                        <TableHead>
-                            <span className="sr-only">{t('global.actions')}</span>
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell className="text-muted-foreground">{user.username}</TableCell>
-                        <TableCell><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
-                        <TableCell className="text-muted-foreground">{user.email || 'N/A'}</TableCell>
-                        <TableCell>
-                         <div className="flex justify-end">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!isCurrentUserAdmin}>
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Toggle menu</span>
-                                </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>{t('global.actions')}</DropdownMenuLabel>
-                                    <DropdownMenuItem onSelect={() => handleEditUser(user)}>
-                                        <Pencil className="mr-2 h-4 w-4" /> {t('users.edit_user')}
-                                    </DropdownMenuItem>
-                                     <DropdownMenuItem onSelect={() => handleManagePermissions(user)}>
-                                        <ShieldCheck className="mr-2 h-4 w-4" /> {t('users.manage_permissions')}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onSelect={() => confirmDeleteUser(user)} className="text-destructive">
-                                        <Trash2 className="mr-2 h-4 w-4" /> {t('users.delete_user')}
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                    {filteredUsers.length === 0 && (
-                        <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                                {t('users.no_users_found')}
+            <div className="rounded-xl border flex-grow overflow-hidden">
+                <ScrollArea className="h-full">
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                        <TableRow className="bg-muted/50 hover:bg-muted/50">
+                            <TableHead>{t('users.full_name')}</TableHead>
+                            <TableHead>{t('users.username')}</TableHead>
+                            <TableHead>{t('users.role')}</TableHead>
+                            <TableHead>{t('users.email')}</TableHead>
+                            <TableHead>
+                                <span className="sr-only">{t('global.actions')}</span>
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredUsers.map((user) => (
+                        <TableRow key={user.id}>
+                            <TableCell className="font-medium">{user.name}</TableCell>
+                            <TableCell className="text-muted-foreground">{user.username}</TableCell>
+                            <TableCell><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
+                            <TableCell className="text-muted-foreground">{user.email || 'N/A'}</TableCell>
+                            <TableCell>
+                            <div className="flex justify-end">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!isCurrentUserAdmin}>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                        <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>{t('global.actions')}</DropdownMenuLabel>
+                                        <DropdownMenuItem onSelect={() => handleEditUser(user)}>
+                                            <Pencil className="mr-2 h-4 w-4" /> {t('users.edit_user')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => handleManagePermissions(user)}>
+                                            <ShieldCheck className="mr-2 h-4 w-4" /> {t('users.manage_permissions')}
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onSelect={() => confirmDeleteUser(user)} className="text-destructive">
+                                            <Trash2 className="mr-2 h-4 w-4" /> {t('users.delete_user')}
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
                             </TableCell>
                         </TableRow>
-                    )}
-                </TableBody>
-                </Table>
+                        ))}
+                        {filteredUsers.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                                    {t('users.no_users_found')}
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
             </div>
         </CardContent>
         <CardFooter>
