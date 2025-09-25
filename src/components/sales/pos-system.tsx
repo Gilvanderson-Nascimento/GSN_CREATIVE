@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText, LayoutGrid, List } from 'lucide-react';
+import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText, LayoutGrid, List, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
@@ -24,6 +24,17 @@ import { useTranslation } from '@/providers/translation-provider';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type PosSystemProps = {
   isEditing?: boolean;
@@ -49,6 +60,7 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
   const { toast } = useToast();
   const [lastCompletedSale, setLastCompletedSale] = useState<Sale | null>(null);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+  const [isClearCartAlertOpen, setIsClearCartAlertOpen] = useState(false);
   const locale = language === 'pt-BR' ? ptBR : enUS;
   
   useEffect(() => {
@@ -190,6 +202,16 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
         setDiscount(0);
         setSelectedCustomer(undefined);
     }
+  }
+
+  const handleClearCart = () => {
+    setCart([]);
+    setDiscount(0);
+    setIsClearCartAlertOpen(false);
+    toast({
+        title: "Carrinho limpo",
+        description: "Todos os itens foram removidos do carrinho."
+    });
   }
 
   const closeSaleDialog = () => {
@@ -403,16 +425,37 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
                 <span>{formatCurrency(total)}</span>
                 </div>
             </div>
-            <Button size="lg" className="w-full" onClick={handleCompleteSale}>
-                {isEditing ? (
-                    <>
-                        <Save className="mr-2 h-4 w-4" />
-                        {t('sales.update_sale')}
-                    </>
-                ) : (
-                    t('sales.complete_sale')
-                )}
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button size="lg" className="w-full" onClick={handleCompleteSale}>
+                    {isEditing ? (
+                        <>
+                            <Save className="mr-2 h-4 w-4" />
+                            {t('sales.update_sale')}
+                        </>
+                    ) : (
+                        t('sales.complete_sale')
+                    )}
+                </Button>
+                 <AlertDialog open={isClearCartAlertOpen} onOpenChange={setIsClearCartAlertOpen}>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="icon" disabled={cart.length === 0}>
+                            <Trash2 className="h-5 w-5"/>
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Limpar Carrinho?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Tem certeza que deseja remover todos os itens do carrinho? Esta ação não pode ser desfeita.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleClearCart} className="bg-destructive hover:bg-destructive/90">Limpar</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
         </div>
       </Card>
     </div>
