@@ -75,3 +75,12 @@ export type User = {
   createdAt: string;
   permissions: Partial<Record<PagePermission, boolean>>;
 }
+
+export type PriceSimulation = {
+  id: string;
+  purchasePrice: number;
+  taxRate: number;
+  profitMargin: number;
+  suggestedSalesPrice: number;
+  createdAt: string;
+};

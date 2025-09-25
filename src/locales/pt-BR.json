@@ -232,7 +232,8 @@
         }
     },
     "pricing": {
-        "title": "Ferramenta de Precificação Inteligente",
+        "title": "Precificação",
+        "tool_title": "Ferramenta de Precificação Inteligente",
         "description": "Insira os custos e a margem de lucro desejada para que a IA sugira o preço de venda ideal.",
         "purchase_value": "Valor de Compra (R$)",
         "tax_percent": "Imposto (%)",
@@ -245,7 +246,11 @@
         "tax_not_negative": "Imposto não pode ser negativo.",
         "profit_margin_not_negative": "Margem de lucro não pode ser negativa.",
         "total_cost": "Custo Total",
-        "suggested_sale_price": "Preço de Venda Sugerido"
+        "suggested_sale_price": "Preço de Venda Sugerido",
+        "history_title": "Histórico de Precificação",
+        "history_description": "Histórico de todas as simulações de preço realizadas.",
+        "no_history": "Nenhuma simulação de preço registrada ainda.",
+        "date": "Data"
     },
     "users": {
         "title": "Usuários do Sistema",

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { DataContext, type AppSettings } from '@/context/data-context';
-import type { Product, Customer, Sale, SaleItem, User } from '@/lib/types';
+import type { Product, Customer, Sale, SaleItem, User, PriceSimulation } from '@/lib/types';
 import { 
     products as initialProducts, 
     customers as initialCustomers, 
@@ -82,6 +82,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [sales, setSalesState] = useState<Sale[]>([]);
   const [users, setUsersState] = useState<User[]>([]);
   const [settings, setSettingsState] = useState<AppSettings>(initialSettings);
+  const [priceSimulations, setPriceSimulationsState] = useState<PriceSimulation[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
 
@@ -91,6 +92,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setSalesState(getInitialState('app_sales', initialSales));
     setUsersState(getInitialState('app_users', initialUsersData));
     setSettingsState(getInitialState('app_settings', initialSettings));
+    setPriceSimulationsState(getInitialState('app_price_simulations', []));
     setIsLoaded(true);
   }, []);
   
@@ -124,11 +126,26 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, [settings, isLoaded]);
 
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('app_price_simulations', JSON.stringify(priceSimulations));
+    }
+  }, [priceSimulations, isLoaded]);
+
   const setProducts = (newProducts: Product[]) => setProductsState(newProducts);
   const setCustomers = (newCustomers: Customer[]) => setCustomersState(newCustomers);
   const setSales = (newSales: Sale[]) => setSalesState(newSales);
   const setUsers = (newUsers: User[]) => setUsersState(newUsers);
   const setSettings = (newSettings: AppSettings) => setSettingsState(newSettings);
+
+  const addPriceSimulation = (simulation: Omit<PriceSimulation, 'id' | 'createdAt'>) => {
+    const newSimulation: PriceSimulation = {
+      ...simulation,
+      id: `SIM${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+    setPriceSimulationsState(prev => [newSimulation, ...prev]);
+  };
 
   const completeSale = (saleData: SaleData): Sale => {
     const newSale: Sale = {
@@ -246,7 +263,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }
 
 
-  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, completeSale, cancelSale, settings, setSettings, updateSale };
+  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, priceSimulations, addPriceSimulation, completeSale, cancelSale, settings, setSettings, updateSale };
 
   return (
     <DataContext.Provider value={value}>

@@ -15,10 +15,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { suggestOptimalPrice } from '@/ai/flows/suggest-optimal-price';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Loader2, Wand2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/providers/translation-provider';
+import { DataContext } from '@/context/data-context';
 
 const formSchema = z.object({
   purchasePrice: z.coerce.number().positive({ message: 'pricing.purchase_price_positive' }),
@@ -31,6 +32,7 @@ export default function PricingTool() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t, formatCurrency } = useTranslation();
+  const { addPriceSimulation } = useContext(DataContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,6 +53,10 @@ export default function PricingTool() {
         profitMargin: values.profitMargin / 100,
       });
       setSuggestedPrice(result.suggestedSalesPrice);
+      addPriceSimulation({
+        ...values,
+        suggestedSalesPrice: result.suggestedSalesPrice,
+      });
     } catch (error) {
       console.error(error);
       toast({
@@ -72,7 +78,7 @@ export default function PricingTool() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle>{t('pricing.title')}</CardTitle>
+            <CardTitle>{t('pricing.tool_title')}</CardTitle>
             <CardDescription className="mt-1">
               {t('pricing.description')}
             </CardDescription>

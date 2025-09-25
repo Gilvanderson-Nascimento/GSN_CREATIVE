@@ -1,6 +1,6 @@
 
 import { createContext } from 'react';
-import type { Product, Customer, Sale, SaleItem, User } from '@/lib/types';
+import type { Product, Customer, Sale, SaleItem, User, PriceSimulation } from '@/lib/types';
 
 type SaleData = {
   items: SaleItem[];
@@ -33,6 +33,8 @@ type DataContextType = {
   setSales: (sales: Sale[]) => void;
   users: User[];
   setUsers: (users: User[]) => void;
+  priceSimulations: PriceSimulation[];
+  addPriceSimulation: (simulation: Omit<PriceSimulation, 'id' | 'createdAt'>) => void;
   completeSale: (saleData: SaleData) => Sale;
   cancelSale: (saleId: string) => void;
   settings: AppSettings;
@@ -49,6 +51,8 @@ export const DataContext = createContext<DataContextType>({
   setSales: () => {},
   users: [],
   setUsers: () => {},
+  priceSimulations: [],
+  addPriceSimulation: () => {},
   completeSale: () => ({} as Sale),
   cancelSale: () => {},
   updateSale: () => {},
