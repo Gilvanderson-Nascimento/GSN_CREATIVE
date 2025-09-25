@@ -24,7 +24,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, TriangleAlert, FileUp } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, Image as ImageIcon, FileUp } from 'lucide-react';
 import { ProductForm } from './product-form';
 import type { Product } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -99,10 +99,16 @@ export default function ProductTable() {
     return products;
   }, [initialProducts, filter, categoryFilter, sortOrder]);
 
+  const getQuantityBadgeVariant = (quantity: number) => {
+    if (quantity <= 5) return 'destructive';
+    if (quantity <= 50) return 'warning';
+    return 'success';
+  };
+
 
   return (
     <>
-      <Card className="h-[calc(100vh-10rem)] flex flex-col">
+      <Card className="h-[calc(100vh-10rem)] flex flex-col shadow-lg dark:bg-slate-800">
         <CardHeader>
           <CardTitle>{t('stock.title')}</CardTitle>
           <CardDescription>
@@ -143,29 +149,29 @@ export default function ProductTable() {
                   </Select>
                 </div>
                 <div className="flex w-full sm:w-auto gap-2">
-                    <Button onClick={() => setIsAutomatedSheetOpen(true)} variant="outline" className="w-full sm:w-auto">
+                    <Button onClick={() => setIsAutomatedSheetOpen(true)} variant="outline" className="w-full sm:w-auto dark:bg-sky-500 dark:text-white rounded-md">
                       <FileUp className="mr-2 h-4 w-4" />
                       {t('stock.ai_entry')}
                     </Button>
-                    <Button onClick={handleAddProduct} className="w-full sm:w-auto">
+                    <Button onClick={handleAddProduct} className="w-full sm:w-auto dark:bg-blue-600 dark:text-white rounded-md">
                       <PlusCircle className="mr-2 h-4 w-4" />
                       {t('stock.add_product')}
                     </Button>
                 </div>
             </div>
 
-            <div className="rounded-xl border flex-grow overflow-hidden">
+            <div className="rounded-lg border flex-grow overflow-hidden dark:border-slate-700">
                 <ScrollArea className="h-full">
                     <Table>
-                    <TableHeader className="sticky top-0 bg-background z-10">
-                        <TableRow className="bg-muted/50 hover:bg-muted/50">
-                        <TableHead className="w-20">{t('stock.image')}</TableHead>
-                        <TableHead>{t('stock.product_name')}</TableHead>
-                        <TableHead>{t('stock.category')}</TableHead>
-                        <TableHead className="text-center">{t('stock.quantity')}</TableHead>
-                        <TableHead className="text-right">{t('stock.purchase_price')}</TableHead>
-                        <TableHead className="text-right">{t('stock.sale_price')}</TableHead>
-                        <TableHead>{t('stock.barcode')}</TableHead>
+                    <TableHeader className="sticky top-0 bg-background z-10 dark:bg-slate-800">
+                        <TableRow className="dark:border-slate-700 dark:hover:bg-slate-700/50">
+                        <TableHead className="w-20 dark:text-slate-100">{t('stock.image')}</TableHead>
+                        <TableHead className="dark:text-slate-100">{t('stock.product_name')}</TableHead>
+                        <TableHead className="dark:text-slate-100">{t('stock.category')}</TableHead>
+                        <TableHead className="text-center dark:text-slate-100">{t('stock.quantity')}</TableHead>
+                        <TableHead className="text-right dark:text-slate-100">{t('stock.purchase_price')}</TableHead>
+                        <TableHead className="text-right dark:text-slate-100">{t('stock.sale_price')}</TableHead>
+                        <TableHead className="dark:text-slate-100">{t('stock.barcode')}</TableHead>
                         <TableHead className="w-16 pr-4">
                             <span className="sr-only">{t('global.actions')}</span>
                         </TableHead>
@@ -173,9 +179,9 @@ export default function ProductTable() {
                     </TableHeader>
                     <TableBody>
                         {filteredProducts.map((product) => (
-                        <TableRow key={product.id}>
+                        <TableRow key={product.id} className="dark:border-slate-700 dark:hover:bg-slate-700/50">
                             <TableCell className="p-2">
-                            <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden border">
+                            <div className="flex items-center justify-center h-10 w-10 bg-muted rounded-md overflow-hidden border dark:bg-slate-700 dark:border-slate-600">
                                 {product.imageUrl ? (
                                     <Image 
                                         src={product.imageUrl} 
@@ -190,18 +196,17 @@ export default function ProductTable() {
                                 )}
                             </div>
                             </TableCell>
-                            <TableCell className="font-medium">{product.name}</TableCell>
-                            <TableCell className="text-muted-foreground">{product.category}</TableCell>
+                            <TableCell className="font-semibold text-sky-400">{product.name}</TableCell>
+                            <TableCell>
+                                <Badge variant="outline" className="dark:bg-slate-600 dark:text-slate-50 dark:border-slate-500">{product.category || 'N/A'}</Badge>
+                            </TableCell>
                             <TableCell className="text-center">
-                               <Badge variant={product.quantity <= lowStockThreshold ? (product.quantity === 0 ? "destructive" : "warning") : "info"} className="gap-1">
-                                    {product.quantity <= lowStockThreshold && (
-                                        <TriangleAlert className="h-3 w-3" />
-                                    )}
+                               <Badge variant={getQuantityBadgeVariant(product.quantity)}>
                                     {product.quantity}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right text-muted-foreground">{formatCurrency(product.purchasePrice)}</TableCell>
-                            <TableCell className="text-right font-medium">{formatCurrency(product.salePrice)}</TableCell>
+                            <TableCell className="text-right text-slate-400">{formatCurrency(product.purchasePrice)}</TableCell>
+                            <TableCell className="text-right font-semibold text-yellow-400">{formatCurrency(product.salePrice)}</TableCell>
                             <TableCell className="text-muted-foreground">{product.barcode}</TableCell>
                             <TableCell className="pr-4">
                             <div className="flex justify-end">
