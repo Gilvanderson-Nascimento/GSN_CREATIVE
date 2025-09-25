@@ -49,18 +49,35 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
+  
+  const handleBarcodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchQuery.length > 3) {
+      const foundProduct = products.find(p => p.barcode === searchQuery);
+      if (foundProduct) {
+        addToCart(foundProduct);
+        setSearchQuery(''); // Clear search after adding
+      } else {
+        toast({
+            variant: "destructive",
+            title: t('stock.barcode_not_found_title'),
+            description: t('stock.barcode_not_found_description', { barcode: searchQuery }),
+        })
+      }
+    }
+  }
 
   const searchedProducts = searchQuery
     ? products.filter(
         (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) && p.quantity > 0
+          (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.barcode.includes(searchQuery)) && p.quantity > 0
       )
     : products.filter(p => p.quantity > 0);
 
   const addToCart = (product: Product) => {
     const existingItem = cart.find((item) => item.productId === product.id);
     
-    // For new sales, check against current stock. For edits, allow adding even if stock is 0 now.
     if (!isEditing) {
         const productInStock = products.find(p => p.id === product.id);
         if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
@@ -164,18 +181,20 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full md:h-[calc(100vh-10rem)]">
-      <Card className="lg:col-span-3 flex flex-col h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-10rem)]">
+      <Card className="lg:col-span-3 flex flex-col h-full overflow-hidden">
         <CardHeader className="p-4">
-            <Input 
-              placeholder={t('sales.search_placeholder')} 
-              value={searchQuery}
-              onChange={handleSearchChange} 
-            />
+            <form onSubmit={handleBarcodeSubmit}>
+                <Input 
+                placeholder={t('sales.search_placeholder')} 
+                value={searchQuery}
+                onChange={handleSearchChange} 
+                />
+            </form>
         </CardHeader>
-        <CardContent className="flex-grow p-4 overflow-hidden">
+        <CardContent className="flex-grow p-4 pt-0 overflow-hidden">
           <ScrollArea className="h-full">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pr-6">
               {searchedProducts.map((product) => (
                 <Card 
                   key={product.id} 
@@ -208,14 +227,40 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
         </CardContent>
       </Card>
 
-      <Card className="lg:col-span-1 flex flex-col p-0">
+      <Card className="lg:col-span-1 flex flex-col p-0 h-full overflow-hidden">
         <CardHeader className="p-6">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">
             <ShoppingCart className="h-6 w-6" />
             {t('sales.shopping_cart')}
           </CardTitle>
         </CardHeader>
-        <div className="flex flex-col gap-4 p-6 pt-0 border-b">
+        <div className="flex-grow overflow-hidden p-6 pt-0">
+             <ScrollArea className="h-full pr-4 -mr-4">
+                {cart.length === 0 ? (
+                    <div className="text-center text-muted-foreground italic h-full flex items-center justify-center">
+                        {t('sales.empty_cart_message')}
+                    </div>
+                ) : (
+                    <div className="space-y-2">
+                    {cart.map((item) => (
+                        <div key={item.productId} className="flex items-center text-sm">
+                        <div className="flex-grow">
+                            <p className="font-medium leading-tight line-clamp-2">{item.productName}</p>
+                            <p className="text-xs text-muted-foreground">{formatCurrency(item.unitPrice)} x {item.quantity}</p>
+                        </div>
+                        <div className="ml-4 flex items-center gap-1">
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-4 w-4"/></Button>
+                            <span className="font-medium w-4 text-center">{item.quantity}</span>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-4 w-4"/></Button>
+                            <div className="font-bold w-14 text-right">{formatCurrency(item.totalPrice)}</div>
+                        </div>
+                        </div>
+                    ))}
+                    </div>
+                )}
+            </ScrollArea>
+        </div>
+        <div className="flex flex-col gap-4 p-6 pt-2 border-t mt-auto">
             <div className="w-full">
                 <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
                     <SelectTrigger>
@@ -265,32 +310,6 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
                 )}
             </Button>
         </div>
-        <CardContent className="flex-grow overflow-hidden p-6 pt-4">
-             <ScrollArea className="h-full pr-4">
-                {cart.length === 0 ? (
-                    <div className="text-center text-muted-foreground italic h-full flex items-center justify-center">
-                        {t('sales.empty_cart_message')}
-                    </div>
-                ) : (
-                    <div className="space-y-2">
-                    {cart.map((item) => (
-                        <div key={item.productId} className="flex items-center text-sm">
-                        <div className="flex-grow">
-                            <p className="font-medium leading-tight line-clamp-2">{item.productName}</p>
-                            <p className="text-xs text-muted-foreground">{formatCurrency(item.unitPrice)} x {item.quantity}</p>
-                        </div>
-                        <div className="ml-4 flex items-center gap-1">
-                            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-4 w-4"/></Button>
-                            <span className="font-medium w-4 text-center">{item.quantity}</span>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-4 w-4"/></Button>
-                            <div className="font-bold w-14 text-right">{formatCurrency(item.totalPrice)}</div>
-                        </div>
-                        </div>
-                    ))}
-                    </div>
-                )}
-            </ScrollArea>
-        </CardContent>
       </Card>
     </div>
   );
