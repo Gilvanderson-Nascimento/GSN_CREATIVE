@@ -135,7 +135,9 @@
             "save_to_stock": "Save to Stock",
             "stock_updated_title": "Stock Updated",
             "stock_updated_description": "{{count}} product entries were added/updated in your stock."
-        }
+        },
+        "barcode_not_found_title": "Barcode Not Found",
+        "barcode_not_found_description": "No product matches the barcode '{{barcode}}'."
     },
     "sales": {
         "title": "Point of Sale (POS)",

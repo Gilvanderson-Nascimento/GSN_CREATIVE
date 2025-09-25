@@ -135,7 +135,9 @@
             "save_to_stock": "Salvar no Estoque",
             "stock_updated_title": "Estoque Atualizado",
             "stock_updated_description": "{{count}} registros de produtos foram adicionados/atualizados no seu estoque."
-        }
+        },
+        "barcode_not_found_title": "Código de Barras Não Encontrado",
+        "barcode_not_found_description": "Nenhum produto corresponde ao código de barras '{{barcode}}'."
     },
     "sales": {
         "title": "Ponto de Venda (PDV)",
