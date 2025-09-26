@@ -40,24 +40,26 @@ import {
 import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, ShieldCheck, UserCog } from 'lucide-react';
 import type { User, PagePermission } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { UserForm } from './user-form';
+import { UserForm, type UserFormValues } from './user-form';
 import { PermissionsForm } from './permissions-form';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 export default function UserTable() {
   const { users: initialUsers, setUsers } = useContext(DataContext);
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [filter, setFilter] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [managingPermissionsFor, setManagingPermissionsFor] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isPermissionsSheetOpen, setIsPermissionsSheetOpen] = useState(false);
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, createUser } = useAuth();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -95,20 +97,26 @@ export default function UserTable() {
     }
   };
   
-  const handleSaveUser = (userData: Omit<User, 'id' | 'createdAt' | 'permissions'>) => {
-    if(editingUser) {
-        setUsers(initialUsers.map(u => u.id === editingUser.id ? { ...editingUser, ...userData, password: userData.password || editingUser.password } : u));
+  const handleSaveUser = async (userData: UserFormValues) => {
+    if (editingUser) {
+      // Logic for updating an existing user
+      setUsers(initialUsers.map(u => u.id === editingUser.id ? { ...editingUser, ...userData } : u));
+      toast({ title: "Usuário atualizado", description: `O usuário ${userData.name} foi atualizado.` });
     } else {
-        const newUser: User = {
-          ...userData,
-          id: `USER${Date.now()}`,
-          createdAt: new Date().toISOString(),
-          permissions: {}, // Start with no permissions
-        }
-        setUsers([...initialUsers, newUser]);
+      // Logic for creating a new user
+      if (!userData.password) {
+        toast({ variant: 'destructive', title: "Senha necessária", description: "A senha é obrigatória para criar um novo usuário." });
+        return;
+      }
+      try {
+        await createUser(userData);
+        toast({ title: "Usuário criado", description: `O usuário ${userData.name} foi criado com sucesso.` });
+      } catch (error: any) {
+        toast({ variant: 'destructive', title: "Erro ao criar usuário", description: error.message });
+      }
     }
     setIsSheetOpen(false);
-  }
+  };
 
   const handleSavePermissions = (permissions: Partial<Record<PagePermission, boolean>>) => {
     if (managingPermissionsFor) {

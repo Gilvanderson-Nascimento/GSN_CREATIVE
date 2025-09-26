@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import type { Product, Customer, Sale, SaleItem, User, PriceSimulation } from '@/lib/types';
+import { UserFormValues } from '@/components/users/user-form';
 
 type SaleData = {
   items: SaleItem[];

@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation';
 import { useFirebase } from '@/firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
 import { users as staticUsers } from '@/lib/data'; // Import static users
+import { UserFormValues } from '@/components/users/user-form';
+import { allPermissions } from '@/lib/types';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { auth, isUserLoading: isFirebaseUserLoading } = useFirebase();
-  const { users } = useContext(DataContext);
+  const { users, setUsers } = useContext(DataContext);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -32,33 +34,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [auth, isFirebaseUserLoading, router, users]);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    const userToLogin = staticUsers.find(u => u.username === username);
+    // Use the most current user list (from context if loaded, otherwise static)
+    const userList = users.length > 0 ? users : staticUsers;
+    const userToLogin = userList.find(u => u.username === username);
 
     if (!userToLogin || !userToLogin.email) {
-      throw new Error('Usuário não encontrado ou sem e-mail configurado.');
+      // Special check for GSN_CREATIVE during initial load
+      if (username === 'GSN_CREATIVE') {
+          const gsnUser = staticUsers.find(u => u.username === 'GSN_CREATIVE');
+          if (gsnUser && gsnUser.email) {
+              await attemptLogin(gsnUser.email, pass);
+              return;
+          }
+      }
+      throw new Error('Usuário não encontrado ou e-mail não configurado.');
     }
     
-    try {
-      await signInWithEmailAndPassword(auth, userToLogin.email, pass);
-      router.push('/dashboard');
-    } catch (error: any) {
-      // If user does not exist, try to create it (useful for first-time dev setup)
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
-        try {
-          await createUserWithEmailAndPassword(auth, userToLogin.email, pass);
-          // Try signing in again after creating the user
-          await signInWithEmailAndPassword(auth, userToLogin.email, pass);
-          router.push('/dashboard');
-        } catch (createError: any) {
-          console.error("User creation failed:", createError);
-          throw new Error('Falha ao criar ou autenticar usuário.');
-        }
-      } else {
+    await attemptLogin(userToLogin.email, pass);
+  };
+  
+  const attemptLogin = async (email: string, pass: string) => {
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        router.push('/dashboard');
+      } catch (error: any) {
         console.error("Login failed:", error);
         throw new Error('Usuário ou senha inválidos.');
       }
-    }
-  };
+  }
 
   const logout = async () => {
     await signOut(auth);
@@ -66,9 +69,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
   
+  const createUser = async (userData: UserFormValues) => {
+    if (!userData.email || !userData.password) {
+        throw new Error('E-mail e senha são obrigatórios para criar um usuário.');
+    }
+
+    // 1. Create user in Firebase Auth
+    try {
+        await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+    } catch (error: any) {
+        if (error.code === 'auth/email-already-in-use') {
+            throw new Error('Este e-mail já está em uso por outra conta.');
+        }
+        console.error('Error creating user in Firebase Auth:', error);
+        throw new Error('Ocorreu um erro ao criar a credencial de acesso.');
+    }
+
+    // 2. Create user profile in local state (DataContext)
+    const newUser: AuthUser = {
+      id: `USER${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      permissions: userData.role === 'admin' ? 
+        Object.keys(allPermissions).reduce((acc, key) => ({...acc, [key]: true}), {}) : 
+        { dashboard: true }, // Default permissions for non-admins
+      ...userData,
+    };
+    setUsers([...users, newUser]);
+  };
+  
   const isAuthenticated = !!user;
   
-  const value = { user, isAuthenticated, isLoading, login, logout };
+  const value = { user, isAuthenticated, isLoading, login, logout, createUser };
 
   return (
     <AuthContext.Provider value={value}>

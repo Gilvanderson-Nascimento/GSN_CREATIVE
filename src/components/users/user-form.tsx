@@ -22,11 +22,11 @@ const roles: UserRole[] = ['admin', 'gerente', 'vendedor', 'estoquista'];
 const baseFormSchema = z.object({
   name: z.string().min(2, { message: 'users.user_form.name_min_char' }),
   username: z.string().min(3, { message: 'users.user_form.username_min_char' }),
-  email: z.string().email({ message: 'users.user_form.email_invalid' }).optional().or(z.literal('')),
+  email: z.string().email({ message: 'users.user_form.email_invalid' }),
   role: z.string().min(1, { message: 'users.user_form.role_required'}),
 });
 
-type UserFormValues = Omit<User, 'id' | 'createdAt' | 'permissions'>;
+export type UserFormValues = Omit<User, 'id' | 'createdAt' | 'permissions'>;
 
 type UserFormProps = {
   user: User | null;
@@ -40,7 +40,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   
   const formSchema = baseFormSchema.extend({
       password: user
-      ? z.string().optional().or(z.literal(''))
+      ? z.string().min(6, { message: 'users.user_form.password_min_char' }).optional().or(z.literal(''))
       : z.string().min(6, { message: 'users.user_form.password_min_char' }),
   });
 
@@ -56,7 +56,12 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onSave(values);
+    // Ensure email is not an empty string if it's optional but submitted
+    const finalValues = {
+        ...values,
+        email: values.email || '',
+    };
+    onSave(finalValues);
   }
   
   const translatedMessage = (messageKey?: string) => {
@@ -160,5 +165,3 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
     </Form>
   );
 }
-
-    
