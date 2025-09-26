@@ -63,7 +63,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
     return messageKey ? t(messageKey) : undefined;
   };
 
-  const canEditRole = currentUser?.role === 'admin';
+  const canEditRole = currentUser?.role === 'admin' && user?.username !== 'GSN_CREATIVE';
 
   return (
     <Form {...form}>
@@ -88,7 +88,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             <FormItem>
               <FormLabel>{t('users.user_form.username')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('users.user_form.ex_username')} {...field} />
+                <Input placeholder={t('users.user_form.ex_username')} {...field} disabled={user?.username === 'GSN_CREATIVE'} />
               </FormControl>
               <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>

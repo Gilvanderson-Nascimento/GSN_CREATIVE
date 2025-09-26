@@ -9,7 +9,7 @@ export const users: User[] = [
         id: 'USER001',
         name: 'Admin GSN',
         username: 'GSN_CREATIVE',
-        email: 'dev@gsn.com',
+        email: 'imaginesinta@gmail.com',
         password: 'Gsn@6437#',
         role: 'admin',
         createdAt: new Date().toISOString(),

@@ -124,7 +124,13 @@ export default function UserTable() {
       (user.email && user.email.toLowerCase().includes(filter.toLowerCase()))
   );
   
-  const isCurrentUserAdmin = isClient && currentUser?.role === 'admin';
+  const canPerformActions = (targetUser: User) => {
+    if (!isClient || !currentUser) return false;
+    if (currentUser.role === 'admin') {
+      return targetUser.username !== 'GSN_CREATIVE';
+    }
+    return false;
+  }
 
   return (
     <>
@@ -146,7 +152,7 @@ export default function UserTable() {
                         className="pl-9"
                     />
                 </div>
-                {isCurrentUserAdmin && (
+                {currentUser?.role === 'admin' && (
                   <Button onClick={handleAddUser}>
                     <PlusCircle className="mr-2 h-4 w-4" />
                     {t('users.add_user')}
@@ -177,13 +183,13 @@ export default function UserTable() {
                               </Link>
                             </TableCell>
                             <TableCell className="text-muted-foreground">{user.username}</TableCell>
-                            <TableCell><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
+                            <TableCell><Badge variant="secondary" className="capitalize">{t(`users.roles.${user.role}`)}</Badge></TableCell>
                             <TableCell className="text-muted-foreground">{user.email || 'N/A'}</TableCell>
                             <TableCell>
                             <div className="flex justify-end">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!isCurrentUserAdmin}>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!canPerformActions(user)}>
                                         <MoreHorizontal className="h-4 w-4" />
                                         <span className="sr-only">Toggle menu</span>
                                     </Button>
