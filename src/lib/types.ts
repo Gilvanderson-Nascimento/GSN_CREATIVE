@@ -57,15 +57,7 @@ export type PagePermission =
   | 'customers' 
   | 'pricing' 
   | 'users' 
-  | 'settings_system'
-  | 'settings_appearance'
-  | 'settings_pricing'
-  | 'settings_stock'
-  | 'settings_sales'
-  | 'settings_users'
-  | 'settings_backup'
-  | 'settings_integrations'
-  | 'settings_test';
+  | 'settings';
 
 export const allPermissions: Record<PagePermission, string> = {
   dashboard: 'Dashboard',
@@ -74,15 +66,7 @@ export const allPermissions: Record<PagePermission, string> = {
   customers: 'Clientes',
   pricing: 'Precificação',
   users: 'Usuários',
-  settings_system: 'Configurações (Sistema)',
-  settings_appearance: 'Configurações (Aparência)',
-  settings_pricing: 'Configurações (Precificação)',
-  settings_stock: 'Configurações (Estoque)',
-  settings_sales: 'Configurações (Vendas)',
-  settings_users: 'Configurações (Usuários)',
-  settings_backup: 'Configurações (Backup)',
-  settings_integrations: 'Configurações (Integrações)',
-  settings_test: 'Configurações (Ambiente de Teste)',
+  settings: 'Configurações',
 };
 
 

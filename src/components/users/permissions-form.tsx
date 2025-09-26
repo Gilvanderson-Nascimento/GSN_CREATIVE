@@ -48,13 +48,8 @@ export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps
   }
 
   const getTranslatedPermission = (key: string) => {
-      const translationKey = `sidebar.${key.split('_')[0]}`;
-      const translation = t(translationKey as any);
-      if (key.startsWith('settings_')) {
-          const subKey = key.replace('settings_', '');
-          return `${translation} > ${t(`settings.${subKey}_title` as any)}`;
-      }
-      return translation;
+      const translationKey = `sidebar.${key}`;
+      return t(translationKey as any);
   }
 
   return (
