@@ -14,6 +14,12 @@ type SaleData = {
 
 // Defining a simplified settings type for the context
 export type AppSettings = {
+  sistema: {
+    nome_empresa: string;
+    logoUrl?: string;
+    idioma: string;
+    moeda: string;
+  },
   estoque: {
     notificar_estoque_minimo: boolean;
     estoque_minimo_padrao: number;
@@ -66,6 +72,12 @@ export const DataContext = createContext<DataContextType>({
   cancelSale: () => {},
   updateSale: () => {},
   settings: {
+    sistema: {
+        nome_empresa: "GSN Gestor",
+        logoUrl: '/logo.png',
+        idioma: "pt-BR",
+        moeda: "BRL",
+    },
     estoque: {
       notificar_estoque_minimo: true,
       estoque_minimo_padrao: 10,

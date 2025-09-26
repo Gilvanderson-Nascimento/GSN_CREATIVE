@@ -23,6 +23,7 @@ type SaleData = {
 const initialSettings: AppSettings = {
     sistema: {
       nome_empresa: "GSN Gestor",
+      logoUrl: '/logo.png',
       idioma: "pt-BR",
       moeda: "BRL",
     },

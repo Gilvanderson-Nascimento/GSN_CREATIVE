@@ -45,6 +45,21 @@ export default function SettingsPage() {
     });
   };
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            handleSettingChange('sistema', 'logoUrl', reader.result as string);
+            toast({
+                title: 'Logo atualizada',
+                description: 'A nova logo da empresa foi carregada com sucesso.'
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+  }
+
   const handleResetData = () => {
     setProducts([]);
     setCustomers([]);
@@ -149,7 +164,7 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-2">
                 <label className="text-sm font-medium">{t('settings.company_logo')}</label>
-                <Input type="file" />
+                <Input type="file" onChange={handleLogoChange} accept="image/*" />
             </div>
             <div className="space-y-2">
                  <label className="text-sm font-medium">{t('settings.language')}</label>
