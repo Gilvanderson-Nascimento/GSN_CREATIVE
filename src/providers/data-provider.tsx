@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { DataContext, type AppSettings } from '@/context/data-context';
+import { DataContext, type AppSettings, initialSettings } from '@/context/data-context';
 import type { Product, Customer, Sale, SaleItem, User, PriceSimulation } from '@/lib/types';
 import { 
     products as initialProducts, 
@@ -19,47 +19,6 @@ type SaleData = {
   sellerId?: string;
   sellerName?: string;
 }
-
-const initialSettings: AppSettings = {
-    sistema: {
-      nome_empresa: "GSN Gestor",
-      logoUrl: '/logo.png',
-      idioma: "pt-BR",
-      moeda: "BRL",
-    },
-    precificacao: {
-      margem_lucro: 20,
-      imposto_padrao: 10,
-      arredondar_valores: true,
-      permitir_venda_abaixo_custo: false,
-    },
-    estoque: {
-      notificar_estoque_minimo: true,
-      estoque_minimo_padrao: 10,
-      permitir_estoque_negativo: false,
-    },
-    vendas: {
-      venda_sem_cliente: true,
-      desconto_maximo_percentual: 15,
-      associar_vendedor: true,
-    },
-    usuarios: {
-      multiusuario: true,
-      autenticacao_2_etapas: false,
-    },
-    backup_exportacao: {
-      frequencia: "semanal",
-      permitir_importacao: true,
-    },
-    integracoes: {
-      api_nfe: false,
-      webhooks: false,
-      impressora_cupom: false,
-    },
-    ambiente_teste: {
-      modo_teste: false,
-    },
-};
 
 const getInitialState = <T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') {
@@ -136,6 +95,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isLoaded) {
       sessionStorage.setItem('app_settings', JSON.stringify(settings));
+       // Also update the font on the body
+      document.body.style.fontFamily = `var(--font-${settings.aparência?.font || 'inter'})`;
     }
   }, [settings, isLoaded]);
 

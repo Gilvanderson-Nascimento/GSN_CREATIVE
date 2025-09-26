@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { DataContext, type AppSettings } from '@/context/data-context';
+import { DataContext, type AppSettings, initialSettings } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
 import {
   AlertDialog,
@@ -22,6 +22,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTheme } from 'next-themes';
+
+const availableFonts = [
+    { name: 'Inter', value: 'inter' },
+    { name: 'Poppins', value: 'poppins' },
+    { name: 'Roboto', value: 'roboto' },
+];
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -29,6 +36,7 @@ export default function SettingsPage() {
   const { products, customers, sales, setProducts, setCustomers, setSales, settings, setSettings } = useContext(DataContext);
   const restoreInputRef = useRef<HTMLInputElement>(null);
   const [isResetAlertOpen, setIsResetAlertOpen] = useState(false);
+  const { setTheme } = useTheme();
 
   // Generic handler for nested state
   const handleSettingChange = <T extends keyof AppSettings, K extends keyof (AppSettings)[T]>(
@@ -58,6 +66,15 @@ export default function SettingsPage() {
         };
         reader.readAsDataURL(file);
     }
+  }
+
+  const handleResetAppearance = () => {
+    setTheme('system');
+    handleSettingChange('aparência', 'font', 'inter');
+    toast({
+        title: t('settings.appearance_reset_title'),
+        description: t('settings.appearance_reset_description'),
+    })
   }
 
   const handleResetData = () => {
@@ -199,6 +216,19 @@ export default function SettingsPage() {
                 <label className="text-sm font-medium">{t('settings.theme')}</label>
                 <ThemeToggle />
             </div>
+            <div className="space-y-2">
+                <label className="text-sm font-medium">{t('settings.font')}</label>
+                <Select value={settings.aparência?.font} onValueChange={(v) => handleSettingChange('aparência', 'font', v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        {availableFonts.map(font => (
+                            <SelectItem key={font.value} value={font.value}>{font.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <Separator />
+            <Button variant="outline" className="w-full" onClick={handleResetAppearance}>{t('settings.reset_appearance')}</Button>
           </CardContent>
         </Card>
 
