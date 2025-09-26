@@ -25,12 +25,12 @@ const getInitialState = <T,>(key: string, fallback: T): T => {
       return fallback;
     }
     try {
-      const stored = sessionStorage.getItem(key);
+      const stored = localStorage.getItem(key);
       if (stored && stored !== 'undefined') {
         return JSON.parse(stored);
       }
     } catch (e) {
-      console.error(`Failed to parse ${key} from sessionStorage`, e);
+      console.error(`Failed to parse ${key} from localStorage`, e);
     }
     return fallback;
 };
@@ -77,31 +77,31 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   
   useEffect(() => {
     if (isLoaded) {
-      sessionStorage.setItem('app_products', JSON.stringify(products));
+      localStorage.setItem('app_products', JSON.stringify(products));
     }
   }, [products, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      sessionStorage.setItem('app_customers', JSON.stringify(customers));
+      localStorage.setItem('app_customers', JSON.stringify(customers));
     }
   }, [customers, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      sessionStorage.setItem('app_sales', JSON.stringify(sales));
+      localStorage.setItem('app_sales', JSON.stringify(sales));
     }
   }, [sales, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      sessionStorage.setItem('app_users', JSON.stringify(users));
+      localStorage.setItem('app_users', JSON.stringify(users));
     }
   }, [users, isLoaded]);
   
   useEffect(() => {
     if (isLoaded) {
-      sessionStorage.setItem('app_settings', JSON.stringify(settings));
+      localStorage.setItem('app_settings', JSON.stringify(settings));
        // Also update the font on the body
       if (typeof window !== 'undefined') {
         document.body.style.fontFamily = `var(--font-${settings.aparência?.font || 'inter'})`;
@@ -111,19 +111,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isLoaded) {
-      sessionStorage.setItem('app_price_simulations', JSON.stringify(priceSimulations));
+      localStorage.setItem('app_price_simulations', JSON.stringify(priceSimulations));
     }
   }, [priceSimulations, isLoaded]);
   
-  // Save cart state to session storage
+  // Save cart state to local storage
   useEffect(() => {
-    if (isLoaded) sessionStorage.setItem('app_cart', JSON.stringify(cart));
+    if (isLoaded) localStorage.setItem('app_cart', JSON.stringify(cart));
   }, [cart, isLoaded]);
   useEffect(() => {
-    if (isLoaded) sessionStorage.setItem('app_cart_discount', JSON.stringify(discount));
+    if (isLoaded) localStorage.setItem('app_cart_discount', JSON.stringify(discount));
   }, [discount, isLoaded]);
   useEffect(() => {
-    if (isLoaded) sessionStorage.setItem('app_cart_customer', JSON.stringify(selectedCustomer));
+    if (isLoaded) localStorage.setItem('app_cart_customer', JSON.stringify(selectedCustomer));
   }, [selectedCustomer, isLoaded]);
 
   const setProducts = (newProducts: Product[]) => setProductsState(newProducts);
