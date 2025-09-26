@@ -4,7 +4,7 @@ import { AuthContext, type AuthUser } from '@/context/auth-context';
 import { DataContext } from '@/context/data-context';
 import { useRouter } from 'next/navigation';
 import { useFirebase } from '@/firebase';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from 'firebase/auth';
 import { users as staticUsers } from '@/lib/data'; // Import static users
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [auth, isFirebaseUserLoading, router, users]);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    // Find the user from the static list first to ensure dev user is always available
     const userToLogin = staticUsers.find(u => u.username === username);
 
     if (!userToLogin || !userToLogin.email) {
@@ -42,9 +41,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await signInWithEmailAndPassword(auth, userToLogin.email, pass);
       router.push('/dashboard');
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw new Error('Usuário ou senha inválidos.');
+    } catch (error: any) {
+      // If user does not exist, try to create it (useful for first-time dev setup)
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+        try {
+          await createUserWithEmailAndPassword(auth, userToLogin.email, pass);
+          // Try signing in again after creating the user
+          await signInWithEmailAndPassword(auth, userToLogin.email, pass);
+          router.push('/dashboard');
+        } catch (createError: any) {
+          console.error("User creation failed:", createError);
+          throw new Error('Falha ao criar ou autenticar usuário.');
+        }
+      } else {
+        console.error("Login failed:", error);
+        throw new Error('Usuário ou senha inválidos.');
+      }
     }
   };
 
