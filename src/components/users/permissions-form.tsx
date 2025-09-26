@@ -47,6 +47,16 @@ export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps
     onSave(values.permissions || {});
   }
 
+  const getTranslatedPermission = (key: string) => {
+      const translationKey = `sidebar.${key.split('_')[0]}`;
+      const translation = t(translationKey as any);
+      if (key.startsWith('settings_')) {
+          const subKey = key.replace('settings_', '');
+          return `${translation} > ${t(`settings.${subKey}_title` as any)}`;
+      }
+      return translation;
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6">
@@ -67,7 +77,7 @@ export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps
                         </FormControl>
                         <div className="space-y-1 leading-none">
                             <FormLabel>
-                                {t(`sidebar.${key}` as any)}
+                                {getTranslatedPermission(key)}
                             </FormLabel>
                         </div>
                         </FormItem>
@@ -87,5 +97,3 @@ export function PermissionsForm({ user, onSave, onCancel }: PermissionsFormProps
     </Form>
   );
 }
-
-    

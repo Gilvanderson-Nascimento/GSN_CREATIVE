@@ -14,6 +14,9 @@ export function SidebarNavigation() {
   
   const canAccess = (page: 'dashboard' | 'stock' | 'sales' | 'customers' | 'pricing' | 'users' | 'settings') => {
       if(user?.role === 'admin') return true;
+      if (page === 'settings') {
+          return Object.keys(user?.permissions || {}).some(p => p.startsWith('settings_'));
+      }
       return user?.permissions?.[page] ?? false;
   }
 
@@ -119,5 +122,3 @@ export function SidebarNavigation() {
     </>
   );
 }
-
-    

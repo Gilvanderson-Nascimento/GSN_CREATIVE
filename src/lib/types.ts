@@ -50,7 +50,22 @@ export type Customer = {
   totalSpent: number;
 };
 
-export type PagePermission = 'dashboard' | 'stock' | 'sales' | 'customers' | 'pricing' | 'users' | 'settings';
+export type PagePermission = 
+  | 'dashboard' 
+  | 'stock' 
+  | 'sales' 
+  | 'customers' 
+  | 'pricing' 
+  | 'users' 
+  | 'settings_system'
+  | 'settings_appearance'
+  | 'settings_pricing'
+  | 'settings_stock'
+  | 'settings_sales'
+  | 'settings_users'
+  | 'settings_backup'
+  | 'settings_integrations'
+  | 'settings_test';
 
 export const allPermissions: Record<PagePermission, string> = {
   dashboard: 'Dashboard',
@@ -59,7 +74,15 @@ export const allPermissions: Record<PagePermission, string> = {
   customers: 'Clientes',
   pricing: 'Precificação',
   users: 'Usuários',
-  settings: 'Configurações',
+  settings_system: 'Configurações (Sistema)',
+  settings_appearance: 'Configurações (Aparência)',
+  settings_pricing: 'Configurações (Precificação)',
+  settings_stock: 'Configurações (Estoque)',
+  settings_sales: 'Configurações (Vendas)',
+  settings_users: 'Configurações (Usuários)',
+  settings_backup: 'Configurações (Backup)',
+  settings_integrations: 'Configurações (Integrações)',
+  settings_test: 'Configurações (Ambiente de Teste)',
 };
 
 
