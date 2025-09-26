@@ -50,19 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await signOut(auth);
+    setUser(null);
     router.push('/login');
   };
   
-  if (isLoading) {
-    return (
-        <div className="flex h-screen w-screen items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-                 <p>Carregando...</p>
-            </div>
-        </div>
-    );
-  }
-
   const isAuthenticated = !!user;
   
   const value = { user, isAuthenticated, isLoading, login, logout };
