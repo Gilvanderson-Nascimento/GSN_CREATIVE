@@ -8,6 +8,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { UserCog } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR, enUS } from 'date-fns/locale';
 
 type UserDetailContentProps = {
   user: User;
@@ -16,7 +18,8 @@ type UserDetailContentProps = {
 };
 
 export function UserDetailContent({ user, sales, customers }: UserDetailContentProps) {
-  const { t, formatCurrency } = useTranslation();
+  const { t, formatCurrency, language } = useTranslation();
+  const locale = language === 'pt-BR' ? ptBR : enUS;
 
   const totalValueSold = sales.reduce((acc, sale) => acc + sale.total, 0);
 
@@ -36,7 +39,7 @@ export function UserDetailContent({ user, sales, customers }: UserDetailContentP
           <div>
             <CardTitle className="text-2xl">{user.name}</CardTitle>
             <p className="text-muted-foreground">@{user.username}</p>
-            <Badge className="mt-2 capitalize">{user.role}</Badge>
+            <Badge className="mt-2 capitalize">{t(`users.roles.${user.role}`)}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4 p-6 pt-0">
@@ -72,8 +75,12 @@ export function UserDetailContent({ user, sales, customers }: UserDetailContentP
               <TableBody className="bg-white divide-y divide-gray-200 dark:bg-card dark:divide-border">
                 {sales.map((sale) => (
                   <TableRow key={sale.id} className="hover:bg-gray-50 dark:hover:bg-muted/50">
-                    <TableCell className="font-medium px-4 py-3 text-gray-800 dark:text-foreground">{sale.id}</TableCell>
-                    <TableCell className="px-4 py-3 text-gray-700 dark:text-muted-foreground">{new Date(sale.date).toLocaleDateString()}</TableCell>
+                    <TableCell className="font-medium px-4 py-3 text-gray-800 dark:text-foreground">
+                       <Link href={`/sales/${sale.id}`} className="hover:underline text-primary">
+                          {sale.id}
+                        </Link>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-700 dark:text-muted-foreground">{format(new Date(sale.date), 'P', { locale })}</TableCell>
                     <TableCell className="px-4 py-3 text-gray-700 dark:text-muted-foreground">
                       {sale.customerId ? (
                         <Link href={`/customers/${sale.customerId}`} className="hover:underline text-primary">

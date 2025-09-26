@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import type { User, UserRole, PagePermission } from '@/lib/types';
+import type { User, UserRole } from '@/lib/types';
 import { useAuth } from '@/hooks/use-auth';
 import { useTranslation } from '@/providers/translation-provider';
 
@@ -134,7 +134,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
                         </FormControl>
                         <SelectContent>
                         {roles.map(role => (
-                            <SelectItem key={role} value={role} className="capitalize">{role}</SelectItem>
+                            <SelectItem key={role} value={role} className="capitalize">{t(`users.roles.${role}`)}</SelectItem>
                         ))}
                         </SelectContent>
                     </Select>

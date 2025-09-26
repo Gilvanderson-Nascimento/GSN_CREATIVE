@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo, useEffect, useContext } from 'react';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -36,7 +37,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, ShieldCheck } from 'lucide-react';
+import { MoreHorizontal, Pencil, PlusCircle, Trash2, Search, ShieldCheck, UserCog } from 'lucide-react';
 import type { User, PagePermission } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { UserForm } from './user-form';
@@ -145,10 +146,12 @@ export default function UserTable() {
                         className="pl-9"
                     />
                 </div>
-                <Button onClick={handleAddUser}>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  {t('users.add_user')}
-                </Button>
+                {isCurrentUserAdmin && (
+                  <Button onClick={handleAddUser}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    {t('users.add_user')}
+                  </Button>
+                )}
             </div>
             <div className="rounded-xl border flex-grow overflow-hidden">
                 <ScrollArea className="h-full">
@@ -167,7 +170,12 @@ export default function UserTable() {
                     <TableBody>
                         {filteredUsers.map((user) => (
                         <TableRow key={user.id}>
-                            <TableCell className="font-medium">{user.name}</TableCell>
+                            <TableCell className="font-medium">
+                              <Link href={`/users/${user.id}`} className="hover:underline text-primary flex items-center gap-2">
+                                <UserCog className="h-4 w-4" />
+                                {user.name}
+                              </Link>
+                            </TableCell>
                             <TableCell className="text-muted-foreground">{user.username}</TableCell>
                             <TableCell><Badge variant="secondary" className="capitalize">{user.role}</Badge></TableCell>
                             <TableCell className="text-muted-foreground">{user.email || 'N/A'}</TableCell>

@@ -305,6 +305,12 @@
             "password_min_char": "Password must be at least 6 characters.",
             "role_required": "Role is required."
         },
+        "roles": {
+            "admin": "Administrator",
+            "gerente": "Manager",
+            "vendedor": "Seller",
+            "estoquista": "Stocker"
+        },
         "details": {
             "title": "Seller Details",
             "sales_made": "Sales Made",

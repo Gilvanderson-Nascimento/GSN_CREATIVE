@@ -305,6 +305,12 @@
             "password_min_char": "Senha deve ter pelo menos 6 caracteres.",
             "role_required": "Função é obrigatória."
         },
+        "roles": {
+            "admin": "Administrador",
+            "gerente": "Gerente",
+            "vendedor": "Vendedor",
+            "estoquista": "Estoquista"
+        },
         "details": {
             "title": "Detalhes do Vendedor",
             "sales_made": "Vendas Realizadas",
