@@ -65,7 +65,7 @@ export default function UserTable() {
   }, []);
 
   const usersToDisplay = useMemo(() => 
-    initialUsers,
+    initialUsers.filter(u => u.username !== 'GSN_CREATIVE'),
     [initialUsers]
   );
 
@@ -198,7 +198,7 @@ export default function UserTable() {
                             <div className="flex justify-end">
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!canPerformActions(user)}>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost" disabled={!canPerformActions(user) || user.username === 'GSN_CREATIVE'}>
                                         <MoreHorizontal className="h-4 w-4" />
                                         <span className="sr-only">Toggle menu</span>
                                     </Button>
