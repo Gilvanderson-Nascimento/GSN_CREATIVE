@@ -5,6 +5,7 @@ import { DataContext } from '@/context/data-context';
 import { useRouter } from 'next/navigation';
 import { useFirebase } from '@/firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { users as staticUsers } from '@/lib/data'; // Import static users
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { auth, isUserLoading: isFirebaseUserLoading } = useFirebase();
@@ -17,7 +18,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isFirebaseUserLoading) {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-          const appUser = users.find(u => u.email === firebaseUser.email) || null;
+          // Use the most current user list (from context if loaded, otherwise static)
+          const userList = users.length > 0 ? users : staticUsers;
+          const appUser = userList.find(u => u.email === firebaseUser.email) || null;
           setUser(appUser);
         } else {
           setUser(null);
@@ -29,7 +32,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [auth, isFirebaseUserLoading, router, users]);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    const userToLogin = users.find(u => u.username === username);
+    // Find the user from the static list first to ensure dev user is always available
+    const userToLogin = staticUsers.find(u => u.username === username);
 
     if (!userToLogin || !userToLogin.email) {
       throw new Error('Usuário não encontrado ou sem e-mail configurado.');
