@@ -250,7 +250,22 @@
         "history_title": "Histórico de Precificação",
         "history_description": "Histórico de todas as simulações de preço realizadas.",
         "no_history": "Nenhuma simulação de preço registrada ainda.",
-        "date": "Data"
+        "date": "Data",
+        "stock_suggestions_title": "Sugestões para o Estoque",
+        "stock_suggestions_description": "Analise e aplique sugestões de preços para os produtos em seu estoque com base nas configurações padrão.",
+        "current_price": "Preço Atual",
+        "suggested_price": "Preço Sugerido",
+        "apply_suggestion": "Aplicar",
+        "apply_all_suggestions": "Aplicar Todas as Sugestões",
+        "no_products_in_stock": "Não há produtos no estoque para exibir.",
+        "confirm_apply_all_title": "Aplicar todas as sugestões?",
+        "confirm_apply_all_description": "Esta ação atualizará o preço de venda de todos os {{count}} produtos listados com os valores sugeridos. Esta ação não pode ser desfeita.",
+        "confirm_apply": "Sim, aplicar todas",
+        "price_update_success_title": "Preços Atualizados",
+        "price_update_success_description": "{{count}} preços de produtos foram atualizados com sucesso.",
+        "price_update_single_success_title": "Preço Atualizado",
+        "price_update_single_success_description": "O preço de {{productName}} foi atualizado para {{price}}."
+
     },
     "users": {
         "title": "Usuários do Sistema",

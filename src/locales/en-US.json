@@ -250,7 +250,21 @@
         "history_title": "Pricing History",
         "history_description": "History of all pricing simulations performed.",
         "no_history": "No pricing simulations recorded yet.",
-        "date": "Date"
+        "date": "Date",
+        "stock_suggestions_title": "Stock Suggestions",
+        "stock_suggestions_description": "Analyze and apply price suggestions for products in your stock based on default settings.",
+        "current_price": "Current Price",
+        "suggested_price": "Suggested Price",
+        "apply_suggestion": "Apply",
+        "apply_all_suggestions": "Apply All Suggestions",
+        "no_products_in_stock": "No products in stock to display.",
+        "confirm_apply_all_title": "Apply all suggestions?",
+        "confirm_apply_all_description": "This action will update the sale price of all {{count}} listed products with the suggested values. This action cannot be undone.",
+        "confirm_apply": "Yes, apply all",
+        "price_update_success_title": "Prices Updated",
+        "price_update_success_description": "{{count}} product prices have been successfully updated.",
+        "price_update_single_success_title": "Price Updated",
+        "price_update_single_success_description": "The price of {{productName}} has been updated to {{price}}."
     },
     "users": {
         "title": "System Users",

@@ -4,9 +4,12 @@ import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageHeader } from '@/components/shared/page-header';
 import { useTranslation } from '@/providers/translation-provider';
+import { Separator } from '@/components/ui/separator';
 
 const PricingTool = React.lazy(() => import('@/components/pricing/pricing-tool'));
 const PricingHistoryTable = React.lazy(() => import('@/components/pricing/pricing-history-table'));
+const StockPricingSuggestions = React.lazy(() => import('@/components/pricing/stock-pricing-suggestions'));
+
 
 function PricingToolSkeleton() {
   return <Skeleton className="w-full max-w-lg h-[400px]" />;
@@ -26,6 +29,11 @@ export default function PricingPage() {
                 <PricingTool />
             </Suspense>
        </div>
+       <Separator />
+       <Suspense fallback={<PricingHistorySkeleton/>}>
+            <StockPricingSuggestions />
+       </Suspense>
+       <Separator />
        <Suspense fallback={<PricingHistorySkeleton/>}>
             <PricingHistoryTable />
        </Suspense>
