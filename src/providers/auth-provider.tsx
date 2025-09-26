@@ -7,15 +7,14 @@ import type { PagePermission } from '@/lib/types';
 import { users as initialUsersData } from '@/lib/data';
 
 const getInitialUsers = () => {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === 'undefined') return initialUsersData;
   try {
+    // For auth, always use localStorage to know about existing users across sessions
     const storedUsers = localStorage.getItem('app_users');
     if(storedUsers) return JSON.parse(storedUsers);
   } catch (error) {
     console.error("Error reading users from local storage", error);
   }
-  // Fallback to empty or initial data if needed, but for auth it should rely on what's persisted
-  // For this app, we assume if nothing is in local storage, we need to populate it.
   // This is a simplified approach. A real app would have a more robust user provisioning.
   localStorage.setItem('app_users', JSON.stringify(initialUsersData));
   return initialUsersData;
@@ -51,15 +50,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (foundUser) {
       sessionStorage.setItem('user', JSON.stringify(foundUser));
       setUser(foundUser);
+      // Clear previous session data to start fresh
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('app_') && key !== 'app_users') {
+          sessionStorage.removeItem(key);
+        }
+      });
+
       const firstAllowedPage = orderedPages.find(page => foundUser.permissions?.[page]) || 'dashboard';
       router.push(`/${firstAllowedPage}`);
+      // Use location.replace to force a full reload and re-initialization of DataProvider
+      window.location.replace(`/${firstAllowedPage}`);
     } else {
       throw new Error('Usuário ou senha inválidos.');
     }
   };
 
   const logout = () => {
-    sessionStorage.removeItem('user');
+    sessionStorage.clear();
     setUser(null);
     router.push('/login');
   };

@@ -65,12 +65,12 @@ const getInitialState = <T,>(key: string, fallback: T): T => {
       return fallback;
     }
     try {
-      const stored = localStorage.getItem(key);
+      const stored = sessionStorage.getItem(key);
       if (stored) {
         return JSON.parse(stored);
       }
     } catch (e) {
-      console.error(`Failed to parse ${key} from localStorage`, e);
+      console.error(`Failed to parse ${key} from sessionStorage`, e);
     }
     return fallback;
 };
@@ -98,37 +98,37 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('app_products', JSON.stringify(products));
+      sessionStorage.setItem('app_products', JSON.stringify(products));
     }
   }, [products, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('app_customers', JSON.stringify(customers));
+      sessionStorage.setItem('app_customers', JSON.stringify(customers));
     }
   }, [customers, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('app_sales', JSON.stringify(sales));
+      sessionStorage.setItem('app_sales', JSON.stringify(sales));
     }
   }, [sales, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('app_users', JSON.stringify(users));
+      sessionStorage.setItem('app_users', JSON.stringify(users));
     }
   }, [users, isLoaded]);
   
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('app_settings', JSON.stringify(settings));
+      sessionStorage.setItem('app_settings', JSON.stringify(settings));
     }
   }, [settings, isLoaded]);
 
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('app_price_simulations', JSON.stringify(priceSimulations));
+      sessionStorage.setItem('app_price_simulations', JSON.stringify(priceSimulations));
     }
   }, [priceSimulations, isLoaded]);
 
