@@ -65,7 +65,7 @@ export default function UserTable() {
   }, []);
 
   const usersToDisplay = useMemo(() => 
-    initialUsers.filter(user => user.username !== 'GSN_CREATIVE'),
+    initialUsers,
     [initialUsers]
   );
 
@@ -126,8 +126,17 @@ export default function UserTable() {
   
   const canPerformActions = (targetUser: User) => {
     if (!isClient || !currentUser) return false;
+    // Nobody can edit the super admin
+    if (targetUser.username === 'GSN_CREATIVE') {
+      return false;
+    }
+    // Admin can edit anyone else
     if (currentUser.role === 'admin') {
-      return targetUser.username !== 'GSN_CREATIVE';
+      return true;
+    }
+    // A user can edit themselves
+    if (currentUser.id === targetUser.id) {
+        return true;
     }
     return false;
   }

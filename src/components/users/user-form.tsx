@@ -63,7 +63,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
     return messageKey ? t(messageKey) : undefined;
   };
 
-  const canEditRole = currentUser?.role === 'admin' && user?.username !== 'GSN_CREATIVE';
+  const canEditRole = currentUser?.username === 'GSN_CREATIVE';
 
   return (
     <Form {...form}>
@@ -88,7 +88,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             <FormItem>
               <FormLabel>{t('users.user_form.username')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('users.user_form.ex_username')} {...field} disabled={user?.username === 'GSN_CREATIVE'} />
+                <Input placeholder={t('users.user_form.ex_username')} {...field} disabled={!!user} />
               </FormControl>
               <FormMessage>{translatedMessage(error?.message)}</FormMessage>
             </FormItem>
@@ -126,7 +126,7 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
             render={({ field, fieldState: { error } }) => (
                 <FormItem>
                     <FormLabel>{t('users.user_form.role')}</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canEditRole}>
+                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!canEditRole && field.value === 'admin'}>
                         <FormControl>
                         <SelectTrigger>
                             <SelectValue placeholder={t('users.user_form.select_role')} />
@@ -134,7 +134,14 @@ export function UserForm({ user, onSave, onCancel }: UserFormProps) {
                         </FormControl>
                         <SelectContent>
                         {roles.map(role => (
-                            <SelectItem key={role} value={role} className="capitalize">{t(`users.roles.${role}`)}</SelectItem>
+                            <SelectItem 
+                              key={role} 
+                              value={role} 
+                              className="capitalize"
+                              disabled={role === 'admin' && !canEditRole}
+                            >
+                              {t(`users.roles.${role}`)}
+                            </SelectItem>
                         ))}
                         </SelectContent>
                     </Select>
