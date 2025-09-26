@@ -26,7 +26,7 @@ const getInitialState = <T,>(key: string, fallback: T): T => {
     }
     try {
       const stored = sessionStorage.getItem(key);
-      if (stored) {
+      if (stored && stored !== 'undefined') {
         return JSON.parse(stored);
       }
     } catch (e) {
