@@ -49,18 +49,13 @@ export default function StockPricingSuggestions() {
       const currentProfitMargin = profitMargin / 100;
       const costWithTax = product.purchasePrice * (1 + currentTaxRate);
       const suggestedPrice = costWithTax / (1 - currentProfitMargin);
-      
-      let finalPrice = suggestedPrice;
-      if (settings.precificacao.arredondar_valores) {
-        finalPrice = Math.ceil(suggestedPrice) - 0.01;
-      }
 
       return {
         ...product,
-        suggestedPrice: finalPrice,
+        suggestedPrice: suggestedPrice,
       };
     }).filter(p => p.suggestedPrice.toFixed(2) !== p.salePrice.toFixed(2));
-  }, [products, settings.precificacao, profitMargin, taxRate]);
+  }, [products, profitMargin, taxRate]);
 
   const handleScenarioClick = (scenario: {name: string, margin: number}) => {
     setProfitMargin(scenario.margin);
