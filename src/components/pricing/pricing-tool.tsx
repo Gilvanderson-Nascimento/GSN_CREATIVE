@@ -15,16 +15,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { suggestOptimalPrice } from '@/ai/flows/suggest-optimal-price';
-import { useState, useContext } from 'react';
-import { Loader2, Wand2, ArrowRight } from 'lucide-react';
+import { useState, useContext, useEffect } from 'react';
+import { Loader2, Wand2, ArrowRight, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/providers/translation-provider';
 import { DataContext } from '@/context/data-context';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Product } from '@/lib/types';
 
 const formSchema = z.object({
   purchasePrice: z.coerce.number().positive({ message: 'pricing.purchase_price_positive' }),
   taxRate: z.coerce.number().min(0, { message: 'pricing.tax_not_negative' }),
   profitMargin: z.coerce.number().min(0, { message: 'pricing.profit_margin_not_negative' }),
+  product: z.string().optional(),
 });
 
 const pricingScenarios = [
@@ -38,24 +41,32 @@ export default function PricingTool() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { t, formatCurrency } = useTranslation();
-  const { addPriceSimulation, settings } = useContext(DataContext);
+  const { addPriceSimulation, settings, products } = useContext(DataContext);
   const [activeScenario, setActiveScenario] = useState<string>("Moderado");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      purchasePrice: 10.00,
+      purchasePrice: 0,
       taxRate: settings.precificacao.imposto_padrao,
       profitMargin: settings.precificacao.margem_lucro,
+      product: '',
     },
   });
+
+  useEffect(() => {
+    if (selectedProduct) {
+        form.setValue('purchasePrice', selectedProduct.purchasePrice);
+    }
+  }, [selectedProduct, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setSuggestedPrice(null);
     try {
       const result = await suggestOptimalPrice({
-        ...values,
+        purchasePrice: values.purchasePrice,
         taxRate: values.taxRate / 100,
         profitMargin: values.profitMargin / 100,
       });
@@ -84,18 +95,64 @@ export default function PricingTool() {
     form.setValue('profitMargin', scenario.margin);
     setActiveScenario(scenario.name);
   }
+  
+  const handleProductSelect = (productId: string) => {
+      const product = products.find(p => p.id === productId);
+      setSelectedProduct(product || null);
+  }
+
+  const handleClearForm = () => {
+    form.reset({
+      purchasePrice: 0,
+      taxRate: settings.precificacao.imposto_padrao,
+      profitMargin: settings.precificacao.margem_lucro,
+      product: '',
+    });
+    setSelectedProduct(null);
+    setSuggestedPrice(null);
+    setActiveScenario("Moderado");
+  }
 
   return (
     <Card className="w-full max-w-lg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle>{t('pricing.tool_title')}</CardTitle>
-            <CardDescription className="mt-1">
-              {t('pricing.description')}
-            </CardDescription>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>{t('pricing.tool_title')}</CardTitle>
+                <CardDescription className="mt-1">
+                  {t('pricing.description')}
+                </CardDescription>
+              </div>
+              <Button type="button" variant="ghost" size="icon" onClick={handleClearForm}>
+                <X className="h-5 w-5"/>
+                <span className="sr-only">Limpar</span>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
+             <FormField
+                control={form.control}
+                name="product"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Selecionar Produto do Estoque</FormLabel>
+                    <Select onValueChange={(value) => { field.onChange(value); handleProductSelect(value); }} value={field.value}>
+                        <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Escolha um produto para preencher o valor de compra" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            {products.map(p => (
+                                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
             <div className="space-y-2">
                 <FormLabel>Cenários Rápidos</FormLabel>
                 <div className="flex gap-2">
