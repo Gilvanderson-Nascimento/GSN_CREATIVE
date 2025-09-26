@@ -11,19 +11,21 @@ import type { Sale } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function EditSalePage({ params }: { params: { id: string } }) {
-  const { sales, updateSale } = useContext(DataContext);
+  const { sales, updateSale, clearCart } = useContext(DataContext);
   const router = useRouter();
   const { t } = useTranslation();
   const [sale, setSale] = useState<Sale | undefined | null>(null);
 
   useEffect(() => {
+    // Clear the global cart when entering edit mode to avoid conflicts
+    clearCart();
     const saleToEdit = sales.find((s) => s.id === params.id);
     if (saleToEdit) {
       setSale(saleToEdit);
     } else {
       setSale(undefined);
     }
-  }, [params.id, sales]);
+  }, [params.id, sales, clearCart]);
 
   if (sale === undefined) {
     notFound();
@@ -48,6 +50,7 @@ export default function EditSalePage({ params }: { params: { id: string } }) {
     customerId?: string;
   }) => {
     updateSale(params.id, updatedSaleData);
+    clearCart(); // Clear the cart after saving changes
     router.push(`/sales/${params.id}`);
   };
 

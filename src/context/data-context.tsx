@@ -40,6 +40,15 @@ type DataContextType = {
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
   updateSale: (saleId: string, updatedData: Partial<SaleData>) => void;
+  
+  // POS Cart State
+  cart: SaleItem[];
+  setCart: (cart: SaleItem[]) => void;
+  discount: number;
+  setDiscount: (discount: number) => void;
+  selectedCustomer: string | undefined;
+  setSelectedCustomer: (id: string | undefined) => void;
+  clearCart: () => void;
 };
 
 export const DataContext = createContext<DataContextType>({
@@ -64,4 +73,11 @@ export const DataContext = createContext<DataContextType>({
     },
   },
   setSettings: () => {},
+  cart: [],
+  setCart: () => {},
+  discount: 0,
+  setDiscount: () => {},
+  selectedCustomer: undefined,
+  setSelectedCustomer: () => {},
+  clearCart: () => {},
 });

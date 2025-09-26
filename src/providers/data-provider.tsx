@@ -83,6 +83,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsersState] = useState<User[]>([]);
   const [settings, setSettingsState] = useState<AppSettings>(initialSettings);
   const [priceSimulations, setPriceSimulationsState] = useState<PriceSimulation[]>([]);
+  
+  // Cart state
+  const [cart, setCartState] = useState<SaleItem[]>([]);
+  const [discount, setDiscountState] = useState<number>(0);
+  const [selectedCustomer, setSelectedCustomerState] = useState<string | undefined>(undefined);
+
   const [isLoaded, setIsLoaded] = useState(false);
   const { toast } = useToast();
 
@@ -93,6 +99,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setUsersState(getInitialState('app_users', initialUsersData));
     setSettingsState(getInitialState('app_settings', initialSettings));
     setPriceSimulationsState(getInitialState('app_price_simulations', []));
+    
+    // Load cart from session storage
+    setCartState(getInitialState('app_cart', []));
+    setDiscountState(getInitialState('app_cart_discount', 0));
+    setSelectedCustomerState(getInitialState('app_cart_customer', undefined));
+
     setIsLoaded(true);
   }, []);
   
@@ -131,12 +143,27 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       sessionStorage.setItem('app_price_simulations', JSON.stringify(priceSimulations));
     }
   }, [priceSimulations, isLoaded]);
+  
+  // Save cart state to session storage
+  useEffect(() => {
+    if (isLoaded) sessionStorage.setItem('app_cart', JSON.stringify(cart));
+  }, [cart, isLoaded]);
+  useEffect(() => {
+    if (isLoaded) sessionStorage.setItem('app_cart_discount', JSON.stringify(discount));
+  }, [discount, isLoaded]);
+  useEffect(() => {
+    if (isLoaded) sessionStorage.setItem('app_cart_customer', JSON.stringify(selectedCustomer));
+  }, [selectedCustomer, isLoaded]);
 
   const setProducts = (newProducts: Product[]) => setProductsState(newProducts);
   const setCustomers = (newCustomers: Customer[]) => setCustomersState(newCustomers);
   const setSales = (newSales: Sale[]) => setSalesState(newSales);
   const setUsers = (newUsers: User[]) => setUsersState(newUsers);
   const setSettings = (newSettings: AppSettings) => setSettingsState(newSettings);
+
+  const setCart = (newCart: SaleItem[]) => setCartState(newCart);
+  const setDiscount = (newDiscount: number) => setDiscountState(newDiscount);
+  const setSelectedCustomer = (id: string | undefined) => setSelectedCustomerState(id);
 
   const addPriceSimulation = (simulation: Omit<PriceSimulation, 'id' | 'createdAt'>) => {
     const newSimulation: PriceSimulation = {
@@ -146,6 +173,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     };
     setPriceSimulationsState(prev => [newSimulation, ...prev]);
   };
+  
+  const clearCart = () => {
+    setCartState([]);
+    setDiscountState(0);
+    setSelectedCustomerState(undefined);
+  }
 
   const completeSale = (saleData: SaleData): Sale => {
     const newSale: Sale = {
@@ -175,6 +208,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setProducts(updatedProducts);
     setCustomers(updatedCustomers);
     setSales(prevSales => [newSale, ...prevSales]);
+    
+    // Clear cart after sale
+    clearCart();
+
     return newSale;
   };
   
@@ -263,7 +300,20 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }
 
 
-  const value = { products, setProducts, customers, setCustomers, sales, setSales, users, setUsers, priceSimulations, addPriceSimulation, completeSale, cancelSale, settings, setSettings, updateSale };
+  const value = { 
+      products, setProducts, 
+      customers, setCustomers, 
+      sales, setSales, 
+      users, setUsers, 
+      priceSimulations, addPriceSimulation, 
+      completeSale, cancelSale, 
+      settings, setSettings, 
+      updateSale,
+      cart, setCart,
+      discount, setDiscount,
+      selectedCustomer, setSelectedCustomer,
+      clearCart,
+    };
 
   return (
     <DataContext.Provider value={value}>

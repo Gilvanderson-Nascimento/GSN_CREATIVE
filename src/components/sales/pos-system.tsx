@@ -50,13 +50,19 @@ type PosSystemProps = {
 
 
 export default function PosSystem({ isEditing = false, existingSale, onSave }: PosSystemProps) {
-  const { products, customers, completeSale, settings } = useContext(DataContext);
+  const { 
+    products, 
+    customers, 
+    completeSale, 
+    settings,
+    cart, setCart,
+    discount, setDiscount,
+    selectedCustomer, setSelectedCustomer,
+    clearCart: clearGlobalCart,
+  } = useContext(DataContext);
   const { user } = useAuth();
   const { t, language, formatCurrency } = useTranslation();
-  const [cart, setCart] = useState<SaleItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
-  const [discount, setDiscount] = useState(0);
   const { toast } = useToast();
   const [lastCompletedSale, setLastCompletedSale] = useState<Sale | null>(null);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
@@ -69,7 +75,7 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
       setDiscount(existingSale.discount);
       setSelectedCustomer(existingSale.customerId);
     }
-  }, [isEditing, existingSale]);
+  }, [isEditing, existingSale, setCart, setDiscount, setSelectedCustomer]);
 
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,17 +202,11 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
     } else {
         const newSale = completeSale(salePayload);
         setLastCompletedSale(newSale); // Open the dialog
-        
-        // Reset state for next sale
-        setCart([]);
-        setDiscount(0);
-        setSelectedCustomer(undefined);
     }
   }
 
   const handleClearCart = () => {
-    setCart([]);
-    setDiscount(0);
+    clearGlobalCart();
     setIsClearCartAlertOpen(false);
     toast({
         title: "Carrinho limpo",
