@@ -1,22 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { AuthContext, type AuthUser } from '@/context/auth-context';
+import { DataContext } from '@/context/data-context';
 import { useRouter } from 'next/navigation';
 import { useFirebase } from '@/firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
-import type { User } from '@/lib/types';
-
-const findUserByUid = (users: User[], uid: string): AuthUser | null => {
-    // This is a placeholder. In a real app, you might fetch user profile from Firestore
-    // For this app, we find the user in the static list by a matching 'id' which we'll treat as uid.
-    // This assumes the user 'id' in your local data corresponds to a Firebase Auth UID.
-    // This part might need to be more robust, e.g. fetching a 'users' collection document by UID.
-    return users.find(u => u.id === uid) || null;
-}
-
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { auth, isUserLoading: isFirebaseUserLoading } = useFirebase();
+  const { users } = useContext(DataContext);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -25,26 +17,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!isFirebaseUserLoading) {
       const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-          // Here, you would typically fetch a user profile from Firestore using firebaseUser.uid
-          // For now, we'll use a placeholder logic.
-          // This is a simplified example. A real app would fetch user roles and permissions from a database.
-           const appUser: AuthUser = {
-                id: firebaseUser.uid,
-                name: firebaseUser.displayName || 'Usuário',
-                username: firebaseUser.email || 'user',
-                email: firebaseUser.email || '',
-                role: 'admin', // Placeholder role
-                createdAt: firebaseUser.metadata.creationTime || new Date().toISOString(),
-                permissions: {
-                    dashboard: true,
-                    stock: true,
-                    sales: true,
-                    customers: true,
-                    pricing: true,
-                    users: true,
-                    settings: true,
-                },
-           };
+          const appUser = users.find(u => u.email === firebaseUser.email) || null;
           setUser(appUser);
         } else {
           setUser(null);
@@ -53,16 +26,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       return () => unsubscribe();
     }
-  }, [auth, isFirebaseUserLoading, router]);
+  }, [auth, isFirebaseUserLoading, router, users]);
 
-  const login = async (email: string, pass: string): Promise<void> => {
+  const login = async (username: string, pass: string): Promise<void> => {
+    const userToLogin = users.find(u => u.username === username);
+
+    if (!userToLogin || !userToLogin.email) {
+      throw new Error('Usuário não encontrado ou sem e-mail configurado.');
+    }
+    
     try {
-      await signInWithEmailAndPassword(auth, email, pass);
-      // onAuthStateChanged will handle setting the user and redirecting
+      await signInWithEmailAndPassword(auth, userToLogin.email, pass);
       router.push('/dashboard');
     } catch (error) {
       console.error("Login failed:", error);
-      throw new Error('Email ou senha inválidos.');
+      throw new Error('Usuário ou senha inválidos.');
     }
   };
 
