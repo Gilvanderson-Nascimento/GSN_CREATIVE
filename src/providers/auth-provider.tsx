@@ -8,6 +8,7 @@ import { signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWith
 import { users as staticUsers } from '@/lib/data'; // Import static users
 import { UserFormValues } from '@/components/users/user-form';
 import { allPermissions } from '@/lib/types';
+import { firebaseConfig } from '@/firebase/config';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { auth, isUserLoading: isFirebaseUserLoading } = useFirebase();
@@ -34,23 +35,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [auth, isFirebaseUserLoading, router, users]);
 
   const login = async (username: string, pass: string): Promise<void> => {
-    // Use the most current user list (from context if loaded, otherwise static)
     const userList = users.length > 0 ? users : staticUsers;
     const userToLogin = userList.find(u => u.username === username);
 
-    if (!userToLogin || !userToLogin.email) {
-      // Special check for GSN_CREATIVE during initial load
-      if (username === 'GSN_CREATIVE') {
-          const gsnUser = staticUsers.find(u => u.username === 'GSN_CREATIVE');
-          if (gsnUser && gsnUser.email) {
-              await attemptLogin(gsnUser.email, pass);
-              return;
-          }
-      }
-      throw new Error('Usuário não encontrado ou e-mail não configurado.');
+    let emailToAuth: string | undefined;
+
+    if (userToLogin) {
+        emailToAuth = userToLogin.email;
+    } else if(username.includes('@')) {
+        // Fallback for email login if username not found
+        emailToAuth = username;
     }
     
-    await attemptLogin(userToLogin.email, pass);
+    // Hardcoded check for GSN_CREATIVE if not found yet (e.g. on first load)
+    if (username === 'GSN_CREATIVE' && !userToLogin) {
+        const gsnUser = staticUsers.find(u => u.username === 'GSN_CREATIVE');
+        emailToAuth = gsnUser?.email;
+    }
+
+
+    if (!emailToAuth) {
+        throw new Error('Usuário não encontrado ou configuração de e-mail incompleta.');
+    }
+    
+    await attemptLogin(emailToAuth, pass);
   };
   
   const attemptLogin = async (email: string, pass: string) => {
