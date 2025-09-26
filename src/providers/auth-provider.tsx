@@ -1,71 +1,85 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { AuthContext, type AuthUser } from '@/context/auth-context';
-import { useRouter, usePathname } from 'next/navigation';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { PagePermission } from '@/lib/types';
-import { users as initialUsersData } from '@/lib/data';
+import { useRouter } from 'next/navigation';
+import { useFirebase } from '@/firebase';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import type { User } from '@/lib/types';
 
-const getInitialUsers = () => {
-  if (typeof window === 'undefined') return initialUsersData;
-  try {
-    // For auth, always use localStorage to know about existing users across sessions
-    const storedUsers = localStorage.getItem('app_users');
-    if(storedUsers) return JSON.parse(storedUsers);
-  } catch (error) {
-    console.error("Error reading users from local storage", error);
-  }
-  // This is a simplified approach. A real app would have a more robust user provisioning.
-  localStorage.setItem('app_users', JSON.stringify(initialUsersData));
-  return initialUsersData;
+const findUserByUid = (users: User[], uid: string): AuthUser | null => {
+    // This is a placeholder. In a real app, you might fetch user profile from Firestore
+    // For this app, we find the user in the static list by a matching 'id' which we'll treat as uid.
+    // This assumes the user 'id' in your local data corresponds to a Firebase Auth UID.
+    // This part might need to be more robust, e.g. fetching a 'users' collection document by UID.
+    return users.find(u => u.id === uid) || null;
 }
 
-const orderedPages: PagePermission[] = ['dashboard', 'stock', 'sales', 'customers', 'pricing', 'users', 'settings'];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { auth, isUserLoading: isFirebaseUserLoading } = useFirebase();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
-    // Check for user session on initial load
-    try {
-      const storedUser = sessionStorage.getItem('user');
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      }
-    } catch (e) {
-        console.error("Failed to parse user from session storage", e);
-        sessionStorage.removeItem('user');
+    if (!isFirebaseUserLoading) {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          // Here, you would typically fetch a user profile from Firestore using firebaseUser.uid
+          // For now, we'll use a placeholder logic.
+          // This is a simplified example. A real app would fetch user roles and permissions from a database.
+           const appUser: AuthUser = {
+                id: firebaseUser.uid,
+                name: firebaseUser.displayName || 'Usuário',
+                username: firebaseUser.email || 'user',
+                email: firebaseUser.email || '',
+                role: 'admin', // Placeholder role
+                createdAt: firebaseUser.metadata.creationTime || new Date().toISOString(),
+                permissions: {
+                    dashboard: true,
+                    stock: true,
+                    sales: true,
+                    customers: true,
+                    pricing: true,
+                    users: true,
+                    settings: true,
+                },
+           };
+          setUser(appUser);
+        } else {
+          setUser(null);
+        }
+        setIsLoading(false);
+      });
+      return () => unsubscribe();
     }
-    setIsLoading(false);
-  }, []);
+  }, [auth, isFirebaseUserLoading, router]);
 
-  const login = async (username: string, pass: string): Promise<void> => {
-    const users = getInitialUsers();
-    const foundUser = users.find(u => u.username === username && u.password === pass);
-
-    if (foundUser) {
-      sessionStorage.setItem('user', JSON.stringify(foundUser));
-      setUser(foundUser);
-      
-      const firstAllowedPage = orderedPages.find(page => foundUser.permissions?.[page]) || 'dashboard';
-
-      // Use location.replace to force a full reload and re-initialization of DataProvider
-      // This ensures that all session data is correctly loaded from sessionStorage after login.
-      window.location.replace(`/${firstAllowedPage}`);
-    } else {
-      throw new Error('Usuário ou senha inválidos.');
+  const login = async (email: string, pass: string): Promise<void> => {
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      // onAuthStateChanged will handle setting the user and redirecting
+      router.push('/dashboard');
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw new Error('Email ou senha inválidos.');
     }
   };
 
-  const logout = () => {
-    sessionStorage.clear();
-    setUser(null);
+  const logout = async () => {
+    await signOut(auth);
     router.push('/login');
   };
+  
+  if (isLoading) {
+    return (
+        <div className="flex h-screen w-screen items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+                 <p>Carregando...</p>
+            </div>
+        </div>
+    );
+  }
 
   const isAuthenticated = !!user;
   

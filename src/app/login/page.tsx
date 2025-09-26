@@ -23,7 +23,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useTranslation();
   const { toast } = useToast();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,8 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
     try {
-      await login(username, password);
+      // The username from the form is used as the email for Firebase Auth
+      await login(email, password);
     } catch (err) {
       if (err instanceof Error) {
         setError(t('login.invalid_credentials'));
@@ -92,13 +93,13 @@ export default function LoginPage() {
         <CardContent className="p-8 pt-0">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">{t('login.username')}</Label>
+              <Label htmlFor="email">{t('login.username')}</Label>
               <Input
-                id="username"
-                type="text"
+                id="email"
+                type="email"
                 placeholder={t('login.username_placeholder')}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="mt-1"
               />

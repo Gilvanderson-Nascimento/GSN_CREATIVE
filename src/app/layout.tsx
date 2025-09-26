@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme/theme-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { DataProvider } from '@/providers/data-provider';
 import { TranslationProvider } from '@/providers/translation-provider';
+import { FirebaseClientProvider } from '@/firebase';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-poppins' });
@@ -31,6 +32,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
+          <FirebaseClientProvider>
             <AuthProvider>
                 <DataProvider>
                     <TranslationProvider>
@@ -38,7 +40,8 @@ export default function RootLayout({
                     </TranslationProvider>
                 </DataProvider>
             </AuthProvider>
-            <Toaster />
+          </FirebaseClientProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
