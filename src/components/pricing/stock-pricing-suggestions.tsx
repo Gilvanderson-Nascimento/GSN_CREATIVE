@@ -39,14 +39,15 @@ export default function StockPricingSuggestions() {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   
   const [profitMargin, setProfitMargin] = useState(settings.precificacao.margem_lucro);
+  const [taxRate, setTaxRate] = useState(settings.precificacao.imposto_padrao);
   const [activeScenario, setActiveScenario] = useState("Moderado");
 
 
   const productsWithSuggestions = useMemo(() => {
     return products.map(product => {
-      const taxRate = settings.precificacao.imposto_padrao / 100;
+      const currentTaxRate = taxRate / 100;
       const currentProfitMargin = profitMargin / 100;
-      const costWithTax = product.purchasePrice * (1 + taxRate);
+      const costWithTax = product.purchasePrice * (1 + currentTaxRate);
       const suggestedPrice = costWithTax / (1 - currentProfitMargin);
       
       let finalPrice = suggestedPrice;
@@ -59,7 +60,7 @@ export default function StockPricingSuggestions() {
         suggestedPrice: finalPrice,
       };
     }).filter(p => p.suggestedPrice.toFixed(2) !== p.salePrice.toFixed(2));
-  }, [products, settings.precificacao, profitMargin]);
+  }, [products, settings.precificacao, profitMargin, taxRate]);
 
   const handleScenarioClick = (scenario: {name: string, margin: number}) => {
     setProfitMargin(scenario.margin);
@@ -119,6 +120,16 @@ export default function StockPricingSuggestions() {
                                 {scenario.name}
                             </Button>
                         ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Label htmlFor="batch-tax-rate" className="whitespace-nowrap text-sm">{t('pricing.tax_percent')}</Label>
+                        <Input
+                            id="batch-tax-rate"
+                            type="number"
+                            value={taxRate}
+                            onChange={(e) => setTaxRate(Number(e.target.value))}
+                            className="h-9 w-24"
+                        />
                     </div>
                     <div className="flex items-center gap-2">
                         <Label htmlFor="batch-profit-margin" className="whitespace-nowrap text-sm">{t('pricing.profit_margin_percent')}</Label>
