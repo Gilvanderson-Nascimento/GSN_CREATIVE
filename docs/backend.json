@@ -1,0 +1,418 @@
+{
+  "entities": {
+    "Product": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Product",
+      "type": "object",
+      "description": "Represents a product in the inventory.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the product."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the product."
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the product in stock."
+        },
+        "purchasePrice": {
+          "type": "number",
+          "description": "Purchase price of the product."
+        },
+        "salePrice": {
+          "type": "number",
+          "description": "Sale price of the product."
+        },
+        "barcode": {
+          "type": "string",
+          "description": "Barcode of the product."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "category",
+        "quantity",
+        "purchasePrice",
+        "salePrice",
+        "barcode"
+      ]
+    },
+    "PricingConfiguration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PricingConfiguration",
+      "type": "object",
+      "description": "Represents pricing configurations for products.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the pricing configuration."
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to Product. (Relationship: Product 1:1 PricingConfiguration)"
+        },
+        "purchasePrice": {
+          "type": "number",
+          "description": "Purchase price used for pricing calculation."
+        },
+        "taxRate": {
+          "type": "number",
+          "description": "Tax rate applied to the product."
+        },
+        "profitMargin": {
+          "type": "number",
+          "description": "Profit margin applied to the product."
+        },
+        "suggestedSalePrice": {
+          "type": "number",
+          "description": "Suggested sale price calculated by the system."
+        }
+      },
+      "required": [
+        "id",
+        "productId",
+        "purchasePrice",
+        "taxRate",
+        "profitMargin",
+        "suggestedSalePrice"
+      ]
+    },
+    "Customer": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Customer",
+      "type": "object",
+      "description": "Represents a customer.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the customer."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the customer."
+        },
+        "nickname": {
+          "type": "string",
+          "description": "Nickname of the customer."
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number of the customer."
+        },
+        "address": {
+          "type": "string",
+          "description": "Address of the customer."
+        },
+        "salesCount": {
+          "type": "number",
+          "description": "Number of sales made to the customer."
+        },
+        "totalSpent": {
+          "type": "number",
+          "description": "Total amount spent by the customer."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "nickname",
+        "phone",
+        "address",
+        "salesCount",
+        "totalSpent"
+      ]
+    },
+    "Sale": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Sale",
+      "type": "object",
+      "description": "Represents a sale transaction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the sale."
+        },
+        "customerId": {
+          "type": "string",
+          "description": "Reference to Customer. (Relationship: Customer 1:N Sale)"
+        },
+        "saleDate": {
+          "type": "string",
+          "description": "Date of the sale.",
+          "format": "date-time"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Total amount of the sale."
+        },
+        "discountAmount": {
+          "type": "number",
+          "description": "Discount applied to the sale."
+        }
+      },
+      "required": [
+        "id",
+        "customerId",
+        "saleDate",
+        "totalAmount",
+        "discountAmount"
+      ]
+    },
+    "SaleItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SaleItem",
+      "type": "object",
+      "description": "Represents an item within a sale.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the sale item."
+        },
+        "saleId": {
+          "type": "string",
+          "description": "Reference to Sale. (Relationship: Sale 1:N SaleItem)"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to Product. (Relationship: Product 1:N SaleItem)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Quantity of the product sold."
+        },
+        "unitPrice": {
+          "type": "number",
+          "description": "Unit price of the product at the time of sale."
+        },
+        "totalPrice": {
+          "type": "number",
+          "description": "Total price of the item (quantity * unitPrice)."
+        }
+      },
+      "required": [
+        "id",
+        "saleId",
+        "productId",
+        "quantity",
+        "unitPrice",
+        "totalPrice"
+      ]
+    },
+    "StockMovement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StockMovement",
+      "type": "object",
+      "description": "Represents a movement of stock (addition or removal).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the stock movement."
+        },
+        "productId": {
+          "type": "string",
+          "description": "Reference to Product. (Relationship: Product 1:N StockMovement)"
+        },
+        "movementDate": {
+          "type": "string",
+          "description": "Date and time of the stock movement.",
+          "format": "date-time"
+        },
+        "quantityChange": {
+          "type": "number",
+          "description": "Change in quantity (positive for addition, negative for removal)."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the stock movement (e.g., sale, restock, write-off)."
+        },
+        "source": {
+          "type": "string",
+          "description": "Source of the stock movement.  Could be saleId, manual adjustment, etc."
+        }
+      },
+      "required": [
+        "id",
+        "productId",
+        "movementDate",
+        "quantityChange",
+        "reason"
+      ]
+    },
+    "SystemConfiguration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SystemConfiguration",
+      "type": "object",
+      "description": "Represents system-wide configurations.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the configuration setting."
+        },
+        "settingKey": {
+          "type": "string",
+          "description": "Key for the configuration setting (e.g., 'taxRate', 'defaultCurrency')."
+        },
+        "settingValue": {
+          "type": "string",
+          "description": "Value for the configuration setting."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of what the configuration setting does."
+        }
+      },
+      "required": [
+        "id",
+        "settingKey",
+        "settingValue"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "products/{productId}",
+        "definition": {
+          "entityName": "Product",
+          "schema": {
+            "$ref": "#/backend/entities/Product"
+          },
+          "description": "Stores product information. Includes product details such as name, category, quantity, purchase price, sale price, and barcode.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            }
+          ]
+        }
+      },
+      {
+        "path": "pricing_configurations/{pricingConfigurationId}",
+        "definition": {
+          "entityName": "PricingConfiguration",
+          "schema": {
+            "$ref": "#/backend/entities/PricingConfiguration"
+          },
+          "description": "Stores pricing configurations for products. Includes details such as purchase price, tax rate, profit margin, and suggested sale price.",
+          "params": [
+            {
+              "name": "pricingConfigurationId",
+              "description": "The unique identifier for the pricing configuration."
+            }
+          ]
+        }
+      },
+      {
+        "path": "customers/{customerId}",
+        "definition": {
+          "entityName": "Customer",
+          "schema": {
+            "$ref": "#/backend/entities/Customer"
+          },
+          "description": "Stores customer information. Includes details such as name, nickname, phone, address, sales count, and total spent.",
+          "params": [
+            {
+              "name": "customerId",
+              "description": "The unique identifier for the customer."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/sales/{saleId}",
+        "definition": {
+          "entityName": "Sale",
+          "schema": {
+            "$ref": "#/backend/entities/Sale"
+          },
+          "description": "Stores sale transaction information. Includes details such as customer ID, sale date, total amount, and discount amount.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "saleId",
+              "description": "The unique identifier for the sale."
+            }
+          ]
+        }
+      },
+      {
+        "path": "users/{userId}/sales/{saleId}/sale_items/{saleItemId}",
+        "definition": {
+          "entityName": "SaleItem",
+          "schema": {
+            "$ref": "#/backend/entities/SaleItem"
+          },
+          "description": "Stores items within a sale. Includes details such as product ID, quantity, unit price, and total price.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            },
+            {
+              "name": "saleId",
+              "description": "The unique identifier for the sale."
+            },
+            {
+              "name": "saleItemId",
+              "description": "The unique identifier for the sale item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "products/{productId}/stock_movements/{stockMovementId}",
+        "definition": {
+          "entityName": "StockMovement",
+          "schema": {
+            "$ref": "#/backend/entities/StockMovement"
+          },
+          "description": "Stores stock movement information for each product. Includes details such as movement date, quantity change, and reason.",
+          "params": [
+            {
+              "name": "productId",
+              "description": "The unique identifier for the product."
+            },
+            {
+              "name": "stockMovementId",
+              "description": "The unique identifier for the stock movement."
+            }
+          ]
+        }
+      },
+      {
+        "path": "system_configurations/{systemConfigurationId}",
+        "definition": {
+          "entityName": "SystemConfiguration",
+          "schema": {
+            "$ref": "#/backend/entities/SystemConfiguration"
+          },
+          "description": "Stores system-wide configurations. Includes settings such as tax rate and default currency.",
+          "params": [
+            {
+              "name": "systemConfigurationId",
+              "description": "The unique identifier for the configuration setting."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage products, pricing, customers, sales, stock movements, and system configurations for a grocery store application (MarketEase). It prioritizes authorization independence by avoiding hierarchical dependencies and denormalizing data where necessary. This facilitates secure and scalable operations. Structural segregation ensures that collections have a homogeneous security posture. Access modeling follows consistent patterns for ownership and collaboration. Explicit state modeling is used for clarity and predictability.\n\n*   **Products:** Stored in a top-level `products` collection. This structure enables efficient querying and management of product information.\n*   **Pricing Configurations:** Stored in a `pricing_configurations` collection. Each pricing configuration is linked to a product using the `productId` field.\n*   **Customers:** Stored in a top-level `customers` collection. This structure allows for easy management of customer data.\n*   **Sales:** Sales are stored under a collection group named `sales` inside the user document. Storing sales under user documents, `/users/{userId}/sales/{saleId}`, is a common practice when the sales are private to a specific user. Given the application scope, this also seems to be a safe assumption. This allows the sales to be easily tied to the users and provide a logical seperation for other application sales data.\n*   **Sale Items:** Stored as a subcollection of sales `/users/{userId}/sales/{saleId}/sale_items/{saleItemId}`. This hierarchical structure makes it easy to retrieve all sale items for a specific sale.\n*   **Stock Movements:** Stored as a subcollection of products `/products/{productId}/stock_movements/{stockMovementId}`. This allows easy tracking of stock movements for each product.\n*   **System Configurations:** Stored in a top-level `system_configurations` collection. This allows for easy management of system-wide settings.\n\n\n**Authorization Independence:** Authorization is ensured without relying on `get()` calls in security rules. For example, access to stock movements is controlled by rules on the `products/{productId}/stock_movements/{stockMovementId}` path, where the `productId` implicitly grants access based on the product.\n\n**QAPs Support:** The structure supports secure `list` operations. Segregation of data into separate collections based on access requirements ensures that rules do not act as filters. For example, listing products can be secured by checking if the user has access to the `products` collection, without needing to filter based on product properties."
+  }
+}

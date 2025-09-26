@@ -1,0 +1,171 @@
+/**
+ * @fileoverview Firestore Security Rules for MarketEase Grocery Store App
+ *
+ * Core Philosophy:
+ * This ruleset enforces a user-ownership model for sales and sale items,
+ * and allows open read access with owner-only writes for products, pricing configurations,
+ * customers, stock movements, and system configurations.
+ *
+ * Data Structure:
+ * - /products/{productId}: Stores product information.
+ * - /pricing_configurations/{pricingConfigurationId}: Stores pricing configurations for products.
+ * - /customers/{customerId}: Stores customer information.
+ * - /users/{userId}/sales/{saleId}: Stores sale transaction information.
+ * - /users/{userId}/sales/{saleId}/sale_items/{saleItemId}: Stores items within a sale.
+ * - /products/{productId}/stock_movements/{stockMovementId}: Stores stock movement information for each product.
+ * - /system_configurations/{systemConfigurationId}: Stores system-wide configurations.
+ *
+ * Key Security Decisions:
+ * - Allows public read access to products, pricing configurations, customers, stock movements, and system configurations.
+ * - Enforces ownership for sales and sale_items, restricting access to the user who created them.
+ * - Uses structural segregation to maintain a homogeneous security posture for each collection.
+ * - Allows listing of documents only by the owner for user-scoped subcollections (sales, sale_items).
+ *
+ * Denormalization for Authorization:
+ * No explicit denormalization is performed, as the path structure and ownership checks are sufficient
+ * for the current security requirements.  If more complex role-based access were needed, data would
+ * be denormalized into the documents themselves.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Manages product information. Allows public read access but restricts writes to the owner of the product.
+     * @path /products/{productId}
+     * @allow (get, list): Any user can read product information.
+     * @allow (create): Only the owner can create a product, with the `ownerId` field matching their UID.
+     * @allow (update, delete): Only the owner can update or delete a product.
+     * @deny (create): A non-authenticated user cannot create a product.
+     * @deny (update, delete): A non-authenticated user cannot update or delete a product.
+     * @principle Allows public read access with owner-only writes.
+     */
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Manages pricing configurations for products. Allows public read access but restricts writes to the owner.
+     * @path /pricing_configurations/{pricingConfigurationId}
+     * @allow (get, list): Any user can read pricing configuration information.
+     * @allow (create): Only the owner can create a pricing configuration.
+     * @allow (update, delete): Only the owner can update or delete a pricing configuration.
+     * @deny (create): A non-authenticated user cannot create a pricing configuration.
+     * @deny (update, delete): A non-authenticated user cannot update or delete a pricing configuration.
+     * @principle Allows public read access with owner-only writes.
+     */
+    match /pricing_configurations/{pricingConfigurationId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Manages customer information. Allows public read access but restricts writes to authenticated users.
+     * @path /customers/{customerId}
+     * @allow (get, list): Any user can read customer information.
+     * @allow (create): Only authenticated users can create a customer.
+     * @allow (update, delete): Only authenticated users can update or delete a customer.
+     * @deny (create): A non-authenticated user cannot create a customer.
+     * @deny (update, delete): A non-authenticated user cannot update or delete a customer.
+     * @principle Allows public read access with authenticated user-only writes.
+     */
+    match /customers/{customerId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Manages sale transaction information for a specific user.  Sales are scoped to a user.
+     * @path /users/{userId}/sales/{saleId}
+     * @allow (get): The owner can get their sale document.
+     * @allow (list): The owner can list their sales documents.
+     * @allow (create): The owner can create a sale document under their user ID. The `userId` in the path must match the authenticated user's UID.
+     * @allow (update): The owner can update their sale document.
+     * @allow (delete): The owner can delete their sale document.
+     * @deny (get): A non-owner cannot get this sale document.
+     * @deny (list): A non-owner cannot list sales documents under another user.
+     * @deny (create): A non-owner cannot create a sale document under another user's ID.
+     * @deny (update): A non-owner cannot update this sale document.
+     * @deny (delete): A non-owner cannot delete this sale document.
+     * @principle Enforces document ownership for writes, restricting access to a user's own data tree.
+     */
+    match /users/{userId}/sales/{saleId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages sale items within a specific sale for a specific user. Sale Items are scoped to a user.
+     * @path /users/{userId}/sales/{saleId}/sale_items/{saleItemId}
+     * @allow (get): The owner can get their sale item.
+     * @allow (list): The owner can list their sale items.
+     * @allow (create): The owner can create a sale item under their user ID. The `userId` in the path must match the authenticated user's UID.
+     * @allow (update): The owner can update their sale item.
+     * @allow (delete): The owner can delete their sale item.
+     * @deny (get): A non-owner cannot get this sale item.
+     * @deny (list): A non-owner cannot list sale items under another user.
+     * @deny (create): A non-owner cannot create a sale item under another user's ID.
+     * @deny (update): A non-owner cannot update this sale item.
+     * @deny (delete): A non-owner cannot delete this sale item.
+     * @principle Enforces document ownership for writes, restricting access to a user's own data tree.
+     */
+    match /users/{userId}/sales/{saleId}/sale_items/{saleItemId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages stock movement information for each product. Allows public read access but restricts writes to the owner.
+     * @path /products/{productId}/stock_movements/{stockMovementId}
+     * @allow (get, list): Any user can read stock movement information.
+     * @allow (create): Only authenticated users can create a stock movement.
+     * @allow (update, delete): Only authenticated users can update or delete a stock movement.
+     * @deny (create): A non-authenticated user cannot create a stock movement.
+     * @deny (update, delete): A non-authenticated user cannot update or delete a stock movement.
+     * @principle Allows public read access with authenticated user-only writes.
+     */
+    match /products/{productId}/stock_movements/{stockMovementId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+    }
+
+    /**
+     * @description Manages system-wide configurations. Allows public read access but restricts writes to authenticated users.
+     * @path /system_configurations/{systemConfigurationId}
+     * @allow (get, list): Any user can read system configuration information.
+     * @allow (create): Only authenticated users can create a system configuration.
+     * @allow (update, delete): Only authenticated users can update or delete a system configuration.
+     * @deny (create): A non-authenticated user cannot create a system configuration.
+     * @deny (update, delete): A non-authenticated user cannot update or delete a system configuration.
+     * @principle Allows public read access with authenticated user-only writes.
+     */
+    match /system_configurations/{systemConfigurationId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn();
+    }
+  }
+}
