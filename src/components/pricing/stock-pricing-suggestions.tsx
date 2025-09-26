@@ -21,21 +21,33 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/types';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 type ProductWithSuggestion = Product & { suggestedPrice: number };
+
+const pricingScenarios = [
+    { name: "Conservador", margin: 40 },
+    { name: "Moderado", margin: 25 },
+    { name: "Agressivo", margin: 15 },
+];
 
 export default function StockPricingSuggestions() {
   const { products, setProducts, settings } = useContext(DataContext);
   const { t, formatCurrency } = useTranslation();
   const { toast } = useToast();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  
+  const [profitMargin, setProfitMargin] = useState(settings.precificacao.margem_lucro);
+  const [activeScenario, setActiveScenario] = useState("Moderado");
+
 
   const productsWithSuggestions = useMemo(() => {
     return products.map(product => {
       const taxRate = settings.precificacao.imposto_padrao / 100;
-      const profitMargin = settings.precificacao.margem_lucro / 100;
+      const currentProfitMargin = profitMargin / 100;
       const costWithTax = product.purchasePrice * (1 + taxRate);
-      const suggestedPrice = costWithTax / (1 - profitMargin);
+      const suggestedPrice = costWithTax / (1 - currentProfitMargin);
       
       let finalPrice = suggestedPrice;
       if (settings.precificacao.arredondar_valores) {
@@ -47,7 +59,12 @@ export default function StockPricingSuggestions() {
         suggestedPrice: finalPrice,
       };
     }).filter(p => p.suggestedPrice.toFixed(2) !== p.salePrice.toFixed(2));
-  }, [products, settings.precificacao]);
+  }, [products, settings.precificacao, profitMargin]);
+
+  const handleScenarioClick = (scenario: {name: string, margin: number}) => {
+    setProfitMargin(scenario.margin);
+    setActiveScenario(scenario.name);
+  }
 
   const handleApplySuggestion = (productToUpdate: ProductWithSuggestion) => {
     setProducts(
@@ -82,31 +99,63 @@ export default function StockPricingSuggestions() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between">
-        <div>
-          <CardTitle>{t('pricing.stock_suggestions_title')}</CardTitle>
-          <CardDescription>{t('pricing.stock_suggestions_description')}</CardDescription>
-        </div>
-        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-            <AlertDialogTrigger asChild>
-                <Button variant="outline" disabled={productsWithSuggestions.length === 0}>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    {t('pricing.apply_all_suggestions')}
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>{t('pricing.confirm_apply_all_title')}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                       {t('pricing.confirm_apply_all_description', { count: productsWithSuggestions.length })}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel>{t('global.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleApplyAll}>{t('pricing.confirm_apply')}</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+        <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+                <CardTitle>{t('pricing.stock_suggestions_title')}</CardTitle>
+                <CardDescription>{t('pricing.stock_suggestions_description')}</CardDescription>
+            </div>
+            <div className="flex flex-col sm:items-end gap-3 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                    <div className="flex gap-2">
+                         {pricingScenarios.map(scenario => (
+                            <Button 
+                                key={scenario.name}
+                                type="button"
+                                size="sm"
+                                variant={activeScenario === scenario.name ? "default" : "outline"}
+                                onClick={() => handleScenarioClick(scenario)}
+                            >
+                                {scenario.name}
+                            </Button>
+                        ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Label htmlFor="batch-profit-margin" className="whitespace-nowrap text-sm">{t('pricing.profit_margin_percent')}</Label>
+                        <Input
+                            id="batch-profit-margin"
+                            type="number"
+                            value={profitMargin}
+                            onChange={(e) => {
+                                setProfitMargin(Number(e.target.value));
+                                setActiveScenario("");
+                            }}
+                            className="h-9 w-24"
+                        />
+                    </div>
+                </div>
+                 <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" disabled={productsWithSuggestions.length === 0}>
+                            <Wand2 className="mr-2 h-4 w-4" />
+                            {t('pricing.apply_all_suggestions')}
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>{t('pricing.confirm_apply_all_title')}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                            {t('pricing.confirm_apply_all_description', { count: productsWithSuggestions.length })}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{t('global.cancel')}</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleApplyAll}>{t('pricing.confirm_apply')}</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
+            </div>
       </CardHeader>
       <CardContent>
         <div className="rounded-xl border">
@@ -128,7 +177,7 @@ export default function StockPricingSuggestions() {
                     <TableCell className="text-right">{formatCurrency(product.purchasePrice)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(product.salePrice)}</TableCell>
                     <TableCell className="text-right font-medium">
-                        <Badge variant="outline" className="flex items-center gap-2 border-primary text-primary">
+                        <Badge variant="outline" className="flex items-center justify-end gap-2 border-primary text-primary">
                             <span>{formatCurrency(product.suggestedPrice)}</span>
                             <ArrowRight className="h-3 w-3"/>
                         </Badge>
@@ -144,7 +193,7 @@ export default function StockPricingSuggestions() {
                 {productsWithSuggestions.length === 0 && (
                    <TableRow>
                         <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                            {t('pricing.no_products_in_stock')}
+                            {products.length > 0 ? t('pricing.no_suggestions_needed') : t('pricing.no_products_in_stock')}
                         </TableCell>
                     </TableRow>
                 )}

@@ -258,6 +258,7 @@
         "apply_suggestion": "Apply",
         "apply_all_suggestions": "Apply All Suggestions",
         "no_products_in_stock": "No products in stock to display.",
+        "no_suggestions_needed": "All prices seem to be optimized.",
         "confirm_apply_all_title": "Apply all suggestions?",
         "confirm_apply_all_description": "This action will update the sale price of all {{count}} listed products with the suggested values. This action cannot be undone.",
         "confirm_apply": "Yes, apply all",

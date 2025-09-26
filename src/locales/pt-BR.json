@@ -258,6 +258,7 @@
         "apply_suggestion": "Aplicar",
         "apply_all_suggestions": "Aplicar Todas as Sugestões",
         "no_products_in_stock": "Não há produtos no estoque para exibir.",
+        "no_suggestions_needed": "Todos os preços parecem otimizados.",
         "confirm_apply_all_title": "Aplicar todas as sugestões?",
         "confirm_apply_all_description": "Esta ação atualizará o preço de venda de todos os {{count}} produtos listados com os valores sugeridos. Esta ação não pode ser desfeita.",
         "confirm_apply": "Sim, aplicar todas",
@@ -265,7 +266,6 @@
         "price_update_success_description": "{{count}} preços de produtos foram atualizados com sucesso.",
         "price_update_single_success_title": "Preço Atualizado",
         "price_update_single_success_description": "O preço de {{productName}} foi atualizado para {{price}}."
-
     },
     "users": {
         "title": "Usuários do Sistema",
@@ -357,7 +357,7 @@
         "users_permissions_title": "Usuários e Permissões",
         "users_permissions_description": "Gerencie o acesso e as funções dos usuários.",
         "multi_user_system": "Sistema multiusuário",
-        "two_factor_auth": "Autenticação em 2 etapas (2FA)",
+        "autenticacao_2_etapas": "Autenticação em 2 etapas (2FA)",
         "roles_permissions": "Papéis e Permissões",
         "role_admin": "Admin: Acesso total.",
         "role_seller": "Vendedor: Acesso a Vendas e Clientes.",
