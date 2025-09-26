@@ -53,17 +53,24 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    const loadedSettings = getInitialState<AppSettings>('app_settings', initialSettings);
+    
     setProductsState(getInitialState('app_products', initialProducts));
     setCustomersState(getInitialState('app_customers', initialCustomers));
     setSalesState(getInitialState('app_sales', initialSales));
     setUsersState(getInitialState('app_users', initialUsersData));
-    setSettingsState(getInitialState('app_settings', initialSettings));
+    setSettingsState(loadedSettings);
     setPriceSimulationsState(getInitialState('app_price_simulations', []));
     
     // Load cart from session storage
     setCartState(getInitialState('app_cart', []));
     setDiscountState(getInitialState('app_cart_discount', 0));
     setSelectedCustomerState(getInitialState('app_cart_customer', undefined));
+
+    // Apply font on initial load
+    if (typeof window !== 'undefined') {
+      document.body.style.fontFamily = `var(--font-${loadedSettings.aparência?.font || 'inter'})`;
+    }
 
     setIsLoaded(true);
   }, []);
@@ -96,7 +103,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (isLoaded) {
       sessionStorage.setItem('app_settings', JSON.stringify(settings));
        // Also update the font on the body
-      document.body.style.fontFamily = `var(--font-${settings.aparência?.font || 'inter'})`;
+      if (typeof window !== 'undefined') {
+        document.body.style.fontFamily = `var(--font-${settings.aparência?.font || 'inter'})`;
+      }
     }
   }, [settings, isLoaded]);
 
