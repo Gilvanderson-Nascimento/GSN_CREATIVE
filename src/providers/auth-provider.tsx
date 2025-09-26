@@ -50,16 +50,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (foundUser) {
       sessionStorage.setItem('user', JSON.stringify(foundUser));
       setUser(foundUser);
-      // Clear previous session data to start fresh
-      Object.keys(sessionStorage).forEach(key => {
-        if (key.startsWith('app_') && key !== 'app_users') {
-          sessionStorage.removeItem(key);
-        }
-      });
-
+      
       const firstAllowedPage = orderedPages.find(page => foundUser.permissions?.[page]) || 'dashboard';
-      router.push(`/${firstAllowedPage}`);
+
       // Use location.replace to force a full reload and re-initialization of DataProvider
+      // This ensures that all session data is correctly loaded from sessionStorage after login.
       window.location.replace(`/${firstAllowedPage}`);
     } else {
       throw new Error('Usuário ou senha inválidos.');
