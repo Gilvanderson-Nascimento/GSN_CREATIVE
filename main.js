@@ -26,7 +26,7 @@ function createWindow() {
     // Em produção, carrega o arquivo index.html da build do Next.js.
     win.loadURL(
       url.format({
-        pathname: path.join(__dirname, '.next/standalone/index.html'),
+        pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true,
       })
