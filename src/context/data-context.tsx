@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 import type { Product, Customer, Sale, SaleItem, User, PriceSimulation } from '@/lib/types';
-import { UserFormValues } from '@/components/users/user-form';
 
 type SaleData = {
   items: SaleItem[];
@@ -93,6 +92,7 @@ type DataContextType = {
   settings: AppSettings;
   setSettings: (settings: AppSettings) => void;
   updateSale: (saleId: string, updatedData: Partial<SaleData>) => void;
+  resetAllData: () => Promise<void>;
   
   // POS Cart State
   cart: SaleItem[];
@@ -118,6 +118,7 @@ export const DataContext = createContext<DataContextType>({
   completeSale: () => ({} as Sale),
   cancelSale: () => {},
   updateSale: () => {},
+  resetAllData: async () => {},
   settings: initialSettings,
   setSettings: () => {},
   cart: [],

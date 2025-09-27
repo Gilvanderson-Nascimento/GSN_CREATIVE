@@ -1,12 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DataContext, type AppSettings, initialSettings } from '@/context/data-context';
 import type { Product, Customer, Sale, SaleItem, User, PriceSimulation } from '@/lib/types';
 import { 
-    products as initialProducts, 
-    customers as initialCustomers, 
-    sales as initialSales,
-    users as initialUsersData
+    products as fallbackProducts, 
+    customers as fallbackCustomers, 
+    sales as fallbackSales,
+    users as fallbackUsers
 } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
@@ -55,10 +55,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadedSettings = getInitialState<AppSettings>('app_settings', initialSettings);
     
-    setProductsState(getInitialState('app_products', initialProducts));
-    setCustomersState(getInitialState('app_customers', initialCustomers));
-    setSalesState(getInitialState('app_sales', initialSales));
-    setUsersState(getInitialState('app_users', initialUsersData));
+    setProductsState(getInitialState('app_products', fallbackProducts));
+    setCustomersState(getInitialState('app_customers', fallbackCustomers));
+    setSalesState(getInitialState('app_sales', fallbackSales));
+    setUsersState(getInitialState('app_users', fallbackUsers));
     setSettingsState(loadedSettings);
     setPriceSimulationsState(getInitialState('app_price_simulations', []));
     
@@ -150,6 +150,29 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setDiscountState(0);
     setSelectedCustomerState(undefined);
   }
+
+  const resetAllData = useCallback(async () => {
+    setProductsState(fallbackProducts);
+    setCustomersState(fallbackCustomers);
+    setSalesState(fallbackSales);
+    // Keep the developer user
+    setUsersState(fallbackUsers.filter(u => u.username === 'GSN_CREATIVE'));
+    setPriceSimulationsState([]);
+    setSettingsState(initialSettings);
+    clearCart();
+
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('app_products');
+        localStorage.removeItem('app_customers');
+        localStorage.removeItem('app_sales');
+        localStorage.removeItem('app_users');
+        localStorage.removeItem('app_settings');
+        localStorage.removeItem('app_price_simulations');
+        localStorage.removeItem('app_cart');
+        localStorage.removeItem('app_cart_discount');
+        localStorage.removeItem('app_cart_customer');
+    }
+  }, []);
 
   const completeSale = (saleData: SaleData): Sale => {
     const newSale: Sale = {
@@ -280,6 +303,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       completeSale, cancelSale, 
       settings, setSettings, 
       updateSale,
+      resetAllData,
       cart, setCart,
       discount, setDiscount,
       selectedCustomer, setSelectedCustomer,
