@@ -366,8 +366,8 @@ export default function SettingsPage() {
               </Select>
             </div>
              <div className="space-y-2">
-                <Label htmlFor="backup-destination">Destino do Backup</Label>
-                <Input id="backup-destination" placeholder="Ex: C:\\Users\\SeuUsuario\\Backups" />
+                <Label htmlFor="backup-destination">{t('settings.backup_destination')}</Label>
+                <Input id="backup-destination" placeholder={t('settings.backup_destination_placeholder')} />
             </div>
              <div className="space-y-2">
                 <Label>{t('settings.export_all_data')}</Label>

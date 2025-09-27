@@ -380,6 +380,8 @@
         "backup_daily": "Daily",
         "backup_weekly": "Weekly",
         "backup_monthly": "Monthly",
+        "backup_destination": "Backup Destination",
+        "backup_destination_placeholder": "Ex: C:\\Users\\YourUser\\Backups",
         "export_all_data": "Export All Data",
         "csv_export_title": "CSV Export",
         "csv_export_note": "CSV format is exported as an Excel file (.xlsx) with separate tabs for better compatibility.",
