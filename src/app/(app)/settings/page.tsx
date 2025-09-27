@@ -366,6 +366,10 @@ export default function SettingsPage() {
               </Select>
             </div>
              <div className="space-y-2">
+                <Label htmlFor="backup-destination">Destino do Backup</Label>
+                <Input id="backup-destination" placeholder="Ex: C:\\Users\\SeuUsuario\\Backups" />
+            </div>
+             <div className="space-y-2">
                 <Label>{t('settings.export_all_data')}</Label>
                 <div className="flex gap-2">
                     <Button variant="outline" size="sm" onClick={() => exportData('csv')}>CSV</Button>
