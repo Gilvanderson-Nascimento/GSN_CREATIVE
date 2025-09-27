@@ -96,7 +96,7 @@ export default function LoginPage() {
           <CardDescription className="mt-2">{t('login.description')}</CardDescription>
         </CardHeader>
         <CardContent className="p-8 pt-0">
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-4" autoComplete="off">
             <div className="space-y-2">
               <Label htmlFor="username">{t('login.username')}</Label>
               <Input
@@ -107,6 +107,7 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 className="mt-1"
+                autoComplete="username"
               />
             </div>
             <div className="space-y-2">
@@ -119,6 +120,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="mt-1"
+                autoComplete="new-password"
               />
             </div>
             <div className="flex justify-center">
