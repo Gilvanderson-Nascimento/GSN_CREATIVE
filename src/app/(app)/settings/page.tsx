@@ -367,7 +367,10 @@ export default function SettingsPage() {
             </div>
              <div className="space-y-2">
                 <Label htmlFor="backup-destination">{t('settings.backup_destination')}</Label>
-                <Input id="backup-destination" placeholder={t('settings.backup_destination_placeholder')} />
+                <div className="flex gap-2">
+                    <Input id="backup-destination" placeholder={t('settings.backup_destination_placeholder')} />
+                    <Button variant="outline">Procurar...</Button>
+                </div>
             </div>
              <div className="space-y-2">
                 <Label>{t('settings.export_all_data')}</Label>
