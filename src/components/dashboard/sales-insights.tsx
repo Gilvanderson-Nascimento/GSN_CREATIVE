@@ -1,5 +1,5 @@
 'use client';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,7 +10,7 @@ import { DataContext } from '@/context/data-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTranslation } from '@/providers/translation-provider';
 
-export function SalesInsights() {
+export const SalesInsights = React.memo(function SalesInsights() {
   const { sales } = useContext(DataContext);
   const { t, formatCurrency, language } = useTranslation();
   const [insights, setInsights] = useState<GenerateSalesReportInsightsOutput | null>(null);
@@ -129,4 +129,4 @@ export function SalesInsights() {
       </CardFooter>
     </Card>
   );
-}
+});

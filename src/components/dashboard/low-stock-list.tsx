@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,7 +16,7 @@ type LowStockListProps = {
   lowStockThreshold: number;
 };
 
-export function LowStockList({ products, lowStockThreshold }: LowStockListProps) {
+export const LowStockList = React.memo(function LowStockList({ products, lowStockThreshold }: LowStockListProps) {
   const { t } = useTranslation();
   const lowStockProducts = products
     .filter((p) => p.quantity <= lowStockThreshold)
@@ -89,4 +90,4 @@ export function LowStockList({ products, lowStockThreshold }: LowStockListProps)
       )}
     </Card>
   );
-}
+});

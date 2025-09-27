@@ -5,12 +5,14 @@ import { PageHeader } from '@/components/shared/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DataContext } from '@/context/data-context';
 import { useTranslation } from '@/providers/translation-provider';
-import { StatsCards } from '@/components/dashboard/stats-cards';
-import { SalesChart } from '@/components/dashboard/sales-chart';
-import { RecentSales } from '@/components/dashboard/recent-sales';
-import { SalesInsights } from '@/components/dashboard/sales-insights';
-import { LowStockList } from '@/components/dashboard/low-stock-list';
-import { SellerPerformance } from '@/components/dashboard/seller-performance';
+
+const StatsCards = React.lazy(() => import('@/components/dashboard/stats-cards').then(m => ({ default: m.StatsCards })));
+const SalesChart = React.lazy(() => import('@/components/dashboard/sales-chart').then(m => ({ default: m.SalesChart })));
+const RecentSales = React.lazy(() => import('@/components/dashboard/recent-sales').then(m => ({ default: m.RecentSales })));
+const SalesInsights = React.lazy(() => import('@/components/dashboard/sales-insights').then(m => ({ default: m.SalesInsights })));
+const LowStockList = React.lazy(() => import('@/components/dashboard/low-stock-list').then(m => ({ default: m.LowStockList })));
+const SellerPerformance = React.lazy(() => import('@/components/dashboard/seller-performance').then(m => ({ default: m.SellerPerformance })));
+
 
 function StatsCardsSkeleton() {
   return (

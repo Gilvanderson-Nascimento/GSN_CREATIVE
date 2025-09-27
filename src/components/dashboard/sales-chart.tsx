@@ -1,5 +1,5 @@
 'use client';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from 'recharts';
+import React, { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -80,7 +80,7 @@ const generateStaticData = (period: 'daily' | 'weekly' | 'monthly', locale: Loca
 };
 
 
-export function SalesChart() {
+export const SalesChart = React.memo(function SalesChart() {
   const { t, language, formatCurrency } = useTranslation();
   const [data, setData] = useState<ChartData[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
@@ -215,4 +215,4 @@ export function SalesChart() {
       </CardContent>
     </Card>
   );
-}
+});

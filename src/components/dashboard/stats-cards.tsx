@@ -1,3 +1,4 @@
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Package, ShoppingBag, Users } from 'lucide-react';
 import { useTranslation } from '@/providers/translation-provider';
@@ -9,7 +10,7 @@ type StatsCardsProps = {
     lowStockItems: number;
 }
 
-export function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItems }: StatsCardsProps) {
+export const StatsCards = React.memo(function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItems }: StatsCardsProps) {
   const { t, formatCurrency } = useTranslation();
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -55,4 +56,4 @@ export function StatsCards({ totalSales, totalProfit, newCustomers, lowStockItem
       </Card>
     </div>
   );
-}
+});

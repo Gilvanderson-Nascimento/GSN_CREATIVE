@@ -1,12 +1,12 @@
 'use client';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataContext } from '@/context/data-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTranslation } from '@/providers/translation-provider';
 
-export function RecentSales() {
+export const RecentSales = React.memo(function RecentSales() {
   const { sales, customers } = useContext(DataContext);
   const { t, formatCurrency } = useTranslation();
   const recentSales = sales.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5);
@@ -53,4 +53,4 @@ export function RecentSales() {
       </CardContent>
     </Card>
   );
-}
+});

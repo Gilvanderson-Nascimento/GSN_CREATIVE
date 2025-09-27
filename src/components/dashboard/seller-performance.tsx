@@ -1,5 +1,5 @@
 'use client';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import type { Sale, User } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -22,7 +22,7 @@ type SellerStats = {
   totalValue: number;
 };
 
-export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
+export const SellerPerformance = React.memo(function SellerPerformance({ sales, users }: SellerPerformanceProps) {
   const { t, formatCurrency } = useTranslation();
   const sellerStats = useMemo(() => {
     const stats: Record<string, SellerStats> = {};
@@ -120,4 +120,4 @@ export function SellerPerformance({ sales, users }: SellerPerformanceProps) {
        </CardFooter>
     </Card>
   );
-}
+});
