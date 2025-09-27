@@ -10,7 +10,7 @@ type AuthContextType = {
   isLoading: boolean;
   login: (username: string, pass: string) => Promise<void>;
   logout: () => void;
-  createUser: (userData: UserFormValues) => Promise<void>;
+  createUser: (userData: UserFormValues) => Promise<AuthUser | undefined>;
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -19,5 +19,5 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   login: async () => {},
   logout: () => {},
-  createUser: async () => {},
+  createUser: async () => undefined,
 });

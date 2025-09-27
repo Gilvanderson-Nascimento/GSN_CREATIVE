@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
   
-  const createUser = async (userData: UserFormValues) => {
+  const createUser = async (userData: UserFormValues): Promise<AuthUser | undefined> => {
     if (!userData.email || !userData.password) {
         throw new Error('E-mail e senha são obrigatórios para criar um usuário.');
     }
@@ -103,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...userData,
     };
     setUsers([...users, newUser]);
+    return newUser;
   };
   
   const isAuthenticated = !!user;

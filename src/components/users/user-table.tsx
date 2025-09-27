@@ -102,6 +102,7 @@ export default function UserTable() {
       // Logic for updating an existing user
       setUsers(initialUsers.map(u => u.id === editingUser.id ? { ...editingUser, ...userData } : u));
       toast({ title: "Usuário atualizado", description: `O usuário ${userData.name} foi atualizado.` });
+      setIsSheetOpen(false);
     } else {
       // Logic for creating a new user
       if (!userData.password) {
@@ -109,13 +110,17 @@ export default function UserTable() {
         return;
       }
       try {
-        await createUser(userData);
-        toast({ title: "Usuário criado", description: `O usuário ${userData.name} foi criado com sucesso.` });
+        const newUser = await createUser(userData);
+        if (newUser) {
+            toast({ title: "Usuário criado", description: `O usuário ${userData.name} foi criado com sucesso. Agora, defina suas permissões.` });
+            setIsSheetOpen(false);
+            // Open permissions sheet for the new user
+            handleManagePermissions(newUser);
+        }
       } catch (error: any) {
         toast({ variant: 'destructive', title: "Erro ao criar usuário", description: error.message });
       }
     }
-    setIsSheetOpen(false);
   };
 
   const handleSavePermissions = (permissions: Partial<Record<PagePermission, boolean>>) => {
