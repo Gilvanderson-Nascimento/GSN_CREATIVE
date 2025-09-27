@@ -18,6 +18,7 @@ import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/providers/translation-provider';
 import { useToast } from '@/hooks/use-toast';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -30,6 +31,7 @@ export default function LoginPage() {
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
   const [forgotPasswordStep, setForgotPasswordStep] = useState(0); // 0: initial, 1: code sent, 2: success
   const [otp, setOtp] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +76,10 @@ export default function LoginPage() {
         })
     }
   }
+  
+  const onRecaptchaChange = (token: string | null) => {
+      setRecaptchaToken(token);
+  }
 
   return (
     <div 
@@ -115,8 +121,14 @@ export default function LoginPage() {
                 className="mt-1"
               />
             </div>
+            <div className="flex justify-center">
+                <ReCAPTCHA
+                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                    onChange={onRecaptchaChange}
+                />
+            </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full mt-4 py-2.5" disabled={isLoading}>
+            <Button type="submit" className="w-full mt-4 py-2.5" disabled={isLoading || !recaptchaToken}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('login.login_button')}
             </Button>
