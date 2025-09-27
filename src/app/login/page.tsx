@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -83,8 +84,16 @@ export default function LoginPage() {
 
   return (
     <div 
-        className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-primary/30 p-4 relative"
+        className="flex min-h-screen items-center justify-center p-4 relative overflow-hidden"
     >
+      <Image 
+        src="https://picsum.photos/seed/future/1920/1080" 
+        alt="Fundo abstrato de tecnologia" 
+        fill
+        className="object-cover -z-10"
+        data-ai-hint="abstract technology"
+      />
+      <div className="absolute inset-0 bg-black/60 -z-10" />
       <Card className="relative z-10 w-full max-w-md bg-card/80 backdrop-blur-sm">
         <CardHeader className="text-center p-8 pb-6">
             <div className="flex justify-center mb-6">
