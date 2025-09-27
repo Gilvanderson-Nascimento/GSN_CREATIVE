@@ -13,12 +13,15 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    // Don't redirect until loading is finished
+    if (isLoading) return;
+
+    if (!isAuthenticated && pathname !== '/login') {
       router.push('/login');
     }
   }, [isLoading, isAuthenticated, router, pathname]);
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return (
         <div className="flex h-screen w-screen items-center justify-center">
             <div className="flex flex-col items-center gap-4">
@@ -30,7 +33,8 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  // If authenticated, render the children.
+  // If not authenticated, the useEffect above will have already initiated the redirect.
+  // Render null or a loading spinner to prevent a flash of the protected content.
+  return isAuthenticated ? <>{children}</> : null;
 }
-
-    

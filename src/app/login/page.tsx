@@ -107,7 +107,7 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 className="mt-1"
-                autoComplete="username"
+                autoComplete="off"
               />
             </div>
             <div className="space-y-2">

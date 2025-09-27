@@ -98,18 +98,14 @@ export default function UserTable() {
   };
   
   const handleSaveUser = async (userData: UserFormValues) => {
-    if (editingUser) {
-      // Logic for updating an existing user
-      setUsers(initialUsers.map(u => u.id === editingUser.id ? { ...editingUser, ...userData } : u));
-      toast({ title: "Usuário atualizado", description: `O usuário ${userData.name} foi atualizado.` });
-      setIsSheetOpen(false);
-    } else {
-      // Logic for creating a new user
-      if (!userData.password) {
-        toast({ variant: 'destructive', title: "Senha necessária", description: "A senha é obrigatória para criar um novo usuário." });
-        return;
-      }
-      try {
+    try {
+      if (editingUser) {
+        // Logic for updating an existing user
+        setUsers(initialUsers.map(u => u.id === editingUser.id ? { ...editingUser, ...userData, password: userData.password || editingUser.password } : u));
+        toast({ title: "Usuário atualizado", description: `O usuário ${userData.name} foi atualizado.` });
+        setIsSheetOpen(false);
+      } else {
+        // Logic for creating a new user
         const newUser = await createUser(userData);
         if (newUser) {
             toast({ title: "Usuário criado", description: `O usuário ${userData.name} foi criado com sucesso. Agora, defina suas permissões.` });
@@ -117,9 +113,9 @@ export default function UserTable() {
             // Open permissions sheet for the new user
             handleManagePermissions(newUser);
         }
-      } catch (error: any) {
-        toast({ variant: 'destructive', title: "Erro ao criar usuário", description: error.message });
       }
+    } catch (error: any) {
+       toast({ variant: 'destructive', title: "Erro ao salvar usuário", description: error.message });
     }
   };
 
@@ -301,5 +297,3 @@ export default function UserTable() {
     </>
   );
 }
-
-    
