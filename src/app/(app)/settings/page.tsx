@@ -352,6 +352,19 @@ export default function SettingsPage() {
             <CardDescription>{t('settings.backup_export_description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>{t('settings.backup_frequency')}</Label>
+              <Select value={settings.backup_exportacao.frequencia} onValueChange={(v) => handleSettingChange('backup_exportacao', 'frequencia', v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="diario">{t('settings.backup_daily')}</SelectItem>
+                  <SelectItem value="semanal">{t('settings.backup_weekly')}</SelectItem>
+                  <SelectItem value="mensal">{t('settings.backup_monthly')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
              <div className="space-y-2">
                 <Label>{t('settings.export_all_data')}</Label>
                 <div className="flex gap-2">
