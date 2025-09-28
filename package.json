@@ -80,28 +80,18 @@
     "wait-on": "^7.2.0"
   },
   "build": {
-    "appId": "com.example.nextron",
+    "appId": "com.seuprojeto.app",
     "productName": "GSN Gestor",
     "directories": {
       "output": "dist"
     },
     "files": [
-      "package.json",
-      {
-        "from": ".next/standalone",
-        "to": "."
-      },
-      {
-        "from": ".next/static",
-        "to": "./.next/static"
-      },
-      {
-        "from": "public",
-        "to": "./public"
-      }
+      "out/**/*",
+      "main.js",
+      "package.json"
     ],
     "win": {
-      "icon": "public/logo.png"
+      "target": "nsis"
     },
     "mac": {
       "icon": "public/logo.png"
