@@ -10,6 +10,14 @@ import { useTranslation } from '@/providers/translation-provider';
 import type { Sale } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// This function is commented out but kept for reference on how to handle static generation
+// export async function generateStaticParams() {
+//   // In a real app, you'd fetch this from a database
+//   // For now, we'll assume no sales can be edited statically.
+//   return [];
+// }
+
+
 export default function EditSalePage({ params }: { params: { id: string } }) {
   const { sales, updateSale, clearCart } = useContext(DataContext);
   const router = useRouter();
