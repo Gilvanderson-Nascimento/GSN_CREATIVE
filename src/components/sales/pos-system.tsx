@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText, LayoutGrid, List, Trash2 } from 'lucide-react';
+import { X, Plus, Minus, Percent, ShoppingCart, UserPlus, CheckCircle, Image as ImageIcon, Save, Printer, FileText, LayoutGrid, List } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Dialog,
@@ -24,17 +24,6 @@ import { useTranslation } from '@/providers/translation-provider';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 type PosSystemProps = {
   isEditing?: boolean;
@@ -58,7 +47,7 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
     cart, setCart,
     discount, setDiscount,
     selectedCustomer, setSelectedCustomer,
-    clearCart: clearGlobalCart,
+    clearCart,
   } = useContext(DataContext);
   const { user } = useAuth();
   const { t, language, formatCurrency } = useTranslation();
@@ -66,7 +55,6 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
   const { toast } = useToast();
   const [lastCompletedSale, setLastCompletedSale] = useState<Sale | null>(null);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
-  const [isClearCartAlertOpen, setIsClearCartAlertOpen] = useState(false);
   const locale = language === 'pt-BR' ? ptBR : enUS;
   
   useEffect(() => {
@@ -114,89 +102,14 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
     }
   }, [cart, isEditing, products, setCart, settings.estoque.permitir_estoque_negativo, t, toast]);
 
-  // Bluetooth/HID Barcode Scanner Logic
-  useEffect(() => {
-    // Only run if the setting is enabled
-    if (!settings.integracoes.leitor_codigo_barras) {
-      return;
-    }
-
-    let barcode = '';
-    let lastKeyTime = Date.now();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Ignore if a dialog or input is focused
-      if ((event.target as HTMLElement).nodeName === 'INPUT' || (event.target as HTMLElement).closest('[role="dialog"]')) {
-        return;
-      }
-
-      const currentTime = Date.now();
-      // Reset if keys are typed too slowly (more than 50ms apart)
-      if (currentTime - lastKeyTime > 50) {
-        barcode = '';
-      }
-
-      if (event.key === 'Enter') {
-        if (barcode.length > 3) { // A reasonable length for a barcode
-          const foundProduct = products.find(p => p.barcode === barcode);
-          if (foundProduct) {
-            addToCart(foundProduct);
-            toast({
-              title: "Produto Adicionado",
-              description: `${foundProduct.name} foi adicionado ao carrinho.`,
-            });
-          } else {
-            toast({
-              variant: "destructive",
-              title: t('stock.barcode_not_found_title'),
-              description: t('stock.barcode_not_found_description', { barcode }),
-            });
-          }
-        }
-        barcode = ''; // Reset after Enter
-      } else if (event.key.length === 1 && /\d/.test(event.key)) {
-        // Append only digits to the barcode string
-        barcode += event.key;
-      }
-
-      lastKeyTime = currentTime;
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    // Cleanup listener on component unmount
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [products, addToCart, t, toast, settings.integracoes.leitor_codigo_barras]);
-
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
   
-  const handleBarcodeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (searchQuery.length > 3) {
-      const foundProduct = products.find(p => p.barcode === searchQuery);
-      if (foundProduct) {
-        addToCart(foundProduct);
-        setSearchQuery(''); // Clear search after adding
-      } else {
-        toast({
-            variant: "destructive",
-            title: t('stock.barcode_not_found_title'),
-            description: t('stock.barcode_not_found_description', { barcode: searchQuery }),
-        })
-      }
-    }
-  }
-
   const searchedProducts = searchQuery
     ? products.filter(
         (p) =>
-          (p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.barcode.includes(searchQuery)) && p.quantity > 0
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) && p.quantity > 0
       )
     : products.filter(p => p.quantity > 0);
 
@@ -260,15 +173,6 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
     }
   }
 
-  const handleClearCart = () => {
-    clearGlobalCart();
-    setIsClearCartAlertOpen(false);
-    toast({
-        title: "Carrinho limpo",
-        description: "Todos os itens foram removidos do carrinho."
-    });
-  }
-
   const closeSaleDialog = () => {
     setLastCompletedSale(null);
   }
@@ -308,14 +212,6 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
   };
 
   const handleGenerateInvoice = () => {
-    if (!settings.integracoes.api_nfe) {
-        toast({
-            variant: "destructive",
-            title: "Função Desativada",
-            description: "A integração com a API de Nota Fiscal Eletrônica não está ativada nas configurações."
-        })
-        return;
-    }
     toast({
         title: "Funcionalidade em desenvolvimento",
         description: "A geração de Nota Fiscal Eletrônica (NF-e) será implementada em breve."
@@ -327,13 +223,12 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-10rem)]">
       <Card className="lg:col-span-3 flex flex-col h-full overflow-hidden">
         <CardHeader className="p-4 flex-row items-center gap-4">
-            <form onSubmit={handleBarcodeSubmit} className="flex-grow">
-                <Input 
-                placeholder={t('sales.search_placeholder')} 
-                value={searchQuery}
-                onChange={handleSearchChange} 
-                />
-            </form>
+            <Input 
+              placeholder={t('sales.search_placeholder')} 
+              value={searchQuery}
+              onChange={handleSearchChange} 
+              className="flex-grow"
+            />
             <div className="flex items-center gap-1">
                 <Button variant={layout === 'grid' ? 'default' : 'outline'} size="icon" onClick={() => setLayout('grid')}>
                     <LayoutGrid className="h-4 w-4" />
@@ -441,6 +336,7 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
                             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, -1)}><Minus className="h-4 w-4"/></Button>
                             <span className="font-medium w-4 text-center">{item.quantity}</span>
                             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" onClick={() => updateQuantity(item.productId, 1)}><Plus className="h-4 w-4"/></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => updateQuantity(item.productId, -item.quantity)}><X className="h-4 w-4"/></Button>
                             <div className="font-bold w-14 text-right">{formatCurrency(item.totalPrice)}</div>
                         </div>
                         </div>
@@ -488,37 +384,16 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
                 <span>{formatCurrency(total)}</span>
                 </div>
             </div>
-            <div className="flex items-center gap-2">
-                <Button size="lg" className="w-full" onClick={handleCompleteSale}>
-                    {isEditing ? (
-                        <>
-                            <Save className="mr-2 h-4 w-4" />
-                            {t('sales.update_sale')}
-                        </>
-                    ) : (
-                        t('sales.complete_sale')
-                    )}
-                </Button>
-                 <AlertDialog open={isClearCartAlertOpen} onOpenChange={setIsClearCartAlertOpen}>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="icon" disabled={cart.length === 0}>
-                            <Trash2 className="h-5 w-5"/>
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Limpar Carrinho?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Tem certeza que deseja remover todos os itens do carrinho? Esta ação não pode ser desfeita.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleClearCart} className="bg-destructive hover:bg-destructive/90">Limpar</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
+            <Button size="lg" className="w-full" onClick={handleCompleteSale}>
+                {isEditing ? (
+                    <>
+                        <Save className="mr-2 h-4 w-4" />
+                        {t('sales.update_sale')}
+                    </>
+                ) : (
+                    t('sales.complete_sale')
+                )}
+            </Button>
         </div>
       </Card>
     </div>
@@ -531,22 +406,18 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
                 {t('sales.sale_success_title')}
             </DialogTitle>
             <DialogDescription>
-                Venda <strong>{lastCompletedSale?.id}</strong> finalizada com o total de <strong>{formatCurrency(lastCompletedSale?.total || 0)}</strong>. O que você gostaria de fazer agora?
+                <div dangerouslySetInnerHTML={{ __html: t('sales.sale_success_description', { id: lastCompletedSale?.id, total: formatCurrency(lastCompletedSale?.total || 0) }) }} />
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center gap-2 pt-4">
-            {settings.integracoes.impressora_cupom && (
-                <Button variant="outline" onClick={handlePrintReceipt}>
-                    <Printer className="mr-2 h-4 w-4"/>
-                    {t('sales.print_receipt')}
-                </Button>
-            )}
-            {settings.integracoes.api_nfe && (
-                 <Button onClick={handleGenerateInvoice}>
-                    <FileText className="mr-2 h-4 w-4"/>
-                    Gerar Nota Fiscal
-                </Button>
-            )}
+            <Button variant="outline" onClick={handlePrintReceipt}>
+                <Printer className="mr-2 h-4 w-4"/>
+                {t('sales.generate_receipt')}
+            </Button>
+            <Button onClick={handleGenerateInvoice}>
+                <FileText className="mr-2 h-4 w-4"/>
+                Gerar Nota Fiscal
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
