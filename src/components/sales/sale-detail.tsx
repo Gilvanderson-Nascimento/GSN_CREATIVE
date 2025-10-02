@@ -30,7 +30,7 @@ type SaleDetailClientProps = {
   companyName: string;
 };
 
-export default function SaleDetailClient({ sale, customer, seller, onCancelSale, companyName }: SaleDetailClientProps) {
+const SaleDetailClient = React.memo(function SaleDetailClient({ sale, customer, seller, onCancelSale, companyName }: SaleDetailClientProps) {
   const { t, language, formatCurrency } = useTranslation();
   const locale = language === 'pt-BR' ? ptBR : enUS;
 
@@ -180,4 +180,6 @@ export default function SaleDetailClient({ sale, customer, seller, onCancelSale,
         </div>
     </div>
   );
-}
+});
+
+export default SaleDetailClient;

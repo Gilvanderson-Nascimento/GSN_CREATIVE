@@ -1,5 +1,5 @@
 'use client';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, memo } from 'react';
 import Image from 'next/image';
 import type { Product, SaleItem, Customer, Sale } from '@/lib/types';
 import { Input } from '@/components/ui/input';
@@ -49,7 +49,7 @@ type PosSystemProps = {
 };
 
 
-export default function PosSystem({ isEditing = false, existingSale, onSave }: PosSystemProps) {
+const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onSave }: PosSystemProps) {
   const { 
     products, 
     customers, 
@@ -485,4 +485,6 @@ export default function PosSystem({ isEditing = false, existingSale, onSave }: P
       </Dialog>
     </>
   );
-}
+});
+
+export default PosSystem;

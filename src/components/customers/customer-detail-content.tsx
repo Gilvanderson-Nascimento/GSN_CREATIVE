@@ -5,13 +5,14 @@ import { useTranslation } from '@/providers/translation-provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import React from 'react';
 
 type CustomerDetailContentProps = {
   customer: Customer;
   sales: Sale[];
 };
 
-export function CustomerDetailContent({ customer, sales }: CustomerDetailContentProps) {
+export const CustomerDetailContent = React.memo(function CustomerDetailContent({ customer, sales }: CustomerDetailContentProps) {
   const { t, formatCurrency } = useTranslation();
 
   return (
@@ -87,4 +88,4 @@ export function CustomerDetailContent({ customer, sales }: CustomerDetailContent
       </Card>
     </div>
   );
-}
+});

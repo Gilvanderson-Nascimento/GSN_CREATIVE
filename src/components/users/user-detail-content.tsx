@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { UserCog } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
+import React from 'react';
 
 type UserDetailContentProps = {
   user: User;
@@ -17,7 +18,7 @@ type UserDetailContentProps = {
   customers: Customer[];
 };
 
-export function UserDetailContent({ user, sales, customers }: UserDetailContentProps) {
+export const UserDetailContent = React.memo(function UserDetailContent({ user, sales, customers }: UserDetailContentProps) {
   const { t, formatCurrency, language } = useTranslation();
   const locale = language === 'pt-BR' ? ptBR : enUS;
 
@@ -107,4 +108,4 @@ export function UserDetailContent({ user, sales, customers }: UserDetailContentP
       </Card>
     </div>
   );
-}
+});
