@@ -399,6 +399,7 @@
         "integrations_title": "Integrations",
         "integrations_description": "Connect the system to other services.",
         "einvoice_api": "Electronic Invoice API",
+        "barcode_scanner": "Barcode Scanner",
         "developer_webhooks": "Webhooks for developers",
         "fiscal_printer": "Fiscal Receipt Printer",
         "test_environment_title": "Danger Zone",

@@ -116,6 +116,11 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
 
   // Bluetooth/HID Barcode Scanner Logic
   useEffect(() => {
+    // Only run if the setting is enabled
+    if (!settings.integracoes.leitor_codigo_barras) {
+      return;
+    }
+
     let barcode = '';
     let lastKeyTime = Date.now();
 
@@ -163,7 +168,7 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [products, addToCart, t, toast]);
+  }, [products, addToCart, t, toast, settings.integracoes.leitor_codigo_barras]);
 
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

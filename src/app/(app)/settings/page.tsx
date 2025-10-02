@@ -409,6 +409,10 @@ export default function SettingsPage() {
                     <Switch id="api-nfe" checked={settings.integracoes.api_nfe} onCheckedChange={(c) => handleSettingChange('integracoes', 'api_nfe', c)} />
                 </div>
                 <div className="flex items-center justify-between">
+                    <Label htmlFor="barcode-scanner" className="cursor-pointer">{t('settings.barcode_scanner')}</Label>
+                    <Switch id="barcode-scanner" checked={settings.integracoes.leitor_codigo_barras} onCheckedChange={(c) => handleSettingChange('integracoes', 'leitor_codigo_barras', c)} />
+                </div>
+                <div className="flex items-center justify-between">
                     <Label htmlFor="webhooks" className="cursor-pointer">{t('settings.developer_webhooks')}</Label>
                     <Switch id="webhooks" checked={settings.integracoes.webhooks} onCheckedChange={(c) => handleSettingChange('integracoes', 'webhooks', c)} />
                 </div>

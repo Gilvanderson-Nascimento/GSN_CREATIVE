@@ -399,6 +399,7 @@
         "integrations_title": "Integrações",
         "integrations_description": "Conecte o sistema a outros serviços.",
         "einvoice_api": "API de Nota Fiscal Eletrônica",
+        "barcode_scanner": "Leitor de Código de Barras",
         "developer_webhooks": "Webhooks para desenvolvedores",
         "fiscal_printer": "Impressora de Cupom Fiscal",
         "test_environment_title": "Zona de Perigo",
