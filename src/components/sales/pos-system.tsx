@@ -538,5 +538,3 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
 });
 
 export default PosSystem;
-
-    
