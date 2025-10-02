@@ -1,5 +1,5 @@
 'use client';
-import { useState, useContext, useEffect, memo } from 'react';
+import { useState, useContext, useEffect, memo, useCallback } from 'react';
 import Image from 'next/image';
 import type { Product, SaleItem, Customer, Sale } from '@/lib/types';
 import { Input } from '@/components/ui/input';
@@ -77,6 +77,94 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
     }
   }, [isEditing, existingSale, setCart, setDiscount, setSelectedCustomer]);
 
+  const addToCart = useCallback((product: Product) => {
+    const existingItem = cart.find((item) => item.productId === product.id);
+    
+    if (!settings.estoque.permitir_estoque_negativo && !isEditing) {
+        const productInStock = products.find(p => p.id === product.id);
+        if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
+            toast({
+                variant: "destructive",
+                title: t('sales.product_out_of_stock_title'),
+                description: t('sales.product_out_of_stock_description'),
+            });
+            return;
+        }
+    }
+
+    if (existingItem) {
+      setCart(
+        cart.map((item) =>
+          item.productId === product.id
+            ? { ...item, quantity: item.quantity + 1, totalPrice: (item.quantity + 1) * item.unitPrice }
+            : item
+        )
+      );
+    } else {
+      setCart([
+        ...cart,
+        {
+          productId: product.id,
+          productName: product.name,
+          quantity: 1,
+          unitPrice: product.salePrice,
+          totalPrice: product.salePrice,
+        },
+      ]);
+    }
+  }, [cart, isEditing, products, setCart, settings.estoque.permitir_estoque_negativo, t, toast]);
+
+  // Bluetooth/HID Barcode Scanner Logic
+  useEffect(() => {
+    let barcode = '';
+    let lastKeyTime = Date.now();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore if a dialog or input is focused
+      if ((event.target as HTMLElement).nodeName === 'INPUT' || (event.target as HTMLElement).closest('[role="dialog"]')) {
+        return;
+      }
+
+      const currentTime = Date.now();
+      // Reset if keys are typed too slowly (more than 50ms apart)
+      if (currentTime - lastKeyTime > 50) {
+        barcode = '';
+      }
+
+      if (event.key === 'Enter') {
+        if (barcode.length > 3) { // A reasonable length for a barcode
+          const foundProduct = products.find(p => p.barcode === barcode);
+          if (foundProduct) {
+            addToCart(foundProduct);
+            toast({
+              title: "Produto Adicionado",
+              description: `${foundProduct.name} foi adicionado ao carrinho.`,
+            });
+          } else {
+            toast({
+              variant: "destructive",
+              title: t('stock.barcode_not_found_title'),
+              description: t('stock.barcode_not_found_description', { barcode }),
+            });
+          }
+        }
+        barcode = ''; // Reset after Enter
+      } else if (event.key.length === 1 && /\d/.test(event.key)) {
+        // Append only digits to the barcode string
+        barcode += event.key;
+      }
+
+      lastKeyTime = currentTime;
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [products, addToCart, t, toast]);
+
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -107,46 +195,8 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
       )
     : products.filter(p => p.quantity > 0);
 
-  const addToCart = (product: Product) => {
-    const existingItem = cart.find((item) => item.productId === product.id);
-    
-    if (!isEditing) {
-        const productInStock = products.find(p => p.id === product.id);
-        if (!productInStock || productInStock.quantity <= (existingItem?.quantity || 0)) {
-            toast({
-                variant: "destructive",
-                title: t('sales.product_out_of_stock_title'),
-                description: t('sales.product_out_of_stock_description'),
-            });
-            return;
-        }
-    }
-
-
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.productId === product.id
-            ? { ...item, quantity: item.quantity + 1, totalPrice: (item.quantity + 1) * item.unitPrice }
-            : item
-        )
-      );
-    } else {
-      setCart([
-        ...cart,
-        {
-          productId: product.id,
-          productName: product.name,
-          quantity: 1,
-          unitPrice: product.salePrice,
-          totalPrice: product.salePrice,
-        },
-      ]);
-    }
-  };
-  
   const updateQuantity = (productId: string, amount: number) => {
-      if (!isEditing) {
+      if (!settings.estoque.permitir_estoque_negativo && !isEditing) {
           const existingItem = cart.find((item) => item.productId === productId);
           const productInStock = products.find(p => p.id === productId);
           if (amount > 0) {
@@ -488,3 +538,5 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
 });
 
 export default PosSystem;
+
+    
