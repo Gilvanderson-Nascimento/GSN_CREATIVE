@@ -413,12 +413,12 @@ export default function SettingsPage() {
                     <Switch id="barcode-scanner" checked={settings.integracoes.leitor_codigo_barras} onCheckedChange={(c) => handleSettingChange('integracoes', 'leitor_codigo_barras', c)} />
                 </div>
                 <div className="flex items-center justify-between">
-                    <Label htmlFor="webhooks" className="cursor-pointer">{t('settings.developer_webhooks')}</Label>
-                    <Switch id="webhooks" checked={settings.integracoes.webhooks} onCheckedChange={(c) => handleSettingChange('integracoes', 'webhooks', c)} />
-                </div>
-                <div className="flex items-center justify-between">
                     <Label htmlFor="impressora-cupom" className="cursor-pointer">{t('settings.fiscal_printer')}</Label>
                     <Switch id="impressora-cupom" checked={settings.integracoes.impressora_cupom} onCheckedChange={(c) => handleSettingChange('integracoes', 'impressora_cupom', c)} />
+                </div>
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="webhooks" className="cursor-pointer">{t('settings.developer_webhooks')}</Label>
+                    <Switch id="webhooks" checked={settings.integracoes.webhooks} onCheckedChange={(c) => handleSettingChange('integracoes', 'webhooks', c)} />
                 </div>
             </CardContent>
         </Card>

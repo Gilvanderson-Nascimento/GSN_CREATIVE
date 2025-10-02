@@ -68,7 +68,7 @@ export const initialSettings: AppSettings = {
     integracoes: {
       api_nfe: false,
       webhooks: false,
-      impressora_cupom: false,
+      impressora_cupom: true,
       leitor_codigo_barras: true,
     },
     ambiente_teste: {

@@ -143,7 +143,7 @@ const SaleDetailClient = React.memo(function SaleDetailClient({ sale, customer, 
                 <CardFooter className="flex flex-col gap-2">
                     <Button className="w-full" onClick={handlePrint}>
                         <Printer className="mr-2 h-4 w-4" />
-                        {t('sales.generate_receipt')}
+                        {t('sales.print_receipt')}
                     </Button>
                     {!isCancelled && (
                          <Button variant="outline" className="w-full" asChild>

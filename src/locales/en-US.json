@@ -179,6 +179,7 @@
         "items_sold": "Items Sold",
         "sale_summary": "Sale Summary",
         "generate_receipt": "Generate Receipt",
+        "print_receipt": "Print Receipt",
         "cancel_sale": "Cancel Sale",
         "cancel_sale_confirm_title": "Are you sure you want to cancel this sale?",
         "cancel_sale_confirm_description": "This action cannot be undone. Items will be returned to stock and financial records will be adjusted.",

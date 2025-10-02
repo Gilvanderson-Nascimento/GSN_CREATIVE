@@ -308,6 +308,14 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
   };
 
   const handleGenerateInvoice = () => {
+    if (!settings.integracoes.api_nfe) {
+        toast({
+            variant: "destructive",
+            title: "Função Desativada",
+            description: "A integração com a API de Nota Fiscal Eletrônica não está ativada nas configurações."
+        })
+        return;
+    }
     toast({
         title: "Funcionalidade em desenvolvimento",
         description: "A geração de Nota Fiscal Eletrônica (NF-e) será implementada em breve."
@@ -527,14 +535,18 @@ const PosSystem = memo(function PosSystem({ isEditing = false, existingSale, onS
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center gap-2 pt-4">
-            <Button variant="outline" onClick={handlePrintReceipt}>
-                <Printer className="mr-2 h-4 w-4"/>
-                Gerar Recibo
-            </Button>
-            <Button onClick={handleGenerateInvoice}>
-                <FileText className="mr-2 h-4 w-4"/>
-                Gerar Nota Fiscal
-            </Button>
+            {settings.integracoes.impressora_cupom && (
+                <Button variant="outline" onClick={handlePrintReceipt}>
+                    <Printer className="mr-2 h-4 w-4"/>
+                    {t('sales.print_receipt')}
+                </Button>
+            )}
+            {settings.integracoes.api_nfe && (
+                 <Button onClick={handleGenerateInvoice}>
+                    <FileText className="mr-2 h-4 w-4"/>
+                    Gerar Nota Fiscal
+                </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -179,6 +179,7 @@
         "items_sold": "Itens Vendidos",
         "sale_summary": "Resumo da Venda",
         "generate_receipt": "Gerar Recibo",
+        "print_receipt": "Imprimir Recibo",
         "cancel_sale": "Cancelar Venda",
         "cancel_sale_confirm_title": "Tem certeza que deseja cancelar esta venda?",
         "cancel_sale_confirm_description": "Esta ação não pode ser desfeita. Os itens retornarão ao estoque e os registros financeiros serão ajustados.",
